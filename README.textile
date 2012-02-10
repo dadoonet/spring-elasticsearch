@@ -1,0 +1,14 @@
+h1. Spring factories for Elasticsearch
+
+Welcome to the Spring factories for "Elasticsearch":http://www.elasticsearch.org/ project 
+
+
+h2. Versions
+
+|_. spring-elasticsearch|_. ElasticSearch|
+|   master (0.0.1)      |     0.19.0.RC1 |
+
+
+h2. Getting Started
+
+TODO 
