@@ -11,4 +11,113 @@ h2. Versions
 
 h2. Getting Started
 
-TODO 
+h3. Maven dependency
+
+Import spring-elasticsearch in you project @pom.xml@ file:
+
+bc. <dependency>
+  <groupId>fr.pilato.spring</groupId>
+  <artifactId>spring-elasticsearch</artifactId>
+  <name>spring-elasticsearch</name>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+
+h3. Define a client Transport bean
+
+In your spring context file, just define a client like this:
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" />
+    
+By default, you will get an "Elasticsearch Transport Client":http://www.elasticsearch.org/guide/reference/java-api/client.html connected to an Elasticsearch node already running at @localhost:9300@
+
+h2. Bean properties
+
+h3. Managing indexes and types
+
+If you want to manage indexes and types at startup (creating missing indexes/types and applying mappings):
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+	<property name="mappings">
+		<list>
+			<value>twitter/tweet</value>
+		</list>
+	</property>
+</bean>
+
+This will create an "Elasticsearch Client":http://www.elasticsearch.org/guide/reference/java-api/client.html that will check
+when starting that index @twitter@ exists and @tweet@ type is defined.
+
+If you add in your classpath a file named @es/myindex/_settings.json@, it will be automatically applied to define
+settings for your @myindex@ index.
+
+For example, create the following file @src/main/resources/es/twitter/_settings.json@ in your project:
+
+bc. {
+  "index" : {
+    "number_of_shards" : 3,
+    "number_of_replicas" : 2
+  }
+}
+
+Also, if you define a file named @es/myindex/mytype.json@, it will be automatically applied as the mapping for the @mytype@ type in the @myindex@ index.
+
+For example, create the following file @src/main/resources/es/twitter/tweet.json@ in your project:
+
+bc. {
+  "tweet" : {
+    "properties" : {
+      "message" : {"type" : "string", "store" : "yes"}
+    }
+  }
+}
+
+h3. Creating aliases to indexes
+
+When creating an index, it could be useful to add an alias on it.
+For example, if you planned to have indexes per year for twitter feeds (twitter2012, twitter2013, twitter2014) and you want
+to define an alias named twitter, you can use the @aliases@ property:
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+	<property name="aliases">
+		<list>
+			<value>twitter:twitter2012</value>
+			<value>twitter:twitter2013</value>
+			<value>twitter:twitter2014</value>
+		</list>
+	</property>
+</bean>
+
+h3. Changing classpath search path for mapping and settings files
+
+By default, the factory look in @es@ classpath folder to find if there is index settings or mappings definitions.
+If you need to change it, you can use the @classpathRoot@ property:
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+	<property name="mappings">
+		<list>
+			<value>twitter/tweet</value>
+		</list>
+	</property>
+	<property name="classpathRoot" value="myownfolder" />
+</bean>
+
+So, if a @myownfolder/twitter/_settings.xml@ file exists in your classpath, it will be used by the factory.
+
+h3. Force rebuild mappings (use with caution)
+
+For test purpose or for continuous integration, you could force the factory to clean the previous @type@ when starting the client.
+It will *remove all your datas* for that @type@. Just set  @forceReinit@ property to @true@.
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+	<property name="mappings">
+		<list>
+			<value>twitter/tweet</value>
+		</list>
+	</property>
+	<property name="forceReinit" value="true" />
+</bean>
