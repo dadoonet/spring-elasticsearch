@@ -9,12 +9,49 @@
 	<packaging>jar</packaging>
 	<name>spring-elasticsearch</name>
 	<version>0.0.1-SNAPSHOT</version>
-	
+	<url>https://github.com/dadoonet/spring-elasticsearch</url>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+  
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+  	
 	<properties>
 		<spring.version>3.1.0.RELEASE</spring.version>
 		<elasticsearch.version>0.19.0.RC2</elasticsearch.version>
 	</properties>
+
+	<developers>
+		<developer>
+			<id>dadoonet</id>
+			<name>David Pilato</name>
+			<email>david+github@pilato.fr</email>
+			<url>http://dev.david.pilato.fr/</url>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</url>
+		<connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
+		<developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
+	</scm>
 	
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/dadoonet/spring-elasticsearch/issues/</url>
+	</issueManagement>
+	
+
 	<build>
 		<plugins>
 			<plugin>
