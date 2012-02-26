@@ -6,7 +6,7 @@ Welcome to the Spring factories for "Elasticsearch":http://www.elasticsearch.org
 h2. Versions
 
 |_. spring-elasticsearch|_. ElasticSearch|
-|   master (0.0.1)      |     0.19.0.RC2 |
+|   master (0.0.1)      |     0.19.0.RC3 |
 
 
 h2. Getting Started
@@ -22,12 +22,27 @@ bc. <dependency>
   <version>0.0.1-SNAPSHOT</version>
 </dependency>
 
+h3. Using elasticsearch spring namespace for XML files
+
+In your spring context file, just add namespaces like this:
+
+bc. <?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.1.xsd">
+</beans>
+
 h3. Define a client Transport bean
 
 In your spring context file, just define a client like this:
 
-bc. <bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" />
+bc. <elasticsearch:client id="esClient" />
     
 By default, you will get an "Elasticsearch Transport Client":http://www.elasticsearch.org/guide/reference/java-api/client.html connected to an Elasticsearch node already running at @localhost:9300@
 
