@@ -36,4 +36,57 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="client">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+			Configures a org.elasticsearch.client.Client in the application context.
+		]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The bean id registered in the application context.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="name" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The bean name
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="node" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Elasticsearch node bean name.
+					example: mynode
+					You must set this property to build a client from a node or
+					you must set esNodes property to build a transport client.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="esNodes" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Elasticsearch esNodes urls bean name.
+					example: localhost:9300,localhost:9301
+					you must set this property to build a transport client or
+					You must set node property to build a client from a node.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="settingsFile" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Elasticsearch Settings file classpath URL (default : es.properties).
+					example: es.properties
+					Use this parameter if you want to define a settings file.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
 </xsd:schema>

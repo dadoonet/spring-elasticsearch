@@ -10,7 +10,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
-public class ElasticsearchNamespaceTest {
+public class ElasticsearchNodeNamespaceTest {
 	static protected ConfigurableApplicationContext ctx;
 	
 	@BeforeClass

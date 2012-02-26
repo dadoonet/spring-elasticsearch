@@ -54,7 +54,7 @@ public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBe
 	@Override
 	public void destroy() throws Exception {
 		try {
-			logger.info("Closing ElasticSearch node");
+			logger.info("Closing ElasticSearch node " + node.settings().get("name") );
 			node.close();
 		} catch (final Exception e) {
 			logger.error("Error closing Elasticsearch node: ", e);
