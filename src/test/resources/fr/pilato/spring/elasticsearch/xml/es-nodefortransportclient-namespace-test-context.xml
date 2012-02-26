@@ -9,7 +9,6 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.1.xsd">
 	
-	<elasticsearch:client id="testTransportClient" esNodes="localhost:9300"
-		settingsFile="fr/pilato/spring/elasticsearch/xml/esclient-transport.properties" />
+	<elasticsearch:node id="testNodeSettings" settingsFile="fr/pilato/spring/elasticsearch/xml/esnode-transport.properties" />
 
 </beans>
