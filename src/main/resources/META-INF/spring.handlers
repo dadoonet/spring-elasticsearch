@@ -1,0 +1,1 @@
+http\://www.pilato.fr/schema/elasticsearch=fr.pilato.spring.elasticsearch.xml.ElasticsearchNamespaceHandler

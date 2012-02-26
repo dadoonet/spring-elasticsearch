@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.pilato.fr/schema/elasticsearch"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.pilato.fr/schema/elasticsearch"
+	elementFormDefault="qualified">
+
+	<xsd:element name="node">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+			Configures a org.elasticsearch.node.Node in the application context.
+		]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The bean id registered in the application context.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="name" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The bean name
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="settingsFile" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Elasticsearch Settings file classpath URL (default : es.properties).
+					example: es.properties
+					Use this parameter if you want to define a settings file.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>
