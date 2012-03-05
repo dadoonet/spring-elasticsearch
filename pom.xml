@@ -27,7 +27,7 @@
   	
 	<properties>
 		<spring.version>3.1.0.RELEASE</spring.version>
-		<elasticsearch.version>0.19.0.RC3</elasticsearch.version>
+		<elasticsearch.version>0.19.0</elasticsearch.version>
 	</properties>
 
 	<developers>
