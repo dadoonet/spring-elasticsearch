@@ -26,8 +26,8 @@
 	</licenses>
   	
 	<properties>
-		<spring.version>3.1.0.RELEASE</spring.version>
-		<elasticsearch.version>0.19.0</elasticsearch.version>
+		<spring.version>3.1.1.RELEASE</spring.version>
+		<elasticsearch.version>0.19.1</elasticsearch.version>
 	</properties>
 
 	<developers>
