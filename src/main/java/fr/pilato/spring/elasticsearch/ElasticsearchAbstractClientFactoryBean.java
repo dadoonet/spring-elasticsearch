@@ -403,7 +403,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 					.execute().actionGet();			
 				if (!response.acknowledged()) throw new Exception("Could not define mapping for type ["+index+"]/["+type+"].");
 			} else {
-				if (logger.isDebugEnabled()) logger.debug("No mapping defintion for ["+index+"]/["+type+"]. Ignoring.");
+				if (logger.isDebugEnabled()) logger.debug("No mapping definition for ["+index+"]/["+type+"]. Ignoring.");
 			}
 		}
 		if (logger.isTraceEnabled()) logger.trace("/pushMapping("+index+","+type+","+force+")");
