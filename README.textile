@@ -140,6 +140,22 @@ If merging fails, the factory will not start ("BeanCreationException":https://gi
  will be raised with a 
  "MergeMappingException":https://github.com/elasticsearch/elasticsearch/blob/master/src/main/java/org/elasticsearch/index/mapper/MergeMappingException.java cause).
 
+h3. Merge settings
+
+If you need to merge settings for an existing @index@, set  @mergeSettings@ property to @true@.
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+	<property name="mappings">
+		<list>
+			<value>twitter/tweet</value>
+		</list>
+	</property>
+	<property name="mergeSettings" value="true" />
+</bean>
+
+If merging fails, the factory will not start.
+
 
 h3. Force rebuild mappings (use with caution)
 

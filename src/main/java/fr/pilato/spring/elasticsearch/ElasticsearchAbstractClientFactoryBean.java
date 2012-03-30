@@ -12,9 +12,14 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
+import org.elasticsearch.action.admin.indices.close.CloseIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.admin.indices.open.OpenIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
+import org.elasticsearch.action.admin.indices.settings.UpdateSettingsRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
@@ -76,6 +81,7 @@ import org.springframework.beans.factory.InitializingBean;
  *    </property>
  *    <property name="forceReinit" value="false" />
  *    <property name="mergeMapping" value="true" />
+ *    <property name="mergeSettings" value="true" />
  *    <property name="settingsFile" value="es.properties" />
  *  </bean>
  * }
@@ -129,6 +135,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	protected boolean mergeMapping;
 	
+	protected boolean mergeSettings;
+	
 	protected String[] mappings;
 
 	protected String[] aliases;
@@ -164,6 +172,14 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		this.mergeMapping = mergeMapping;
 	}
 
+	/**
+	 * Set to true if you want to try to merge index settings
+	 * @param mergeSettings
+	 */
+	public void setMergeSettings(boolean mergeSettings) {
+		this.mergeSettings = mergeSettings;
+	}
+	
 	/**
 	 * Define mappings you want to manage with this factory
 	 * <br/>use : indexname/mappingname form
@@ -291,6 +307,10 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			for (String index : indexes.keySet()) {
 				if (!isIndexExist(index)) {
 					createIndex(index);
+				} else {
+					if (mergeSettings) {
+						mergeIndexSettings(index);
+					}
 				}
 				
 				Collection<String> mappings = indexes.get(index);
@@ -463,6 +483,41 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		CreateIndexResponse createIndexResponse = cirb.execute().actionGet();
 		if (!createIndexResponse.acknowledged()) throw new Exception("Could not create index ["+index+"].");
 		if (logger.isTraceEnabled()) logger.trace("/createIndex("+index+")");
+	}
+
+	/**
+	 * Create a new index in Elasticsearch
+	 * @param index Index name
+	 * @param merge Try to merge settings ?
+	 * @throws Exception
+	 */
+	private void mergeIndexSettings(String index) throws Exception {
+		if (logger.isTraceEnabled()) logger.trace("mergeIndexSettings("+index+")");
+		if (logger.isDebugEnabled()) logger.debug("Index " + index + " already exists. Trying to merge settings.");
+		
+		checkClient();
+		
+		// Before merging, we have to close the index
+//		CloseIndexRequestBuilder cirb = client.admin().indices().prepareClose(index);
+//		CloseIndexResponse closeIndexResponse = cirb.execute().actionGet();
+//		if (!closeIndexResponse.acknowledged()) throw new Exception("Could not close index ["+index+"].");
+
+		UpdateSettingsRequestBuilder usrb = client.admin().indices().prepareUpdateSettings(index);
+
+		// If there are settings for this index, we use it. If not, using Elasticsearch defaults.
+		String source = readIndexSettings(index);
+		if (source != null) {
+			if (logger.isTraceEnabled()) logger.trace("Found settings for index "+index+" : " + source);
+			usrb.setSettings(source);
+		}
+		
+		usrb.execute().actionGet();
+		
+		OpenIndexRequestBuilder oirb = client.admin().indices().prepareOpen(index);
+		OpenIndexResponse openIndexResponse = oirb.execute().actionGet();
+		if (!openIndexResponse.acknowledged()) throw new Exception("Could not open index ["+index+"].");
+
+		if (logger.isTraceEnabled()) logger.trace("/mergeIndexSettings("+index+")");
 	}
 
 	/**
