@@ -122,6 +122,22 @@ bc. <bean id="esClient"
 
 So, if a @myownfolder/twitter/_settings.xml@ file exists in your classpath, it will be used by the factory.
 
+h3. Merge mappings
+
+If you need to merge mapping for an existing @type@, set  @mergeMapping@ property to @true@.
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+	<property name="mappings">
+		<list>
+			<value>twitter/tweet</value>
+		</list>
+	</property>
+	<property name="mergeMapping" value="true" />
+</bean>
+
+If merging fails, the factory will not start.
+
 h3. Force rebuild mappings (use with caution)
 
 For test purpose or for continuous integration, you could force the factory to clean the previous @type@ when starting the client.

@@ -75,6 +75,7 @@ import org.springframework.beans.factory.InitializingBean;
  *      </list>
  *    </property>
  *    <property name="forceReinit" value="false" />
+ *    <property name="mergeMapping" value="true" />
  *    <property name="settingsFile" value="es.properties" />
  *  </bean>
  * }
@@ -126,6 +127,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	protected boolean forceReinit;
 	
+	protected boolean mergeMapping;
+	
 	protected String[] mappings;
 
 	protected String[] aliases;
@@ -151,6 +154,14 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 */
 	public void setForceReinit(boolean forceReinit) {
 		this.forceReinit = forceReinit;
+	}
+
+	/**
+	 * Set to true if you want to try to merge mappings
+	 * @param mergeMapping
+	 */
+	public void setMergeMapping(boolean mergeMapping) {
+		this.mergeMapping = mergeMapping;
 	}
 
 	/**
@@ -286,7 +297,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				for (Iterator<String> iterator = mappings.iterator(); iterator
 						.hasNext();) {
 					String type = iterator.next();
-					pushMapping(index, type, forceReinit);
+					pushMapping(index, type, forceReinit, mergeMapping);
 				}
 			}
 		}
@@ -371,9 +382,10 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * @param type Type name
 	 * @param force Force rebuild the type : <b>Caution</b> : if true, all your datas for
 	 * this type will be erased. Use only for developpement or continuous integration
+	 * @param merge Merge existing mappings
 	 * @throws Exception
 	 */
-	private void pushMapping(String index, String type, boolean force) throws Exception {
+	private void pushMapping(String index, String type, boolean force, boolean merge) throws Exception {
 		if (logger.isTraceEnabled()) logger.trace("pushMapping("+index+","+type+","+force+")");
 
 		checkClient();
@@ -389,8 +401,15 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		}
 		
 		// If type does not exist, we create it
-		if (!isMappingExist(index, type)) {
-			if (logger.isDebugEnabled()) logger.debug("Mapping ["+index+"]/["+type+"] doesn't exist. Creating it.");
+		boolean mappingExist = isMappingExist(index, type);
+		if (merge || !mappingExist) {
+			if (logger.isDebugEnabled()) {
+				if (mappingExist) {
+					logger.debug("Updating mapping ["+index+"]/["+type+"].");
+				} else {
+					logger.debug("Mapping ["+index+"]/["+type+"] doesn't exist. Creating it.");
+				}
+			}
 			// Read the mapping json file if exists and use it
 			String source = readMapping(index, type);
 			if (source != null) {
@@ -401,10 +420,22 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 					.setType(type)
 					.setSource(source)
 					.execute().actionGet();			
-				if (!response.acknowledged()) throw new Exception("Could not define mapping for type ["+index+"]/["+type+"].");
+				if (!response.acknowledged()) {
+					throw new Exception("Could not define mapping for type ["+index+"]/["+type+"].");
+				} else {
+					if (logger.isDebugEnabled()) {
+						if (mappingExist) {
+							logger.debug("Mapping definition for ["+index+"]/["+type+"] succesfully merged.");
+						} else {
+							logger.debug("Mapping definition for ["+index+"]/["+type+"] succesfully created.");
+						}
+					}
+				}
 			} else {
 				if (logger.isDebugEnabled()) logger.debug("No mapping definition for ["+index+"]/["+type+"]. Ignoring.");
 			}
+		} else {
+			if (logger.isDebugEnabled()) logger.debug("Mapping ["+index+"]/["+type+"] already exists and mergeMapping is not set.");
 		}
 		if (logger.isTraceEnabled()) logger.trace("/pushMapping("+index+","+type+","+force+")");
 	}

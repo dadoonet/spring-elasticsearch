@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.1.xsd">
+
+	<elasticsearch:node id="esNode" settingsFile="fr/pilato/spring/elasticsearch/xml/esnode-transport.properties" />
+  
+    <bean id="esClient"
+        class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+        <property name="node" ref="esNode" />
+        <property name="classpathRoot" value="/es1" />
+		<property name="mappings">
+			<list>
+				<value>twitter/tweet</value>
+			</list>
+		</property>
+        <property name="forceReinit" value="false" />
+    </bean>	
+
+    <bean id="esClient2"
+        class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+        <property name="node" ref="esNode" />
+        <property name="classpathRoot" value="/es2" />
+		<property name="mappings">
+			<list>
+				<value>twitter/tweet</value>
+			</list>
+		</property>
+        <property name="mergeMapping" value="true" />
+    </bean>	
+
+
+</beans>
