@@ -136,7 +136,10 @@ bc. <bean id="esClient"
 	<property name="mergeMapping" value="true" />
 </bean>
 
-If merging fails, the factory will not start.
+If merging fails, the factory will not start ("BeanCreationException":https://github.com/SpringSource/spring-framework/blob/master/spring-beans/src/main/java/org/springframework/beans/factory/BeanCreationException.java
+ will be raised with a 
+ "MergeMappingException":https://github.com/elasticsearch/elasticsearch/blob/master/src/main/java/org/elasticsearch/index/mapper/MergeMappingException.java cause).
+
 
 h3. Force rebuild mappings (use with caution)
 
