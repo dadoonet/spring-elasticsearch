@@ -26,7 +26,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				<value>alltheworld:rss</value>
 			</list>
 		</property>
-        <property name="forceReinit" value="true" />
+        <property name="forceMapping" value="true" />
     </bean>
     
 </beans>

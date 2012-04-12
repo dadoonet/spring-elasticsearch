@@ -20,7 +20,7 @@
 				<value>twitter/tweet</value>
 			</list>
 		</property>
-        <property name="forceReinit" value="false" />
+        <property name="forceMapping" value="false" />
     </bean>	
 
     <bean id="esClient2"

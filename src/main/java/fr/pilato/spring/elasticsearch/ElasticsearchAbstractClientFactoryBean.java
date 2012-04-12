@@ -12,21 +12,23 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
-import org.elasticsearch.action.admin.indices.close.CloseIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.elasticsearch.action.admin.indices.settings.UpdateSettingsRequestBuilder;
+import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateResponse;
+import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.cluster.metadata.IndexTemplateMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * An abstract {@link FactoryBean} used to create an ElasticSearch
@@ -79,8 +81,14 @@ import org.springframework.beans.factory.InitializingBean;
  *        <value>alltheworld:rss</value>
  *      </list>
  *    </property>
- *    <property name="forceReinit" value="false" />
+ *    <property name="templates">
+ *      <list>
+ *        <value>rss_template</value>
+ *      </list>
+ *    </property>    
+ *    <property name="forceMapping" value="false" />
  *    <property name="mergeMapping" value="true" />
+ *    <property name="forceTemplate" value="false" />    
  *    <property name="mergeSettings" value="true" />
  *    <property name="settingsFile" value="es.properties" />
  *  </bean>
@@ -131,7 +139,9 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	protected Client client;
 
-	protected boolean forceReinit;
+	protected boolean forceMapping;
+	
+	protected boolean forceTemplate;
 	
 	protected boolean mergeMapping;
 	
@@ -140,6 +150,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	protected String[] mappings;
 
 	protected String[] aliases;
+	
+	protected String[] templates;
 	
 	protected String classpathRoot = "/es";
 	
@@ -158,12 +170,21 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	/**
 	 * Set to true if you want to force reinit indexes/mapping
-	 * @param forceReinit
+	 * @param forceMapping
 	 */
-	public void setForceReinit(boolean forceReinit) {
-		this.forceReinit = forceReinit;
+	public void setForceMapping(boolean forceMapping) {
+		this.forceMapping = forceMapping;
 	}
 
+	/**
+	 * Set to true if you want to force recreate templates
+	 * 
+	 * @param forceTemplate
+	 */
+	public void setForceTemplate(boolean forceTemplate) {
+		this.forceTemplate = forceTemplate;
+	}
+	
 	/**
 	 * Set to true if you want to try to merge mappings
 	 * @param mergeMapping
@@ -220,6 +241,28 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	public void setAliases(String[] aliases) {
 		this.aliases = aliases;
 	}
+
+	/**
+	 * Define templates you want to manage with this factory <br/>
+	 * <p>
+	 * Example :<br/>
+	 * 
+	 * <pre>
+	 * {@code
+	 * <property name="templates">
+	 *  <list>
+	 *   <value>template_1</value>
+	 *   <value>template_2</value>
+	 *  </list>
+	 * </property>
+	 * }
+	 * </pre>
+	 * 
+	 * @param templates list of template
+	 */
+	public void setTemplates(String[] templates) {
+		this.templates = templates;
+	}
 	
 	/**
 	 * Classpath root for index and mapping files (default : /es)
@@ -244,6 +287,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		logger.info("Starting ElasticSearch client");
 		
 		client = buildClient();
+		initTemplates();		
 		initMappings();
 		initAliases();
 	}
@@ -256,7 +300,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				client.close();
 			}
 		} catch (final Exception e) {
-			logger.error("Error closing Elasticsearch client: ", e);
+			logger.error("Error closing ElasticSearch client: ", e);
 		}
 	}
 
@@ -276,8 +320,28 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	}
 
 	/**
+	 * Init templates if needed.
+	 * <p>
+	 * Note that you can force to recreate template using
+	 * {@link #setForceTemplate(boolean)}
+	 * 
+	 * @throws Exception
+	 */
+	private void initTemplates() throws Exception {
+		if (templates != null && templates.length > 0) {
+			for (int i = 0; i < templates.length; i++) {
+				String template = templates[i];
+				Assert.hasText(template, "Can not read template in ["
+						+ templates[i]
+						+ "]. Check that templates is not empty.");
+				createTemplate(template, forceTemplate);
+			}
+		}
+	}
+	
+	/**
 	 * Init mapping if needed.
-	 * <p>Note that you can force to reinit mapping using {@link #setForceReinit(boolean)}
+	 * <p>Note that you can force to reinit mapping using {@link #setForceMapping(boolean)}
 	 * @throws Exception 
 	 */
 	private void initMappings() throws Exception {
@@ -317,7 +381,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				for (Iterator<String> iterator = mappings.iterator(); iterator
 						.hasNext();) {
 					String type = iterator.next();
-					pushMapping(index, type, forceReinit, mergeMapping);
+					pushMapping(index, type, forceMapping, mergeMapping);
 				}
 			}
 		}
@@ -369,6 +433,59 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		if (!response.acknowledged()) throw new Exception("Could not define alias [" + alias + "] for index [" + index + "].");
 		if (logger.isTraceEnabled()) logger.trace("/createAlias("+alias+","+index+")");
 	}
+
+	/**
+	 * Create a template if needed
+	 * 
+	 * @param template template name
+	 * @param force    force recreate template
+	 * @throws Exception
+	 */
+	private void createTemplate(String template, boolean force)
+			throws Exception {
+		if (logger.isTraceEnabled())
+			logger.trace("createTemplate(" + template + ")");
+		checkClient();
+
+		// If template already exists and if we are in force mode, we delete the
+		// type and its mapping
+		if (force && isTemplateExist(template)) {
+			if (logger.isDebugEnabled())
+				logger.debug("Force remove template [" + template + "]");
+			// Remove template in ElasticSearch !
+			final DeleteIndexTemplateResponse response = client.admin()
+					.indices().prepareDeleteTemplate(template).execute()
+					.actionGet();
+		}
+
+		// Read the template json file if exists and use it
+		String source = readTemplate(template);
+		if (source != null) {
+			if (logger.isTraceEnabled())
+				logger.trace("Template [" + template + "]=" + source);
+			// Create template
+			final PutIndexTemplateResponse response = client.admin().indices()
+					.preparePutTemplate(template).setSource(source).execute()
+					.actionGet();
+			if (!response.acknowledged()) {
+				throw new Exception("Could not define template [" + template
+						+ "].");
+			} else {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Template [" + template
+							+ "] successfully created.");
+				}
+			}
+		} else {
+			if (logger.isWarnEnabled()) {
+				logger.warn("No template definition for [" + template
+						+ "]. Ignoring.");
+			}
+		}
+
+		if (logger.isTraceEnabled())
+			logger.trace("/createTemplate(" + template + ")");
+	}
     
 	/**
 	 * Check if an index already exists
@@ -392,6 +509,23 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		IndexMetaData imd = cs.getMetaData().index(index);
 		MappingMetaData mdd = imd.mapping(type);
 		
+		if (mdd != null) return true;
+		return false;
+	}
+
+	/**
+	 * Check if a template already exists
+	 * 
+	 * @param template template name
+	 * @return true if template exists
+	 */
+	private boolean isTemplateExist(String template) {
+		ClusterState cs = client.admin().cluster().prepareState()
+				.setFilterIndexTemplates(template).execute().actionGet()
+				.getState();
+		final IndexTemplateMetaData mdd = cs.getMetaData().templates()
+				.get(template);
+
 		if (mdd != null) return true;
 		return false;
 	}
@@ -486,9 +620,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	}
 
 	/**
-	 * Create a new index in Elasticsearch
+	 * Create a new index in ElasticSearch
 	 * @param index Index name
-	 * @param merge Try to merge settings ?
 	 * @throws Exception
 	 */
 	private void mergeIndexSettings(String index) throws Exception {
@@ -532,6 +665,18 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		return readFileInClasspath(classpathRoot + "/" + index + "/" + type + jsonFileExtension);
 	}	
 
+	/**
+	 * Read the template.<br>
+	 * Shortcut to readFileInClasspath(classpathRoot + "/_template/" + template + jsonFileExtension);
+	 * 
+	 * @param template Template name
+	 * @return Template if exists. Null otherwise.
+	 * @throws Exception
+	 */
+	private String readTemplate(String template) throws Exception {
+		return readFileInClasspath(classpathRoot + "/_template/" + template	+ jsonFileExtension);
+	}
+	
 	/**
 	 * Read settings for an index.<br>
 	 * Shortcut to readFileInClasspath(classpathRoot + "/" + index + "/" + indexSettingsFileName);

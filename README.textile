@@ -160,7 +160,7 @@ If merging fails, the factory will not start.
 h3. Force rebuild mappings (use with caution)
 
 For test purpose or for continuous integration, you could force the factory to clean the previous @type@ when starting the client.
-It will *remove all your datas* for that @type@. Just set  @forceReinit@ property to @true@.
+It will *remove all your datas* for that @type@. Just set  @forceMapping@ property to @true@.
 
 bc. <bean id="esClient"
     class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
@@ -169,5 +169,5 @@ bc. <bean id="esClient"
 			<value>twitter/tweet</value>
 		</list>
 	</property>
-	<property name="forceReinit" value="true" />
+	<property name="forceMapping" value="true" />
 </bean>
