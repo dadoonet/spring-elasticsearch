@@ -1,6 +1,7 @@
 package fr.pilato.spring.elasticsearch;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
 /**
@@ -91,6 +94,7 @@ import org.springframework.util.Assert;
  *    <property name="forceTemplate" value="false" />    
  *    <property name="mergeSettings" value="true" />
  *    <property name="settingsFile" value="es.properties" />
+ *    <property name="autoscan" value="false" />
  *  </bean>
  * }
  * </pre>
@@ -126,6 +130,9 @@ import org.springframework.util.Assert;
  * }
  * </pre>
  * 
+ * By convention, the factory will create all settings and mappings found under the /es classpath.<br>
+ * You can disable convention and use configuration by setting autoscan to false.
+ * 
  * @see {@link ElasticsearchTransportClientFactoryBean} to get a *simple*
  *      client.
  * @see {@link ElasticsearchClientFactoryBean} to get a client from a cluster
@@ -147,6 +154,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	protected boolean mergeSettings;
 	
+	protected boolean autoscan = true;
+	
 	protected String[] mappings;
 
 	protected String[] aliases;
@@ -160,6 +169,9 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	// TODO Let the user decide
 	protected String indexSettingsFileName = "_settings.json";
+	
+	// TODO Let the user decide
+	protected String templateDir = "_template";
 
 	/**
 	 * Implement this method to build a client
@@ -200,6 +212,15 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	public void setMergeSettings(boolean mergeSettings) {
 		this.mergeSettings = mergeSettings;
 	}
+	
+	/**
+	 * Set to false if you want to use configuration instead of convention.
+	 * @param autoscan
+	 */
+	public void setAutoscan(boolean autoscan) {
+		this.autoscan = autoscan;
+	}
+	
 	
 	/**
 	 * Define mappings you want to manage with this factory
@@ -287,7 +308,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		logger.info("Starting ElasticSearch client");
 		
 		client = buildClient();
-		initTemplates();		
+		initTemplates();	
+		if (autoscan) computeMappings();
 		initMappings();
 		initAliases();
 	}
@@ -339,6 +361,45 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		}
 	}
 	
+	/**
+	 * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
+	 */
+	private void computeMappings() {
+		if (mappings == null || mappings.length == 0) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Automatic discovery is activated. Looking for definition files in classpath under " + classpathRoot + ".");
+			}
+			
+			ArrayList<String> autoMappings = new ArrayList<String>();
+			// Let's scan our resources
+			PathMatchingResourcePatternResolver pathResolver = new PathMatchingResourcePatternResolver();
+			Resource resourceRoot = pathResolver.getResource(classpathRoot);
+			try {
+				Resource[] resources = pathResolver.getResources("classpath:"+classpathRoot + "/**/*"+jsonFileExtension);
+				for (int i = 0; i < resources.length; i++) {
+					String relPath = resources[i].getURI().toString().substring(resourceRoot.getURI().toString().length()+1);
+					
+					// We should ignore _settings.json files (as they are not really mappings)
+					// We should also ignore _template dir
+					if (!relPath.endsWith(indexSettingsFileName) && !relPath.startsWith(templateDir)) {
+						// We must remove the .json extension
+						relPath = relPath.substring(0, relPath.lastIndexOf(".json"));
+						autoMappings.add(relPath);
+
+						if (logger.isDebugEnabled()) {
+							logger.debug("Automatic discovery found " + relPath + " json file in classpath under " + classpathRoot + ".");
+						}
+					}
+				}
+				
+				mappings = (String[]) autoMappings.toArray(new String[autoMappings.size()]);
+			
+			} catch (IOException e) {
+				logger.warn("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".", e);
+			}
+		}
+	}
+
 	/**
 	 * Init mapping if needed.
 	 * <p>Note that you can force to reinit mapping using {@link #setForceMapping(boolean)}
@@ -670,14 +731,14 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Read the template.<br>
-	 * Shortcut to readFileInClasspath(classpathRoot + "/_template/" + template + jsonFileExtension);
+	 * Shortcut to readFileInClasspath(classpathRoot + "/" + templateDir + "/" + template + jsonFileExtension);
 	 * 
 	 * @param template Template name
 	 * @return Template if exists. Null otherwise.
 	 * @throws Exception
 	 */
 	private String readTemplate(String template) throws Exception {
-		return readFileInClasspath(classpathRoot + "/_template/" + template	+ jsonFileExtension);
+		return readFileInClasspath(classpathRoot + "/" + templateDir + "/" + template + jsonFileExtension);
 	}
 	
 	/**

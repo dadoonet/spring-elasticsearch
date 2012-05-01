@@ -6,7 +6,7 @@ Welcome to the Spring factories for "Elasticsearch":http://www.elasticsearch.org
 h2. Versions
 
 |_. spring-elasticsearch|_. ElasticSearch|
-|   master (0.0.1)      |     0.19.1     |
+|   master (0.0.1)      |     0.19.3     |
 
 
 h2. Getting Started
@@ -87,6 +87,28 @@ bc. {
     }
   }
 }
+
+h3. Using convention over configuration
+
+By default, the factory will find every json file located under @es@ directory.
+So, if you have a file named @es/twitter/tweet.json@ in your classpath, it will be automatically used by the factory
+without defining anything:
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" />
+
+You can disable this automatic lookup by setting the @autoscan@ property to @false@:
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean">
+	<property name="autoscan" value="false" />
+	<property name="mappings">
+		<list>
+			<value>twitter/tweet</value>
+		</list>
+	</property>
+</bean>
+
 
 h3. Creating aliases to indexes
 
