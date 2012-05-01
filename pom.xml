@@ -38,6 +38,12 @@
 			<url>http://dev.david.pilato.fr/</url>
 			<timezone>+1</timezone>
 		</developer>
+		<developer>
+			<id>nhuray</id>
+			<name>Nicolas Huray</name>
+			<url>https://github.com/nhuray/</url>
+			<timezone>+1</timezone>
+		</developer>
 	</developers>
 
 	<scm>
