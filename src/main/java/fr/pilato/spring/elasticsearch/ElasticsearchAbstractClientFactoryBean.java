@@ -507,8 +507,11 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	private boolean isMappingExist(String index, String type) {
 		ClusterState cs = client.admin().cluster().prepareState().setFilterIndices(index).execute().actionGet().getState();
 		IndexMetaData imd = cs.getMetaData().index(index);
-		MappingMetaData mdd = imd.mapping(type);
 		
+		if (imd == null) return false;
+
+		MappingMetaData mdd = imd.mapping(type);
+
 		if (mdd != null) return true;
 		return false;
 	}
