@@ -46,6 +46,33 @@ bc. <elasticsearch:client id="esClient" />
     
 By default, you will get an "Elasticsearch Transport Client":http://www.elasticsearch.org/guide/reference/java-api/client.html connected to an Elasticsearch node already running at @localhost:9300@
 
+h2. Elasticsearch properties
+
+You can set your elasticsearch properties in a file:
+
+bc. <bean id="esClient"
+     class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
+     <property name="settingsFile" value="es.properties" />
+</bean>
+
+By default, the factory will use the es.properties file if it exists in your classpath.
+
+
+h2. Transport Client Network settings
+
+You can (you should) define your nodes settings when using a transport client:
+
+bc. <bean id="esClient"
+     class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
+     <property name="esNodes">
+       <list>
+         <value>localhost:9300</value>
+         <value>localhost:9301</value>
+       </list>
+     </property>
+</bean>
+
+
 h2. Bean properties
 
 h3. Managing indexes and types
