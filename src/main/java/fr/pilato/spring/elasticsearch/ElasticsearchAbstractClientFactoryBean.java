@@ -244,7 +244,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	}
 
 	/**
-	 * Define mappings you want to manage with this factory
+	 * Define aliases you want to manage with this factory
 	 * <br/>use : aliasname:indexname form
 	 * <p>Example :<br/>
  	 * <pre>
@@ -508,8 +508,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			logger.trace("createTemplate(" + template + ")");
 		checkClient();
 
-		// If template already exists and if we are in force mode, we delete the
-		// type and its mapping
+		// If template already exists and if we are in force mode, we delete the template
 		if (force && isTemplateExist(template)) {
 			if (logger.isDebugEnabled())
 				logger.debug("Force remove template [" + template + "]");

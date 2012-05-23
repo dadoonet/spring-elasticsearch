@@ -116,8 +116,8 @@ bc. {
 
 h3. Using convention over configuration
 
-By default, the factory will find every json file located under @es@ directory.
-So, if you have a file named @es/twitter/tweet.json@ in your classpath, it will be automatically used by the factory
+By default, the factory will find every mapping file located under @es@ directory.
+So, if you have a mapping file named @es/twitter/tweet.json@ in your classpath, it will be automatically used by the factory
 without defining anything:
 
 bc. <bean id="esClient"
@@ -152,6 +152,42 @@ bc. <bean id="esClient"
 		</list>
 	</property>
 </bean>
+
+h3. Creating templates
+
+Sometimes it's useful to define a template mapping that will automatically be applied to new indices created. 
+
+For example, if you planned to have indexes per year for twitter feeds (twitter2012, twitter2013, twitter2014) and you want
+to define a template named @twitter_template@, you can use the @templates@ property:
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+	<property name="templates">
+		<list>
+			<value>twitter_template</value>
+		</list>
+	</property>
+</bean>
+
+To configure your template you have to define a file named @es/_template/twitter_template.json@ in your project:
+
+bc. {
+    "template" : "twee*",
+    "settings" : {
+        "number_of_shards" : 1
+    },
+    "mappings" : {
+        "tweet" : {
+            "properties" : {
+                "message" : {
+                    "type" : "string",
+                    "store" : "yes"
+                }
+            }
+        }
+    }
+}
+
 
 h3. Changing classpath search path for mapping and settings files
 
@@ -218,4 +254,19 @@ bc. <bean id="esClient"
 		</list>
 	</property>
 	<property name="forceMapping" value="true" />
+</bean>
+
+h3. Force rebuild templates (use with caution)
+
+For test purpose or for continuous integration, you could force the factory to clean the previous @template@ when starting the client.
+Just set  @forceTemplate@ property to @true@.
+
+bc. <bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+	<property name="templates">
+		<list>
+			<value>twitter_template</value>
+		</list>
+	</property>
+	<property name="forceTemplate" value="true" />
 </bean>
