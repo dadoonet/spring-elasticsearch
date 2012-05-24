@@ -270,3 +270,8 @@ bc. <bean id="esClient"
 	</property>
 	<property name="forceTemplate" value="true" />
 </bean>
+
+
+h2. Thanks
+
+Special thanks to "Nicolas Huray":https://github.com/nhuray for his contribution about "templates":https://github.com/dadoonet/spring-elasticsearch/pull/4
