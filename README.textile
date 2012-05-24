@@ -6,7 +6,7 @@ Welcome to the Spring factories for "Elasticsearch":http://www.elasticsearch.org
 h2. Versions
 
 |_. spring-elasticsearch|_. ElasticSearch|
-|   master (0.0.1)      |     0.19.3     |
+|   master (0.0.1)      |     0.19.4     |
 
 
 h2. Getting Started
