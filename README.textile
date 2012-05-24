@@ -18,7 +18,7 @@ Import spring-elasticsearch in you project @pom.xml@ file:
 bc. <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
 </dependency>
 
 h3. Using elasticsearch spring namespace for XML files
