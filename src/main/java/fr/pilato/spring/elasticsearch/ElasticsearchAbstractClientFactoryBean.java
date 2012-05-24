@@ -19,7 +19,6 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.elasticsearch.action.admin.indices.settings.UpdateSettingsRequestBuilder;
-import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateResponse;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
@@ -395,7 +394,12 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				mappings = (String[]) autoMappings.toArray(new String[autoMappings.size()]);
 			
 			} catch (IOException e) {
-				logger.warn("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".", e);
+				if (!logger.isTraceEnabled() && logger.isDebugEnabled()) {
+					logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
+				}
+				if (logger.isTraceEnabled()) {
+					logger.trace("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".", e);
+				}
 			}
 		}
 	}
@@ -513,7 +517,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			if (logger.isDebugEnabled())
 				logger.debug("Force remove template [" + template + "]");
 			// Remove template in ElasticSearch !
-			final DeleteIndexTemplateResponse response = client.admin()
+			client.admin()
 					.indices().prepareDeleteTemplate(template).execute()
 					.actionGet();
 		}
