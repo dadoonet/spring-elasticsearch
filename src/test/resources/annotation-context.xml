@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xmlns:context="http://www.springframework.org/schema/context"
+   xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+   ">
+
+   <context:annotation-config />
+   <context:component-scan base-package="fr.pilato.spring.elasticsearch.annotation" />
+ 
+   <bean class="fr.pilato.spring.elasticsearch.annotation.AppConfig"/>
+
+<!-- 
+    <bean id="esNode"
+        class="fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean">
+    </bean>
+    
+    <bean id="esClient"
+        class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+		<property name="mappings">
+			<list>
+				<value>twitter/tweet</value>
+				<value>rss/feed</value>
+				<value>rss/config</value>
+			</list>
+		</property>
+		<property name="aliases">
+			<list>
+				<value>alltheworld:twitter</value>
+				<value>alltheworld:rss</value>
+			</list>
+		</property>
+        <property name="forceMapping" value="true" />
+    </bean>
+ -->   
+</beans>
