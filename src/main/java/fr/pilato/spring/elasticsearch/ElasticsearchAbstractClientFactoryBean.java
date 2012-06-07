@@ -307,8 +307,10 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		logger.info("Starting ElasticSearch client");
 		
 		client = buildClient();
+		if (autoscan) {
+			computeMappings();
+		}
 		initTemplates();	
-		if (autoscan) computeMappings();
 		initMappings();
 		initAliases();
 	}
@@ -376,13 +378,13 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			try {
 				Resource[] resources = pathResolver.getResources("classpath:"+classpathRoot + "/**/*"+jsonFileExtension);
 				for (int i = 0; i < resources.length; i++) {
-					String relPath = resources[i].getURI().toString().substring(resourceRoot.getURI().toString().length()+1);
+					String relPath = resources[i].getURI().toString().substring(resourceRoot.getURI().toString().length());
 					
 					// We should ignore _settings.json files (as they are not really mappings)
 					// We should also ignore _template dir
-					if (!relPath.endsWith(indexSettingsFileName) && !relPath.startsWith(templateDir)) {
+					if (!relPath.endsWith(indexSettingsFileName) && !relPath.startsWith("/"+templateDir)) {
 						// We must remove the .json extension
-						relPath = relPath.substring(0, relPath.lastIndexOf(".json"));
+						relPath = relPath.substring(1, relPath.lastIndexOf(".json"));
 						autoMappings.add(relPath);
 
 						if (logger.isDebugEnabled()) {
