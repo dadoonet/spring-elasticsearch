@@ -383,8 +383,13 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 					// We should ignore _settings.json files (as they are not really mappings)
 					// We should also ignore _template dir
 					if (!relPath.endsWith(indexSettingsFileName) && !relPath.startsWith("/"+templateDir)) {
+						// If relPath starts with / we must ignore first char
+						// TODO : check why sometimes there is a / and sometimes not ! :-(
+						int start = 0;
+						if (relPath.startsWith("/")) start = 1;
+						
 						// We must remove the .json extension
-						relPath = relPath.substring(1, relPath.lastIndexOf(".json"));
+						relPath = relPath.substring(start, relPath.lastIndexOf(".json"));
 						autoMappings.add(relPath);
 
 						if (logger.isDebugEnabled()) {
