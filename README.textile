@@ -6,7 +6,9 @@ Welcome to the Spring factories for "Elasticsearch":http://www.elasticsearch.org
 h2. Versions
 
 |_. spring-elasticsearch|_. ElasticSearch|
-|   master (0.0.1)      |     0.19.4     |
+|   master (0.0.3)      |     0.19.4     |
+|        0.0.2          |     0.19.4     |
+|        0.0.1          |     0.19.4     |
 
 
 h2. Getting Started
@@ -18,7 +20,7 @@ Import spring-elasticsearch in you project @pom.xml@ file:
 bc. <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 </dependency>
 
 h3. Using elasticsearch spring namespace for XML files
