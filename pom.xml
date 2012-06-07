@@ -6,7 +6,7 @@
 	<artifactId>spring-elasticsearch</artifactId>
 	<packaging>jar</packaging>
 	<name>spring-elasticsearch</name>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<url>https://github.com/dadoonet/spring-elasticsearch</url>
 
 	<parent>
