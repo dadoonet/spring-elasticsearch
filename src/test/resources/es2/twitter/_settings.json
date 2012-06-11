@@ -1,5 +1,5 @@
 {
-	"settings" : {
+	"index" : {
 		"analysis":{
 			"analyzer":{
 				"francais":{
