@@ -1,0 +1,28 @@
+{
+	"index" : {
+		"analysis":{
+			"analyzer":{
+                "custom_uax_url_email":{
+                    "type":"custom",
+                    "tokenizer" : "uax_url_email",
+                    "filter" : ["standard", "lowercase", "stop"]
+                },
+				"francais":{
+					"type":"custom",
+					"tokenizer":"standard",
+					"filter":["lowercase", "stop_francais", "fr_stemmer", "asciifolding", "elision"]
+				}
+			},
+			"filter":{
+				"stop_francais":{
+					"type":"stop",
+					"stopwords":["_french_"]
+				},
+				"fr_stemmer" : {
+					"type" : "stemmer",
+					"name" : "french"
+				}
+			}
+		}
+	}
+}
