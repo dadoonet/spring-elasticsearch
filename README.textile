@@ -11,6 +11,10 @@ h2. Versions
 |        0.0.1          |     0.19.4     |
 
 
+h2. Build Status
+
+Thanks to cloudbees for the "build status":https://buildhive.cloudbees.com : !https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/badge/icon(Build Status)!:https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/
+
 h2. Getting Started
 
 h3. Maven dependency
