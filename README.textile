@@ -49,7 +49,36 @@ In your spring context file, just define a client like this:
 
 bc. <elasticsearch:client id="esClient" />
     
-By default, you will get an "Elasticsearch Transport Client":http://www.elasticsearch.org/guide/reference/java-api/client.html connected to an Elasticsearch node already running at @localhost:9300@
+By default, you will get an "Elasticsearch Transport Client":http://www.elasticsearch.org/guide/reference/java-api/client.html connected to an Elasticsearch node already running at @localhost:9300@.
+
+
+h3. Define a node and get a node client bean
+
+In your spring context file, just define a node like this:
+
+bc. <elasticsearch:node id="esNode" />
+
+By default, it will build an "Elasticsearch Node":http://www.elasticsearch.org/guide/reference/modules/node.html running at @localhost:9300@.
+
+Then, you can ask the node to give you a client.
+
+bc. <elasticsearch:client node="esNode" />
+    
+You will get an "Elasticsearch Node Client":http://www.elasticsearch.org/guide/reference/java-api/client.html.
+
+
+h3. Injecting client in your java project
+
+Now, you can use the client (either the node) in your java classes.
+
+bc. // import org.elasticsearch.client.Client;
+ Client client = ctx.getBean("esClient", Client.class);
+
+Better, you should use @Autowired@ annotation.
+
+bc. // @Autowired Node node; // if you really need it
+ @Autowired Client client;
+
 
 h2. Elasticsearch properties
 
