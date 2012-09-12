@@ -1,0 +1,8 @@
+{
+    "tweet" : {
+        "properties" : {
+            "message" : {"type" : "string", "store" : "yes", "analyzer" : "francais" },
+            "author" : {"type" : "string", "store" : "no"}
+        }
+    }
+}

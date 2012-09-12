@@ -626,6 +626,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				.prepareDeleteMapping(index)
 				.setType(type)
 				.execute().actionGet();
+			// client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet(); 
 		}
 		
 		// If type does not exist, we create it
