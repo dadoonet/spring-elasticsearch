@@ -13,6 +13,7 @@
   
     <bean id="esClient"
         class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+		<property name="settingsFile" value="es-empty.properties" />
         <property name="node" ref="esNode" />
         <property name="classpathRoot" value="/es7" />
 		<property name="mappings">
