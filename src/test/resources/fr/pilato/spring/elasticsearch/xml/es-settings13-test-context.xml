@@ -20,10 +20,12 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.1.xsd">
 
+    <util:properties id="esclientproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
+
 	<bean id="esClient"
 		class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
 		<property name="classpathRoot" value="es13" />
-		<property name="settingsFile" value="fr/pilato/spring/elasticsearch/xml/esclient-transport.properties" />
+		<property name="properties" ref="esclientproperties" />
 		<property name="esNodes">
 			<list>
 				<value>localhost:9300</value>

@@ -10,6 +10,10 @@
             <action issue="26" dev="dadoonet" type="update">
                 Update to Spring 3.2.1.
             </action>
+            <action issue="15" dev="dadoonet" type="add" due-to="Ittai Zeidman">
+                Add `properties` property to Node and Client settings.
+                We can now also use placeholders. This is deprecating `settings` property.
+            </action>
         </release>
 
         <release date="2013-04-05" description="April 2013 Release" version="0.1.0">

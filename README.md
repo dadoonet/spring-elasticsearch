@@ -30,7 +30,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -52,9 +52,11 @@ In your spring context file, just add namespaces like this:
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.1.xsd">
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd">
 </beans>
 ```
 
@@ -84,8 +86,18 @@ cluster.name=myclustername
 And use it when building the transport client:
 
 ```xml
+<util:properties id="esproperties"
+    location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
 <elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
-    settingsFile="myesclient.properties"/>
+    properties="esproperties"/>
+```
+
+Note that you can also define properties as follow:
+
+```xml
+<util:map id="esProperties">
+    <entry key="cluster.name" value="newclustername"/>
+</util:map>
 ```
 
 ### Define a node and get a node client bean
@@ -96,7 +108,8 @@ In your spring context file, just define a node like this:
 <elasticsearch:node id="esNode" />
 ```
 
-By default, it will build an [Elasticsearch Node](http://www.elasticsearch.org/guide/reference/modules/node.html) running at `localhost:9300`.
+By default, it will build an [Elasticsearch Node](http://www.elasticsearch.org/guide/reference/modules/node.html)
+running at `localhost:9300`.
 
 Then, you can ask the node to give you a client.
 
@@ -132,15 +145,29 @@ Elasticsearch properties
 
 You can set your elasticsearch properties in a file:
 
-```xml
-<bean id="esClient"
-     class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
-     <property name="settingsFile" value="es.properties" />
-</bean>
+```properties
+cluster.name=myclustername
 ```
 
-By default, the factory will use the es.properties file if it exists in your classpath.
+Load properties:
 
+```xml
+<util:properties id="esproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
+
+<!-- Or define inline properties -->
+<util:map id="esproperties">
+    <entry key="cluster.name" value="newclustername"/>
+</util:map>
+```
+
+Then, use these properties.
+
+```xml
+<bean id="esClient"
+    class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
+        <property name="properties" ref="esproperties" />
+</bean>
+```
 
 Transport Client Network settings
 ---------------------------------
@@ -148,6 +175,9 @@ Transport Client Network settings
 You can (you should) define your nodes settings when using a transport client:
 
 ```xml
+<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"/>
+
+<!-- Or -->
 <bean id="esClient"
      class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
      <property name="esNodes">
@@ -215,6 +245,9 @@ So, if you have a mapping file named `es/twitter/tweet.json` in your classpath, 
 without defining anything:
 
 ```xml
+<elasticsearch:client id="esClient" />
+
+<!-- Or -->
 <bean id="esClient"
     class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" />
 ```

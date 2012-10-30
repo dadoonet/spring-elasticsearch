@@ -12,14 +12,19 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.1.xsd">
-	
-	<elasticsearch:node id="testNode1" settingsFile="fr/pilato/spring/elasticsearch/xml/esnode1.properties" />
-    <elasticsearch:node id="testNode2" settingsFile="fr/pilato/spring/elasticsearch/xml/esnode2.properties" />
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd">
 
-	<elasticsearch:client id="testNodeClient" esNodes="localhost:9300,localhost:9301"
-            settingsFile="fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
+    <util:properties id="esproperties1" location="classpath:fr/pilato/spring/elasticsearch/xml/esnode1.properties"/>
+    <util:properties id="esproperties2" location="classpath:fr/pilato/spring/elasticsearch/xml/esnode2.properties"/>
+
+    <elasticsearch:node id="testNode1" properties="esproperties1" />
+    <elasticsearch:node id="testNode2" properties="esproperties2" />
+
+    <util:properties id="esproperties3" location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
+	<elasticsearch:client id="testNodeClient" esNodes="localhost:9300,localhost:9301" properties="esproperties3"/>
 
 </beans>

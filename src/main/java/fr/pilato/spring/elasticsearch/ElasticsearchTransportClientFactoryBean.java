@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -89,11 +88,22 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	
 	@Override
 	protected Client buildClient() throws Exception {
-		Settings settings = ImmutableSettings.settingsBuilder()
-				.loadFromClasspath(this.settingsFile)
-				.build();
+        ImmutableSettings.Builder builder = ImmutableSettings.settingsBuilder();
 
-		TransportClient client = new TransportClient(settings);
+        if (null != this.settings && null == properties) {
+            builder.put(this.settings);
+        }
+
+        if (null != this.settingsFile && null == properties) {
+            logger.warn("settings has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
+            builder.loadFromClasspath(this.settingsFile);
+        }
+
+        if (null != this.properties) {
+            builder.put(this.properties);
+        }
+
+		TransportClient client = new TransportClient(builder.build());
 
 		for (int i = 0; i < esNodes.length; i++) {
 			client.addTransportAddress(toAddress(esNodes[i]));

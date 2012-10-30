@@ -51,17 +51,21 @@ public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBe
 	public void afterPropertiesSet() throws Exception {
 		final NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
 
-		if (null != settings) {
-			nodeBuilder.getSettings().put(settings);
+		if (null != settings && null == properties) {
+            logger.warn("settings has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
+            nodeBuilder.getSettings().put(settings);
 		}
 
-		if (null != settingsFile) {
+		if (null != settingsFile && null == properties) {
 			Settings settings = ImmutableSettings.settingsBuilder()
 					.loadFromClasspath(this.settingsFile)
 					.build();
 			nodeBuilder.getSettings().put(settings);
 		}
 
+        if (null != properties) {
+            nodeBuilder.getSettings().put(properties);
+        }
 
 		if (logger.isDebugEnabled()) logger.debug("Starting ElasticSearch node...");
 		node = nodeBuilder.node();

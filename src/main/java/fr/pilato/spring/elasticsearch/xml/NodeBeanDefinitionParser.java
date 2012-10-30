@@ -19,6 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -29,17 +31,19 @@ import org.w3c.dom.Element;
 import fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean;
 
 public class NodeBeanDefinitionParser implements BeanDefinitionParser {
+    protected static final Log logger = LogFactory.getLog(NodeBeanDefinitionParser.class);
 
-	public BeanDefinition parse(Element element, ParserContext parserContext) {
+    public BeanDefinition parse(Element element, ParserContext parserContext) {
 		GenericBeanDefinition bdef = new GenericBeanDefinition();
 		bdef.setBeanClass(ElasticsearchNodeFactoryBean.class);
 		
 		String id = element.getAttribute("id");
 		String name = element.getAttribute("name");
 		String settingsFile = element.getAttribute("settingsFile");
-		
-		// Define NodeBeanDefinition
-		BeanDefinition node = NodeBeanDefinitionParser.buildNodeDef(settingsFile);
+        String properties = element.getAttribute("properties");
+
+        // Define NodeBeanDefinition
+		BeanDefinition node = NodeBeanDefinitionParser.buildNodeDef(settingsFile, properties);
 
 		// Register NodeBeanDefinition
 		if (id != null && id.length() > 0) {
@@ -51,12 +55,16 @@ public class NodeBeanDefinitionParser implements BeanDefinitionParser {
 		return bdef;
 	}
 
-	public static BeanDefinition buildNodeDef(String settingsFile) {
+	public static BeanDefinition buildNodeDef(String settingsFile, String properties) {
 		BeanDefinitionBuilder nodeFactory = BeanDefinitionBuilder.rootBeanDefinition(ElasticsearchNodeFactoryBean.class);
 		if (settingsFile != null && settingsFile.length() > 0) {
-			nodeFactory.addPropertyValue("settingsFile", settingsFile);	
-		} 
-		return nodeFactory.getBeanDefinition();
+            logger.warn("settingsFile is deprecated. Use properties attribute instead. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
+			nodeFactory.addPropertyValue("settingsFile", settingsFile);
+		}
+        if (properties != null && properties.length() > 0) {
+            nodeFactory.addPropertyReference("properties", properties);
+        }
+        return nodeFactory.getBeanDefinition();
 	}
 
 }

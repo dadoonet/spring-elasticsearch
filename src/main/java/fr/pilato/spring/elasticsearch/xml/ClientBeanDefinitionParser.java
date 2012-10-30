@@ -19,6 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -30,6 +32,7 @@ import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
 
 public class ClientBeanDefinitionParser implements BeanDefinitionParser {
+    protected static final Log logger = LogFactory.getLog(ClientBeanDefinitionParser.class);
 
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		GenericBeanDefinition bdef = new GenericBeanDefinition();
@@ -44,7 +47,8 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
 		String esNodes = element.getAttribute("esNodes");
 		
 		String settingsFile = element.getAttribute("settingsFile");
-		
+        String properties = element.getAttribute("properties");
+
 		// Checking bean definition
 		boolean isClientNode = (node != null && node.length() > 0);
 		boolean isEsNodesEmpty = (esNodes == null || esNodes.length() == 0);
@@ -61,10 +65,10 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
 		
 		if (isClientNode) {
 			bdef.setBeanClass(ElasticsearchClientFactoryBean.class);
-			client = ClientBeanDefinitionParser.buildClientDef(node, settingsFile);
+			client = ClientBeanDefinitionParser.buildClientDef(node, settingsFile, properties);
 		} else {
 			bdef.setBeanClass(ElasticsearchTransportClientFactoryBean.class);
-			client = ClientBeanDefinitionParser.buildTransportClientDef(esNodes, settingsFile);
+			client = ClientBeanDefinitionParser.buildTransportClientDef(esNodes, settingsFile, properties);
 		}
 		
 
@@ -78,10 +82,14 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
 		return bdef;
 	}
 
-	public static BeanDefinition buildClientDef(String node, String settingsFile) {
+	public static BeanDefinition buildClientDef(String node, String settingsFile, String properties) {
 		BeanDefinitionBuilder nodeFactory = BeanDefinitionBuilder.rootBeanDefinition(ElasticsearchClientFactoryBean.class);
-		if (settingsFile != null && settingsFile.length() > 0) {
-			nodeFactory.addPropertyValue("settingsFile", settingsFile);	
+        if (settingsFile != null && settingsFile.length() > 0) {
+            logger.warn("settingsFile is deprecated. Use properties attribute instead. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
+            nodeFactory.addPropertyValue("settingsFile", settingsFile);
+        }
+        if (properties != null && properties.length() > 0) {
+			nodeFactory.addPropertyReference("properties", properties);
 		} 
 		if (node != null && node.length() > 0) {
 			nodeFactory.addPropertyReference("node", node);	
@@ -89,10 +97,14 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
 		return nodeFactory.getBeanDefinition();
 	}
 
-	public static BeanDefinition buildTransportClientDef(String esNodes, String settingsFile) {
+	public static BeanDefinition buildTransportClientDef(String esNodes, String settingsFile, String properties) {
 		BeanDefinitionBuilder nodeFactory = BeanDefinitionBuilder.rootBeanDefinition(ElasticsearchTransportClientFactoryBean.class);
-		if (settingsFile != null && settingsFile.length() > 0) {
-			nodeFactory.addPropertyValue("settingsFile", settingsFile);	
+        if (settingsFile != null && settingsFile.length() > 0) {
+            logger.warn("settingsFile is deprecated. Use properties attribute instead. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
+            nodeFactory.addPropertyValue("settingsFile", settingsFile);
+        }
+        if (properties != null && properties.length() > 0) {
+			nodeFactory.addPropertyReference("properties", properties);
 		} 
 		if (esNodes != null && esNodes.length() > 0) {
 			nodeFactory.addPropertyValue("esNodes", esNodes);	

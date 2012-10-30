@@ -19,24 +19,26 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import java.util.Map;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
+
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * An abstract {@link FactoryBean} used to create an ElasticSearch object.
- * <p>
- * By default, the factory will load a es.properties file in the classloader. It will
- * contains all information needed for your client, e.g.: cluster.name
- * <br>
- * If you want to  modify the filename used for properties, just define the settingsFile property.
  * @author David Pilato
  */
 public abstract class ElasticsearchAbstractFactoryBean {
 
-	protected String settingsFile = "es.properties";
+    protected final Log logger = LogFactory.getLog(getClass());
+
+    protected String settingsFile = "es.properties";
 	
 	protected Map<String, String> settings;
+
+    protected Properties properties;
 
 	/**
 	 * Elasticsearch Settings file classpath URL (default : es.properties)
@@ -48,8 +50,12 @@ public abstract class ElasticsearchAbstractFactoryBean {
 	 * </pre>
 	 * @param settingsFile the settingsFile to set
 	 * @see {@link #setSettings(Map)} to define settings in spring xml file
+     * @deprecated by {@link #setProperties(java.util.Properties)}
 	 */
+    @Deprecated
 	public void setSettingsFile(String settingsFile) {
+        logger.warn("settingsFile has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15." +
+                "\n You should now write something like: <util:properties id=\"esproperties\" location=\"classpath:" + settingsFile + "\"/>");
 		this.settingsFile = settingsFile;
 	}
 
@@ -59,8 +65,34 @@ public abstract class ElasticsearchAbstractFactoryBean {
 	 * 
 	 * @param settings
 	 * @see {@link #setSettingsFile(String)} to define settings in file
+     * @deprecated by {@link #setProperties(java.util.Properties)}
 	 */
+    @Deprecated
 	public void setSettings(final Map<String, String> settings) {
+        logger.warn("settings has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
 		this.settings = settings;
 	}
+
+    /**
+     * Elasticsearch properties
+     * <p>Example:</p>
+     * <pre>
+     *   <util:map id="esproperties">
+     *     <entry key="cluster.name" value="newclustername"/>
+     *   </util:map>
+     *
+     * <bean id="esClient" class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+     *   <property name="properties" ref="esproperties" />
+     * </bean>
+     * </pre>
+     * <p>Example:</p>
+     * <pre>
+     *   <util:properties id="esproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esnode-transport.properties"/>
+     *   <elasticsearch:node id="esNode" properties="esproperties" />
+     * </pre>
+     * @param properties the properties
+     */
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 }

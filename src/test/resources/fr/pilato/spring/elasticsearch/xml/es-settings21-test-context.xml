@@ -18,9 +18,10 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.1.xsd">
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd">
 
-    <elasticsearch:node id="esNode" settingsFile="fr/pilato/spring/elasticsearch/xml/esnode-transport.properties" />
+    <util:properties id="esproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esnode-transport.properties"/>
+    <elasticsearch:node id="esNode" properties="esproperties" />
 
     <bean id="esClient"
           class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
