@@ -9,9 +9,11 @@ Versions
 
 | spring-elasticsearch | ElasticSearch |
 |:--------------------:|:-------------:|
-|   master (0.0.3)     |    0.19.4     |
+|   master (0.0.3)     |    0.20.0.RC1 |
 |        0.0.2         |    0.19.4     |
 |        0.0.1         |    0.19.4     |
+
+Note that you can use 0.0.2 released version with Elasticsearch 0.19.5 and above (tested with 0.20.0.RC1).
 
 
 Build Status
@@ -31,6 +33,16 @@ Import spring-elasticsearch in you project `pom.xml` file:
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
   <version>0.0.2</version>
+</dependency>
+```
+
+If you want to set a specific version of elasticsearch, add it to your `pom.xml` file:
+
+```xml
+<dependency>
+  <groupId>org.elasticsearch</groupId>
+  <artifactId>elasticsearch</artifactId>
+  <version>0.20.0.RC1</version>
 </dependency>
 ```
 
