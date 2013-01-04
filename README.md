@@ -88,7 +88,7 @@ By default, it will build an [Elasticsearch Node](http://www.elasticsearch.org/g
 Then, you can ask the node to give you a client.
 
 ```xml
-<elasticsearch:client node="esNode" />
+<elasticsearch:client node="esNode" id="esClient" />
 ```
   
 You will get an [Elasticsearch Node Client](http://www.elasticsearch.org/guide/reference/java-api/client.html).
