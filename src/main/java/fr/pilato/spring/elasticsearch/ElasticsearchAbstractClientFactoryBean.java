@@ -407,9 +407,16 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 					
 					// We should ignore _settings.json files (as they are not really mappings)
 					// We should also ignore _template dir
-					if (!relPath.endsWith(indexSettingsFileName) && !relPath.startsWith(templateDir)) {
+					if (!relPath.startsWith(templateDir)) {
 						// We must remove the .json extension
-						relPath = relPath.substring(0, relPath.lastIndexOf(".json"));
+
+                        // Issue #21: If there are only _settings.json and no mapping
+                        // we should manage it also
+                        if (!relPath.endsWith(indexSettingsFileName)) {
+                            relPath = relPath.substring(0, relPath.lastIndexOf(".json"));
+                        } else {
+                            relPath = relPath.substring(0, relPath.lastIndexOf(indexSettingsFileName));
+                        }
 						autoMappings.add(relPath);
 
 						if (logger.isDebugEnabled()) {
@@ -445,18 +452,19 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				String indexmapping = mappings[i];
 				String[] indexmappingsplitted = indexmapping.split("/");
 				String index = indexmappingsplitted[0];
-				String mapping = indexmappingsplitted[1];
-				
-				if (index == null) throw new Exception("Can not read index in [" + indexmapping + 
-						"]. Check that mappings contains only indexname/mappingname elements.");
-				if (mapping == null) throw new Exception("Can not read mapping in [" + indexmapping + 
-						"]. Check that mappings contains only indexname/mappingname elements.");
 
-				// We add the mapping in the collection of its index
-				if (!indexes.containsKey(index)) {
-					indexes.put(index, new ArrayList<String>());
-				}
-				indexes.get(index).add(mapping);
+                if (index == null) throw new Exception("Can not read index in [" + indexmapping +
+                        "]. Check that mappings contains only indexname/mappingname elements.");
+
+                // We add the mapping in the collection of its index
+                if (!indexes.containsKey(index)) {
+                    indexes.put(index, new ArrayList<String>());
+                }
+
+                if (indexmappingsplitted.length > 1) {
+                    String mapping = indexmappingsplitted[1];
+                    indexes.get(index).add(mapping);
+                }
 			}
 			
 			// Let's initialize indexes and mappings if needed
