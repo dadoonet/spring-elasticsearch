@@ -9,12 +9,10 @@ Versions
 
 | spring-elasticsearch | ElasticSearch |
 |:--------------------:|:-------------:|
-|   master (0.0.3)     |    0.20.0.RC1 |
+|   master (0.2.0)     |    0.90.0.RC1 |
+|        0.1.0         |    0.20.6     |
 |        0.0.2         |    0.19.4     |
 |        0.0.1         |    0.19.4     |
-
-Note that you can use 0.0.2 released version with Elasticsearch 0.19.5 and above (tested with 0.20.0.RC1).
-
 
 Build Status
 ------------
@@ -32,7 +30,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>0.0.2</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 
@@ -42,7 +40,7 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 <dependency>
   <groupId>org.elasticsearch</groupId>
   <artifactId>elasticsearch</artifactId>
-  <version>0.20.0.RC1</version>
+  <version>0.20.6</version>
 </dependency>
 ```
 
@@ -54,12 +52,8 @@ In your spring context file, just add namespaces like this:
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.1.xsd">
 </beans>
 ```
@@ -72,8 +66,27 @@ In your spring context file, just define a client like this:
 <elasticsearch:client id="esClient" />
 ```
     
-By default, you will get an [Elasticsearch Transport Client](http://www.elasticsearch.org/guide/reference/java-api/client.html) connected to an Elasticsearch node already running at `localhost:9300`.
+By default, you will get an [Elasticsearch Transport Client](http://www.elasticsearch.org/guide/reference/java-api/client.html)
+connected to an Elasticsearch node already running at `localhost:9300` using `elasticsearch` as cluster name.
 
+You can set the nodes you want to connect to:
+
+```xml
+<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301" />
+```
+
+You can define your client properties using a property file such as:
+
+```properties
+cluster.name=myclustername
+```
+
+And use it when building the transport client:
+
+```xml
+<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
+    settingsFile="myesclient.properties"/>
+```
 
 ### Define a node and get a node client bean
 
@@ -107,7 +120,7 @@ Client client = ctx.getBean("esClient", Client.class);
 Better, you should use `@Autowired` annotation.
 
 ```java
- // if you really need it and have started a node using the factory
+// if you really need it and have started a node using the factory
 @Autowired Node node;
 
 // Inject your client...
