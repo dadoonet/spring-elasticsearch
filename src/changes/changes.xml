@@ -1,0 +1,20 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+
+    <body>
+        <release date="2013-04-05" description="April 2013 Release" version="0.1.0">
+            <action issue="22" dev="dadoonet" type="update">
+                Update to Elasticsearch 0.20.6.
+            </action>
+            <action issue="21" dev="dadoonet" type="fix">
+                _settings are not applied when no mapping is defined.
+            </action>
+            <action issue="18" dev="dadoonet" type="fix" due-to="Dalibor Frivaldsky">
+                When the resource relPath is prefixed with '/', _template directory is treated as a name of an index.
+            </action>
+        </release>
+
+    </body>
+
+</document>
