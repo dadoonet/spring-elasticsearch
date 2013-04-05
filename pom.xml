@@ -8,6 +8,9 @@
 	<name>spring-elasticsearch</name>
 	<version>0.2.0-SNAPSHOT</version>
 	<url>https://github.com/dadoonet/spring-elasticsearch</url>
+    <description>
+        Spring factories for Elasticsearch
+    </description>
 
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
