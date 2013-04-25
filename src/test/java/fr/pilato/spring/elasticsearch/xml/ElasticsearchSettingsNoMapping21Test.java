@@ -53,6 +53,6 @@ public class ElasticsearchSettingsNoMapping21Test {
 
 		// We should have an existing index here
         IndicesExistsResponse ier = client.admin().indices().prepareExists("twitter").execute().actionGet();
-        assertTrue(ier.exists());
+        assertTrue(ier.isExists());
     }
 }

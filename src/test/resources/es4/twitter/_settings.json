@@ -2,10 +2,11 @@
     "index" : {
         "number_of_replicas" : 4,
         "analysis" : {
-        	"analyzer" : {
-        		"type" : "simple"
-        		}
-        	}
+            "analyzer":{
+                "mysimple":{
+                    "type":"simple"
+                }
+            }
         }
     }
 }

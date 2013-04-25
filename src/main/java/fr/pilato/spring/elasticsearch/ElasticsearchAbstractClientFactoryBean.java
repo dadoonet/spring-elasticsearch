@@ -19,19 +19,11 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
+import org.elasticsearch.action.admin.indices.close.CloseIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
@@ -44,12 +36,19 @@ import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.IndexTemplateMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.indices.IndexMissingException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 
 /**
  * An abstract {@link FactoryBean} used to create an ElasticSearch
@@ -530,7 +529,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		checkClient();
 		
 		IndicesAliasesResponse response = client.admin().indices().prepareAliases().addAlias(index, alias).execute().actionGet();
-		if (!response.acknowledged()) throw new Exception("Could not define alias [" + alias + "] for index [" + index + "].");
+		if (!response.isAcknowledged()) throw new Exception("Could not define alias [" + alias + "] for index [" + index + "].");
 		if (logger.isTraceEnabled()) logger.trace("/createAlias("+alias+","+index+")");
 	}
 
@@ -566,7 +565,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			final PutIndexTemplateResponse response = client.admin().indices()
 					.preparePutTemplate(template).setSource(source).execute()
 					.actionGet();
-			if (!response.acknowledged()) {
+			if (!response.isAcknowledged()) {
 				throw new Exception("Could not define template [" + template
 						+ "].");
 			} else {
@@ -604,10 +603,15 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * @return true if mapping exists
 	 */
 	private boolean isMappingExist(String index, String type) {
-		ClusterState cs = client.admin().cluster().prepareState().setFilterIndices(index).execute().actionGet().getState();
-		IndexMetaData imd = cs.getMetaData().index(index);
-		
-		if (imd == null) return false;
+        IndexMetaData imd = null;
+        try {
+            ClusterState cs = client.admin().cluster().prepareState().setFilterIndices(index).execute().actionGet().getState();
+            imd = cs.getMetaData().index(index);
+        } catch (IndexMissingException e) {
+            // If there is no index, there is no mapping either
+        }
+
+        if (imd == null) return false;
 
 		MappingMetaData mdd = imd.mapping(type);
 
@@ -677,7 +681,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 					.setType(type)
 					.setSource(source)
 					.execute().actionGet();			
-				if (!response.acknowledged()) {
+				if (!response.isAcknowledged()) {
 					throw new Exception("Could not define mapping for type ["+index+"]/["+type+"].");
 				} else {
 					if (logger.isDebugEnabled()) {
@@ -718,7 +722,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		}
 		
 		CreateIndexResponse createIndexResponse = cirb.execute().actionGet();
-		if (!createIndexResponse.acknowledged()) throw new Exception("Could not create index ["+index+"].");
+		if (!createIndexResponse.isAcknowledged()) throw new Exception("Could not create index ["+index+"].");
 		if (logger.isTraceEnabled()) logger.trace("/createIndex("+index+")");
 	}
 
@@ -734,9 +738,9 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		checkClient();
 		
 		// Before merging, we have to close the index
-//		CloseIndexRequestBuilder cirb = client.admin().indices().prepareClose(index);
-//		CloseIndexResponse closeIndexResponse = cirb.execute().actionGet();
-//		if (!closeIndexResponse.acknowledged()) throw new Exception("Could not close index ["+index+"].");
+		CloseIndexRequestBuilder cirb = client.admin().indices().prepareClose(index);
+		CloseIndexResponse closeIndexResponse = cirb.execute().actionGet();
+		if (!closeIndexResponse.isAcknowledged()) throw new Exception("Could not close index ["+index+"].");
 
 		UpdateSettingsRequestBuilder usrb = client.admin().indices().prepareUpdateSettings(index);
 
@@ -751,7 +755,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		
 		OpenIndexRequestBuilder oirb = client.admin().indices().prepareOpen(index);
 		OpenIndexResponse openIndexResponse = oirb.execute().actionGet();
-		if (!openIndexResponse.acknowledged()) throw new Exception("Could not open index ["+index+"].");
+		if (!openIndexResponse.isAcknowledged()) throw new Exception("Could not open index ["+index+"].");
 
 		if (logger.isTraceEnabled()) logger.trace("/mergeIndexSettings("+index+")");
 	}
