@@ -7,12 +7,12 @@ Welcome to the Spring factories for [Elasticsearch](http://www.elasticsearch.org
 Versions
 --------
 
-| spring-elasticsearch | ElasticSearch |
-|:--------------------:|:-------------:|
-|   master (0.2.0)     |    0.90.0.RC1 |
-|        0.1.0         |    0.20.6     |
-|        0.0.2         |    0.19.4     |
-|        0.0.1         |    0.19.4     |
+| spring-elasticsearch | ElasticSearch |   Spring     | Release date |
+|:--------------------:|:-------------:|:------------:|:------------:|
+|   master (0.2.0)     |    0.90.0     |    3.2.1     |  01/05/2013  |
+|        0.1.0         |    0.20.6     |    3.1.1     |  05/04/2013  |
+|        0.0.2         |    0.19.4     |    3.1.1     |  07/06/2012  |
+|        0.0.1         |    0.19.4     |    3.1.1     |  24/05/2012  |
 
 Build Status
 ------------
@@ -40,7 +40,7 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 <dependency>
   <groupId>org.elasticsearch</groupId>
   <artifactId>elasticsearch</artifactId>
-  <version>0.20.6</version>
+  <version>0.90.0</version>
 </dependency>
 ```
 
