@@ -79,6 +79,14 @@ You can set the nodes you want to connect to:
 <elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301" />
 ```
 
+**Important notes**
+
+> Note that you should define the same clustername as the one you defined on your running nodes.
+> Otherwise, your Transport Client won't connect to the node. See [Elasticsearch properties](#elasticsearch-properties).
+
+> Note also that you must define the transport client port (9300-9399) and not the REST port (9200-9299).
+> Transport client does not use REST API.
+
 ### Define a node and get a node client bean
 
 In your spring context file, just define a node like this:

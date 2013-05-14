@@ -4,6 +4,9 @@
 
     <body>
         <release date="2013-05-01" description="May 2013 Release" version="0.2.0">
+            <action issue="27" dev="dadoonet" type="update" due-to="Marius Fink">
+                Improve documentation.
+            </action>
             <action issue="28" dev="dadoonet" type="update">
                 Add all properties to elasticsearch namespace.
             </action>
