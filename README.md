@@ -17,7 +17,9 @@ Versions
 Build Status
 ------------
 
-Thanks to cloudbees for the [build status](https://buildhive.cloudbees.com): [![Build Status](https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/badge/icon)](https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/)
+Thanks to cloudbees for the [build status](https://buildhive.cloudbees.com):
+[![Build Status](https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/badge/icon)](https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/)
+
 
 Getting Started
 ---------------
@@ -77,29 +79,6 @@ You can set the nodes you want to connect to:
 <elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301" />
 ```
 
-You can define your client properties using a property file such as:
-
-```properties
-cluster.name=myclustername
-```
-
-And use it when building the transport client:
-
-```xml
-<util:properties id="esproperties"
-    location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
-<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
-    properties="esproperties"/>
-```
-
-Note that you can also define properties as follow:
-
-```xml
-<util:map id="esProperties">
-    <entry key="cluster.name" value="newclustername"/>
-</util:map>
-```
-
 ### Define a node and get a node client bean
 
 In your spring context file, just define a node like this:
@@ -143,75 +122,84 @@ Better, you should use `@Autowired` annotation.
 Elasticsearch properties
 ------------------------
 
-You can set your elasticsearch properties in a file:
+You can define your client properties using a property file such as:
 
 ```properties
 cluster.name=myclustername
 ```
 
-Load properties:
+And load it in Spring context:
 
 ```xml
-<util:properties id="esproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
+<util:properties id="esproperties"
+    location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
+```
 
-<!-- Or define inline properties -->
-<util:map id="esproperties">
+Note that you can also define properties as follow:
+
+```xml
+<util:map id="esProperties">
     <entry key="cluster.name" value="newclustername"/>
 </util:map>
 ```
 
-Then, use these properties.
+<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
+    properties="esproperties"/>
+
+Injecting properties in node and client is now easy:
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
-        <property name="properties" ref="esproperties" />
-</bean>
+<elasticsearch:node id="esNode" properties="esproperties" />
+<elasticsearch:client id="esClient" properties="esproperties" />
 ```
 
-Transport Client Network settings
----------------------------------
+Transport Client Properties
+---------------------------
 
 You can (you should) define your nodes settings when using a transport client:
 
 ```xml
-<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"/>
-
-<!-- Or -->
-<bean id="esClient"
-     class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
-     <property name="esNodes">
-       <list>
-         <value>localhost:9300</value>
-         <value>localhost:9301</value>
-       </list>
-     </property>
-</bean>
+<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301" />
 ```
 
-Bean properties
----------------
+Node Client Properties
+----------------------
+
+You can define your running node from which you want to get a client:
+
+```xml
+<elasticsearch:node id="esNode" properties="esproperties" />
+<elasticsearch:client id="esClient" node="esNode" />
+```
+
+
+Common Client properties
+------------------------
+
+For both TransportClient and NodeClient, you can define many properties to manage automatic creation
+of index, mappings, templates and aliases.
 
 ### Managing indexes and types
 
 If you want to manage indexes and types at startup (creating missing indexes/types and applying mappings):
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-	<property name="mappings">
-		<list>
-			<value>twitter/tweet</value>
-		</list>
-	</property>
-</bean>
+<elasticsearch:client id="esClient" node="esNode"
+    mappings="twitter/tweet" />
 ```
 
 This will create an [Elasticsearch Client](http://www.elasticsearch.org/guide/reference/java-api/client.html) that will check
 when starting that index `twitter` exists and `tweet` type is defined.
 
-If you add in your classpath a file named `es/myindex/_settings.json`, it will be automatically applied to define
-settings for your `myindex` index.
+If you need to manage more than one type or index, just use a comma separated list:
+
+```xml
+<elasticsearch:client id="esClient" node="esNode"
+    mappings="twitter/tweet,twitter/user,facebook/user" />
+```
+
+If you add in your classpath a file named `es/twitter/_settings.json`, it will be automatically applied to define
+settings for your `twitter` index.
 
 For example, create the following file `src/main/resources/es/twitter/_settings.json` in your project:
 
@@ -224,7 +212,8 @@ For example, create the following file `src/main/resources/es/twitter/_settings.
 }
 ```
 
-Also, if you define a file named `es/myindex/mytype.json`, it will be automatically applied as the mapping for the `mytype` type in the `myindex` index.
+Also, if you define a file named `es/twitter/tweet.json`, it will be automatically applied as the mapping for
+the `tweet` type in the `twitter` index.
 
 For example, create the following file `src/main/resources/es/twitter/tweet.json` in your project:
 
@@ -241,29 +230,17 @@ For example, create the following file `src/main/resources/es/twitter/tweet.json
 ### Using convention over configuration
 
 By default, the factory will find every mapping file located under `es` directory.
-So, if you have a mapping file named `es/twitter/tweet.json` in your classpath, it will be automatically used by the factory
-without defining anything:
+So, if you have a mapping file named `es/twitter/tweet.json` in your classpath, it will be automatically used by
+the factory without defining anything:
 
 ```xml
 <elasticsearch:client id="esClient" />
-
-<!-- Or -->
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" />
 ```
 
 You can disable this automatic lookup by setting the `autoscan` property to `false`:
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean">
-	<property name="autoscan" value="false" />
-	<property name="mappings">
-		<list>
-			<value>twitter/tweet</value>
-		</list>
-	</property>
-</bean>
+<elasticsearch:client id="esClient" autoscan="false" mappings="twitter/tweet" />
 ```
 
 ### Creating aliases to indexes
@@ -273,16 +250,8 @@ For example, if you planned to have indexes per year for twitter feeds (twitter2
 to define an alias named twitter, you can use the `aliases` property:
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-	<property name="aliases">
-		<list>
-			<value>twitter:twitter2012</value>
-			<value>twitter:twitter2013</value>
-			<value>twitter:twitter2014</value>
-		</list>
-	</property>
-</bean>
+<elasticsearch:client id="esClient"
+    aliases="twitter:twitter2012,twitter:twitter2013,twitter:twitter2014" />
 ```
 
 ### Creating templates
@@ -293,14 +262,12 @@ For example, if you planned to have indexes per year for twitter feeds (twitter2
 to define a template named `twitter_template`, you can use the `templates` property:
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-	<property name="templates">
-		<list>
-			<value>twitter_template</value>
-		</list>
-	</property>
-</bean>
+<!--
+    We add also a facebook_template template just for showing how to
+    define more than one template...
+-->
+<elasticsearch:client id="esClient"
+    templates="twitter_template,facebook_template" />
 ```
 
 To configure your template you have to define a file named `es/_template/twitter_template.json` in your project:
@@ -330,15 +297,7 @@ By default, the factory look in `es` classpath folder to find if there is index 
 If you need to change it, you can use the `classpathRoot` property:
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-	<property name="mappings">
-		<list>
-			<value>twitter/tweet</value>
-		</list>
-	</property>
-	<property name="classpathRoot" value="myownfolder" />
-</bean>
+<elasticsearch:client id="esClient" classpathRoot="myownfolder" />
 ```
 
 So, if a `myownfolder/twitter/_settings.xml` file exists in your classpath, it will be used by the factory.
@@ -348,15 +307,7 @@ So, if a `myownfolder/twitter/_settings.xml` file exists in your classpath, it w
 If you need to merge mapping for an existing `type`, set  `mergeMapping` property to `true`.
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-	<property name="mappings">
-		<list>
-			<value>twitter/tweet</value>
-		</list>
-	</property>
-	<property name="mergeMapping" value="true" />
-</bean>
+<elasticsearch:client id="esClient" mergeMapping="true" />
 ```
 
 If merging fails, the factory will not start ([BeanCreationException](https://github.com/SpringSource/spring-framework/blob/master/spring-beans/src/main/java/org/springframework/beans/factory/BeanCreationException.java)
@@ -368,15 +319,7 @@ If merging fails, the factory will not start ([BeanCreationException](https://gi
 If you need to merge settings for an existing `index`, set  `mergeSettings` property to `true`.
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-	<property name="mappings">
-		<list>
-			<value>twitter/tweet</value>
-		</list>
-	</property>
-	<property name="mergeSettings" value="true" />
-</bean>
+<elasticsearch:client id="esClient" mergeSettings="true" />
 ```
 
 If merging fails, the factory will not start.
@@ -388,15 +331,7 @@ For test purpose or for continuous integration, you could force the factory to c
 It will *remove all your datas* for that `type`. Just set  `forceMapping` property to `true`.
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-	<property name="mappings">
-		<list>
-			<value>twitter/tweet</value>
-		</list>
-	</property>
-	<property name="forceMapping" value="true" />
-</bean>
+<elasticsearch:client id="esClient" forceMapping="true" />
 ```
 
 ### Force rebuild templates (use with caution)
@@ -405,21 +340,81 @@ For test purpose or for continuous integration, you could force the factory to c
 Just set  `forceTemplate` property to `true`.
 
 ```xml
-<bean id="esClient"
-    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-	<property name="templates">
-		<list>
-			<value>twitter_template</value>
-		</list>
-	</property>
-	<property name="forceTemplate" value="true" />
-</bean>
+<elasticsearch:client id="esClient" forceTemplate="true" />
+```
+
+Old fashion bean definition
+---------------------------
+
+Note that you can use the old fashion method to define your beans instead of using `<elasticsearch:...>` namespace:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <util:map id="esproperties">
+        <entry key="cluster.name" value="newclustername"/>
+    </util:map>
+
+    <bean id="esNode"
+        class="fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean">
+    </bean>
+
+    <bean id="esClient" class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+        <!-- If ElasticsearchTransportClientFactoryBean -->
+        <!--
+        <property name="esNodes">
+            <list>
+                <value>localhost:9300</value>
+                <value>localhost:9301</value>
+            </list>
+        </property>
+        -->
+
+        <!--
+            When using ElasticsearchClientFactoryBean running node is
+            automatically injected. But you can define it as well.
+        -->
+        <property name="node" ref="esNode" />
+
+        <property name="properties" ref="esproperties" />
+
+        <property name="autoscan" value="false" />
+        <property name="mappings">
+            <list>
+                <value>twitter/tweet</value>
+            </list>
+        </property>
+        <property name="classpathRoot" value="myownfolder" />
+        <property name="forceMapping" value="true" />
+        <property name="mergeSettings" value="true" />
+        <property name="templates">
+            <list>
+                <value>twitter_template</value>
+            </list>
+        </property>
+        <property name="forceTemplate" value="true" />
+        <property name="aliases">
+            <list>
+                <value>twitter:twitter2012</value>
+                <value>twitter:twitter2013</value>
+                <value>twitter:twitter2014</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>
 ```
 
 Thanks
 ------
 
-Special thanks to [Nicolas Huray](https://github.com/nhuray) for his contribution about [templates](https://github.com/dadoonet/spring-elasticsearch/pull/4)
+Special thanks to [Nicolas Huray](https://github.com/nhuray) for his contribution about
+[templates](https://github.com/dadoonet/spring-elasticsearch/pull/4)
 
 
 License
