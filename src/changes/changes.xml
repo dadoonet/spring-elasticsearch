@@ -14,7 +14,7 @@
                 Update to Elasticsearch 0.90.0.
             </action>
             <action issue="26" dev="dadoonet" type="update">
-                Update to Spring 3.2.1.
+                Update to Spring 3.2.2.
             </action>
             <action issue="15" dev="dadoonet" type="add" due-to="Ittai Zeidman">
                 Add `properties` property to Node and Client settings.
