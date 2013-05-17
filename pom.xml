@@ -6,7 +6,7 @@
 	<artifactId>spring-elasticsearch</artifactId>
 	<packaging>jar</packaging>
 	<name>spring-elasticsearch</name>
-	<version>0.2.0</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<url>https://github.com/dadoonet/spring-elasticsearch</url>
     <description>
         Spring factories for Elasticsearch
