@@ -19,6 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
+import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -27,9 +29,6 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
-
-import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
-import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
 
 public class ClientBeanDefinitionParser implements BeanDefinitionParser {
     protected static final Log logger = LogFactory.getLog(ClientBeanDefinitionParser.class);
@@ -58,6 +57,9 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
         String aliases = XMLParserUtil.getElementStringValue(element, "aliases");
         String templates = XMLParserUtil.getElementStringValue(element, "templates");
 
+		String taskExecutor = XMLParserUtil.getElementStringValue(element, "taskExecutor");
+		String async = XMLParserUtil.getElementStringValue(element, "async");
+
         // Checking bean definition
 		boolean isClientNode = (node != null && node.length() > 0);
 		boolean isEsNodesEmpty = (esNodes == null || esNodes.length() == 0);
@@ -77,13 +79,13 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
             bdef.setBeanClass(ElasticsearchClientFactoryBean.class);
             BeanDefinitionBuilder clientBuilder = startClientBuilder(ElasticsearchClientFactoryBean.class,
                     settingsFile, properties, forceMapping, forceTemplate, mergeMapping, mergeSettings, autoscan,
-                    classpathRoot, mappings, aliases, templates);
+                    classpathRoot, mappings, aliases, templates, async, taskExecutor);
             client = ClientBeanDefinitionParser.buildClientDef(clientBuilder, node);
         } else {
             bdef.setBeanClass(ElasticsearchTransportClientFactoryBean.class);
             BeanDefinitionBuilder clientBuilder = startClientBuilder(ElasticsearchTransportClientFactoryBean.class,
                     settingsFile, properties, forceMapping, forceTemplate, mergeMapping, mergeSettings, autoscan,
-                    classpathRoot, mappings, aliases, templates);
+                    classpathRoot, mappings, aliases, templates, async, taskExecutor);
             client = ClientBeanDefinitionParser.buildTransportClientDef(clientBuilder, esNodes);
         }
 
@@ -119,7 +121,7 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
                                                            boolean forceMapping, boolean forceTemplate,
                                                            boolean mergeMapping, boolean mergeSettings,
                                                            boolean autoscan, String classpathRoot, String mappings,
-                                                           String aliases, String templates) {
+                                                           String aliases, String templates, String async, String taskExecutor) {
         BeanDefinitionBuilder nodeFactory = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
         if (settingsFile != null && settingsFile.length() > 0) {
             logger.warn("settingsFile is deprecated. Use properties attribute instead. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
@@ -145,6 +147,15 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
         if (templates != null && templates.length() > 0) {
             nodeFactory.addPropertyValue("templates", templates);
         }
+
+		if (async != null && async.length() > 0) {
+			nodeFactory.addPropertyValue("async", async);
+		}
+		if (taskExecutor != null && taskExecutor.length() > 0) {
+			nodeFactory.addPropertyReference("taskExecutor", taskExecutor);
+		}
+
+
         return nodeFactory;
     }
 

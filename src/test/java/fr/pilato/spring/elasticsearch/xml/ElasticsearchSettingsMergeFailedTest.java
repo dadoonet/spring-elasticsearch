@@ -19,13 +19,13 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
-import static org.junit.Assert.assertEquals;
-
 import org.elasticsearch.ElasticSearchIllegalArgumentException;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.junit.Assert.assertEquals;
 
 
 /**

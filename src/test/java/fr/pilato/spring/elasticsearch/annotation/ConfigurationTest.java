@@ -20,7 +20,6 @@
 package fr.pilato.spring.elasticsearch.annotation;
 
 import junit.framework.Assert;
-
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.junit.Test;

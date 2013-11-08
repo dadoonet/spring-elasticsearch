@@ -19,12 +19,12 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
-import static org.junit.Assert.*;
-
 import org.elasticsearch.index.mapper.MergeMappingException;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * We try to merge non merging mapping.

@@ -1,1 +1,2 @@
 http\://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd=fr/pilato/spring/elasticsearch/xml/elasticsearch-0.2.xsd
+http\://www.pilato.fr/schema/elasticsearch/elasticsearch-0.3.xsd=fr/pilato/spring/elasticsearch/xml/elasticsearch-0.3.xsd

@@ -352,6 +352,18 @@ Just set  `forceTemplate` property to `true`.
 <elasticsearch:client id="esClient" forceTemplate="true" />
 ```
 
+### Asyncronous initialization
+
+Node and client beans initialization are by default synchronously. They can be initialized asynchronously with the attributes `async` and `taskExecutor`.
+
+```xml
+<task:executor pool-size="4" id="taskExecutor"/>
+<elasticsearch:client id="esClient" async="true" taskExecutor="taskExecutor"/>
+```
+Aynchronous initialization does not block Spring startup but it continues on background on another thread.
+Any methods call to these beans before elasticsearch is initialized will be blocker. `taskExecutor` references a standard Spring's task executor.
+
+
 Old fashion bean definition
 ---------------------------
 
@@ -422,8 +434,12 @@ Note that you can use the old fashion method to define your beans instead of usi
 Thanks
 ------
 
-Special thanks to [Nicolas Huray](https://github.com/nhuray) for his contribution about
+Special thanks to
+
+- [Nicolas Huray](https://github.com/nhuray) for his contribution about
 [templates](https://github.com/dadoonet/spring-elasticsearch/pull/4)
+- [Nicolas Labrot](https://github.com/nithril‎) for his contribution about
+[async](https://github.com/dadoonet/spring-elasticsearch/pull/30)
 
 
 License

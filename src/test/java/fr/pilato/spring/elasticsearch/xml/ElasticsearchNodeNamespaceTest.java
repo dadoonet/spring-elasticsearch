@@ -19,14 +19,15 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
-import static org.junit.Assert.*;
-
 import org.elasticsearch.node.Node;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 public class ElasticsearchNodeNamespaceTest {

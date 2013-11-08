@@ -20,39 +20,47 @@
 package fr.pilato.spring.elasticsearch.xml;
 
 import org.elasticsearch.client.Client;
+import org.elasticsearch.node.Node;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.lang.reflect.Proxy;
+
 import static org.junit.Assert.assertNotNull;
 
 
-public class ElasticsearchSettings7Test {
-	static protected ConfigurableApplicationContext ctx;
-	
-	@BeforeClass
-	static public void setup() {
-		ctx = new ClassPathXmlApplicationContext("fr/pilato/spring/elasticsearch/xml/es-settings7-test-context.xml");
-	}
-	
-	@AfterClass
-	static public void tearDown() {
-		if (ctx != null) {
-			ctx.close();
-		}
-	}
-	
-	@Test
-	public void test_transport_client() {
-		Client client = ctx.getBean("esClient", Client.class);
-		assertNotNull("Client must not be null...", client);
+public class ElasticsearchAsyncClientTest {
+    static protected ConfigurableApplicationContext ctx;
 
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
-		
-	}
+    @BeforeClass
+    static public void setup() {
+        ctx = new ClassPathXmlApplicationContext("fr/pilato/spring/elasticsearch/xml/es-async-client.xml");
+    }
+
+    @AfterClass
+    static public void tearDown() {
+        if (ctx != null) {
+            ctx.close();
+        }
+    }
+
+    @Test
+    public void test_node_client() throws Exception {
+        Node node = ctx.getBean(Node.class);
+        try {
+            Proxy.getInvocationHandler(node);
+            throw new Exception("Must not be proxyfied");
+        } catch (IllegalArgumentException e) {
+        }
+
+        Client client = ctx.getBean(Client.class);
+        Assert.assertNotNull(Proxy.getInvocationHandler(client));
+
+        assertNotNull("Client must not be null...", client);
+        client.admin().cluster().prepareState().execute().get();
+    }
 }

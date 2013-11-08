@@ -22,6 +22,7 @@ package fr.pilato.spring.elasticsearch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Map;
 import java.util.Properties;
@@ -39,6 +40,10 @@ public abstract class ElasticsearchAbstractFactoryBean {
 	protected Map<String, String> settings;
 
     protected Properties properties;
+
+	protected boolean async = false;
+
+	protected ThreadPoolTaskExecutor taskExecutor;
 
 	/**
 	 * Elasticsearch Settings file classpath URL (default : es.properties)
@@ -94,5 +99,23 @@ public abstract class ElasticsearchAbstractFactoryBean {
      */
     public void setProperties(Properties properties) {
         this.properties = properties;
+	}
+
+	/**
+	 * Enable async initialization
+	 *
+	 * @param async
+	 */
+	public void setAsync(boolean async) {
+		this.async = async;
+	}
+
+	/**
+	 * Executor for async init mode
+	 *
+	 * @param taskExecutor
+	 */
+	public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
+		this.taskExecutor = taskExecutor;
     }
 }

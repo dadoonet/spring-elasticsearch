@@ -19,11 +19,11 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import static org.junit.Assert.*;
-
 import org.elasticsearch.client.Client;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.Assert.assertNotNull;
 
 public class ElasticsearchNodeClientTest extends AbstractESTest {
 	@Autowired Client client;

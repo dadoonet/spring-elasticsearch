@@ -19,13 +19,12 @@
 
 package fr.pilato.spring.elasticsearch.annotation;
 
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
+import fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
-import fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean;
 
 @Configuration
 public class AppConfig {
