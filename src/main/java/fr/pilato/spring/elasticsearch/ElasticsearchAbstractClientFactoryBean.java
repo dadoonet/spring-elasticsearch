@@ -19,6 +19,21 @@
 
 package fr.pilato.spring.elasticsearch;
 
+import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
@@ -162,6 +177,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	protected Client client;
+	protected Client proxyfiedClient;
 
 	protected boolean forceMapping;
 	
@@ -324,6 +340,24 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	public void afterPropertiesSet() throws Exception {
 		logger.info("Starting ElasticSearch client");
 		
+		if (async) {
+			Assert.notNull(taskExecutor);
+			Future<Client> future = taskExecutor.submit(new Callable<Client>() {
+				@Override
+				public Client call() throws Exception {
+					return initialize();
+				}
+			});
+			proxyfiedClient = (Client) Proxy.newProxyInstance(Client.class.getClassLoader(),
+					new Class[]{Client.class}, new GenericInvocationHandler(future));
+
+		} else {
+			client = initialize();
+		}
+	}
+
+
+	private Client initialize() throws Exception {
 		client = buildClient();
 		if (autoscan) {
 			computeMappings();
@@ -331,6 +365,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		initTemplates();	
 		initMappings();
 		initAliases();
+
+		return client;
 	}
 
 	@Override
@@ -347,7 +383,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	@Override
 	public Client getObject() throws Exception {
-		return client;
+		return async ? proxyfiedClient : client;
 	}
 
 	@Override
