@@ -40,13 +40,13 @@ import org.elasticsearch.indices.IndexMissingException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -83,7 +83,7 @@ import java.util.*;
  * </ul>
  * Then we will define an alias alltheworld for twitter and rss indexes.
  * </p>
- * 
+ *
  * <pre>
  * {@code
  *  <bean id="esClient"
@@ -105,18 +105,18 @@ import java.util.*;
  *      <list>
  *        <value>rss_template</value>
  *      </list>
- *    </property>    
+ *    </property>
  *    <property name="forceMapping" value="false" />
  *    <property name="mergeMapping" value="true" />
- *    <property name="forceTemplate" value="false" />    
+ *    <property name="forceTemplate" value="false" />
  *    <property name="mergeSettings" value="true" />
  *    <property name="settingsFile" value="es.properties" />
  *    <property name="autoscan" value="false" />
  *  </bean>
  * }
  * </pre>
- * 
- * By default, indexes are created with their default Elasticsearch settings. You can specify 
+ *
+ * By default, indexes are created with their default Elasticsearch settings. You can specify
  * your own settings for your index by putting a /es/indexname/_settings.json in your classpath.
  * <br>
  * So if you create a file named /es/twitter/_settings.json in your src/main/resources folder (for maven lovers),
@@ -130,7 +130,7 @@ import java.util.*;
  *   }
  * }
  * </pre>
- * By default, types are not created and wait for the first document you send to Elasticsearch (auto mapping). 
+ * By default, types are not created and wait for the first document you send to Elasticsearch (auto mapping).
  * But, if you define a file named /es/indexname/type.json in your classpath, the type will be created at startup using
  * the type definition you give.
  * <br>
@@ -146,47 +146,47 @@ import java.util.*;
  *   }
  * }
  * </pre>
- * 
+ *
  * By convention, the factory will create all settings and mappings found under the /es classpath.<br>
  * You can disable convention and use configuration by setting autoscan to false.
- * 
+ *
  * @see {@link ElasticsearchTransportClientFactoryBean} to get a *simple*
  *      client.
  * @see {@link ElasticsearchClientFactoryBean} to get a client from a cluster
  *      node.
  * @author David Pilato
  */
-public abstract class ElasticsearchAbstractClientFactoryBean extends ElasticsearchAbstractFactoryBean 
+public abstract class ElasticsearchAbstractClientFactoryBean extends ElasticsearchAbstractFactoryBean
 	implements FactoryBean<Client>,	InitializingBean, DisposableBean {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	protected static Log logger = LogFactory.getLog(ElasticsearchAbstractClientFactoryBean.class);
 
 	protected Client client;
 
 	protected boolean forceMapping;
-	
+
 	protected boolean forceTemplate;
-	
+
 	protected boolean mergeMapping;
-	
+
 	protected boolean mergeSettings;
-	
+
 	protected boolean autoscan = true;
-	
+
 	protected String[] mappings;
 
 	protected String[] aliases;
-	
+
 	protected String[] templates;
-	
+
 	protected String classpathRoot = "/es";
-	
+
 	// TODO Let the user decide
 	protected String jsonFileExtension = ".json";
 
 	// TODO Let the user decide
 	protected String indexSettingsFileName = "_settings.json";
-	
+
 	// TODO Let the user decide
 	protected String templateDir = "_template";
 
@@ -196,7 +196,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * @throws Exception if something goes wrong
 	 */
 	abstract protected Client buildClient() throws Exception;
-	
+
 	/**
 	 * Set to true if you want to force reinit indexes/mapping
 	 * @param forceMapping
@@ -207,13 +207,13 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Set to true if you want to force recreate templates
-	 * 
+	 *
 	 * @param forceTemplate
 	 */
 	public void setForceTemplate(boolean forceTemplate) {
 		this.forceTemplate = forceTemplate;
 	}
-	
+
 	/**
 	 * Set to true if you want to try to merge mappings
 	 * @param mergeMapping
@@ -229,7 +229,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	public void setMergeSettings(boolean mergeSettings) {
 		this.mergeSettings = mergeSettings;
 	}
-	
+
 	/**
 	 * Set to false if you want to use configuration instead of convention.
 	 * @param autoscan
@@ -237,8 +237,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	public void setAutoscan(boolean autoscan) {
 		this.autoscan = autoscan;
 	}
-	
-	
+
+
 	/**
 	 * Define mappings you want to manage with this factory
 	 * <br/>use : indexname/mappingname form
@@ -284,7 +284,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * Define templates you want to manage with this factory <br/>
 	 * <p>
 	 * Example :<br/>
-	 * 
+	 *
 	 * <pre>
 	 * {@code
 	 * <property name="templates">
@@ -295,13 +295,13 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * </property>
 	 * }
 	 * </pre>
-	 * 
+	 *
 	 * @param templates list of template
 	 */
 	public void setTemplates(String[] templates) {
 		this.templates = templates;
 	}
-	
+
 	/**
 	 * Classpath root for index and mapping files (default : /es)
 	 * <p>Example :<br/>
@@ -323,12 +323,12 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		logger.info("Starting ElasticSearch client");
-		
+
 		client = buildClient();
 		if (autoscan) {
 			computeMappings();
 		}
-		initTemplates();	
+		initTemplates();
 		initMappings();
 		initAliases();
 	}
@@ -365,7 +365,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * <p>
 	 * Note that you can force to recreate template using
 	 * {@link #setForceTemplate(boolean)}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void initTemplates() throws Exception {
@@ -379,7 +379,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			}
 		}
 	}
-	
+
 	/**
 	 * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
 	 */
@@ -388,7 +388,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			if (logger.isDebugEnabled()) {
 				logger.debug("Automatic discovery is activated. Looking for definition files in classpath under " + classpathRoot + ".");
 			}
-			
+
 			ArrayList<String> autoMappings = new ArrayList<String>();
 			// Let's scan our resources
 			PathMatchingResourcePatternResolver pathResolver = new PathMatchingResourcePatternResolver();
@@ -397,13 +397,13 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				Resource[] resources = pathResolver.getResources("classpath:"+classpathRoot + "/**/*"+jsonFileExtension);
 				for (int i = 0; i < resources.length; i++) {
 					String relPath = resources[i].getURI().toString().substring(resourceRoot.getURI().toString().length());
-					
+
 					// If relPath starts with / we must ignore first char
 					// TODO : check why sometimes there is a / and sometimes not ! :-(
 					if (relPath.startsWith("/")) {
 						relPath = relPath.substring(1);
 					}
-					
+
 					// We should ignore _settings.json files (as they are not really mappings)
 					// We should also ignore _template dir
 					if (!relPath.startsWith(templateDir)) {
@@ -423,9 +423,9 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 						}
 					}
 				}
-				
+
 				mappings = (String[]) autoMappings.toArray(new String[autoMappings.size()]);
-			
+
 			} catch (IOException e) {
 				if (!logger.isTraceEnabled() && logger.isDebugEnabled()) {
 					logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
@@ -440,13 +440,13 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	/**
 	 * Init mapping if needed.
 	 * <p>Note that you can force to reinit mapping using {@link #setForceMapping(boolean)}
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private void initMappings() throws Exception {
 		// We extract indexes and mappings to manage from mappings definition
 		if (mappings != null && mappings.length > 0) {
 			Map<String, Collection<String>> indexes = new HashMap<String, Collection<String>>();
-			
+
 			for (int i = 0; i < mappings.length; i++) {
 				String indexmapping = mappings[i];
 				String[] indexmappingsplitted = indexmapping.split("/");
@@ -465,7 +465,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
                     indexes.get(index).add(mapping);
                 }
 			}
-			
+
 			// Let's initialize indexes and mappings if needed
 			for (String index : indexes.keySet()) {
 				if (!isIndexExist(index)) {
@@ -475,7 +475,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 						mergeIndexSettings(index);
 					}
 				}
-				
+
 				Collection<String> mappings = indexes.get(index);
 				for (Iterator<String> iterator = mappings.iterator(); iterator
 						.hasNext();) {
@@ -488,7 +488,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Init aliases if needed.
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private void initAliases() throws Exception {
 
@@ -497,10 +497,10 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				String[] aliasessplitted = aliases[i].split(":");
 				String alias = aliasessplitted[0];
 				String index = aliasessplitted[1];
-				
-				if (index == null) throw new Exception("Can not read index in [" + aliases[i] + 
+
+				if (index == null) throw new Exception("Can not read index in [" + aliases[i] +
 						"]. Check that aliases contains only aliasname:indexname elements.");
-				if (alias == null) throw new Exception("Can not read mapping in [" + aliases[i] + 
+				if (alias == null) throw new Exception("Can not read mapping in [" + aliases[i] +
 						"]. Check that aliases contains only aliasname:indexname elements.");
 
 				createAlias(alias, index);
@@ -517,7 +517,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			throw new Exception("ElasticSearch client doesn't exist. Your factory is not properly initialized.");
 		}
 	}
-	
+
 	/**
 	 * Create an alias if needed
 	 * @param alias
@@ -527,7 +527,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
     private void createAlias(String alias, String index) throws Exception {
 		if (logger.isTraceEnabled()) logger.trace("createAlias("+alias+","+index+")");
 		checkClient();
-		
+
 		IndicesAliasesResponse response = client.admin().indices().prepareAliases().addAlias(index, alias).execute().actionGet();
 		if (!response.isAcknowledged()) throw new Exception("Could not define alias [" + alias + "] for index [" + index + "].");
 		if (logger.isTraceEnabled()) logger.trace("/createAlias("+alias+","+index+")");
@@ -535,7 +535,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Create a template if needed
-	 * 
+	 *
 	 * @param template template name
 	 * @param force    force recreate template
 	 * @throws Exception
@@ -584,7 +584,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		if (logger.isTraceEnabled())
 			logger.trace("/createTemplate(" + template + ")");
 	}
-    
+
 	/**
 	 * Check if an index already exists
 	 * @param index Index name
@@ -595,7 +595,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		checkClient();
 		return client.admin().indices().prepareExists(index).execute().actionGet().isExists();
 	}
-    
+
     /**
 	 * Check if a mapping already exists in an index
 	 * @param index Index name
@@ -621,7 +621,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Check if a template already exists
-	 * 
+	 *
 	 * @param template template name
 	 * @return true if template exists
 	 */
@@ -635,7 +635,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		if (mdd != null) return true;
 		return false;
 	}
-	
+
 	/**
 	 * Define a type for a given index and if exists with its mapping definition
 	 * @param index Index name
@@ -658,9 +658,9 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				.prepareDeleteMapping(index)
 				.setType(type)
 				.execute().actionGet();
-			// client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet(); 
+			// client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
 		}
-		
+
 		// If type does not exist, we create it
 		boolean mappingExist = isMappingExist(index, type);
 		if (merge || !mappingExist) {
@@ -680,7 +680,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 					.preparePutMapping(index)
 					.setType(type)
 					.setSource(source)
-					.execute().actionGet();			
+					.execute().actionGet();
 				if (!response.isAcknowledged()) {
 					throw new Exception("Could not define mapping for type ["+index+"]/["+type+"].");
 				} else {
@@ -709,9 +709,9 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	private void createIndex(String index) throws Exception {
 		if (logger.isTraceEnabled()) logger.trace("createIndex("+index+")");
 		if (logger.isDebugEnabled()) logger.debug("Index " + index + " doesn't exist. Creating it.");
-		
+
 		checkClient();
-		
+
 		CreateIndexRequestBuilder cirb = client.admin().indices().prepareCreate(index);
 
 		// If there are settings for this index, we use it. If not, using Elasticsearch defaults.
@@ -720,7 +720,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			if (logger.isTraceEnabled()) logger.trace("Found settings for index "+index+" : " + source);
 			cirb.setSettings(source);
 		}
-		
+
 		CreateIndexResponse createIndexResponse = cirb.execute().actionGet();
 		if (!createIndexResponse.isAcknowledged()) throw new Exception("Could not create index ["+index+"].");
 		if (logger.isTraceEnabled()) logger.trace("/createIndex("+index+")");
@@ -734,9 +734,9 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	private void mergeIndexSettings(String index) throws Exception {
 		if (logger.isTraceEnabled()) logger.trace("mergeIndexSettings("+index+")");
 		if (logger.isDebugEnabled()) logger.debug("Index " + index + " already exists. Trying to merge settings.");
-		
+
 		checkClient();
-		
+
 		// Before merging, we have to close the index
 		CloseIndexRequestBuilder cirb = client.admin().indices().prepareClose(index);
 		CloseIndexResponse closeIndexResponse = cirb.execute().actionGet();
@@ -750,9 +750,9 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			if (logger.isTraceEnabled()) logger.trace("Found settings for index "+index+" : " + source);
 			usrb.setSettings(source);
 		}
-		
+
 		usrb.execute().actionGet();
-		
+
 		OpenIndexRequestBuilder oirb = client.admin().indices().prepareOpen(index);
 		OpenIndexResponse openIndexResponse = oirb.execute().actionGet();
 		if (!openIndexResponse.isAcknowledged()) throw new Exception("Could not open index ["+index+"].");
@@ -770,12 +770,12 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 */
 	private String readMapping(String index, String type) throws Exception {
 		return readFileInClasspath(classpathRoot + "/" + index + "/" + type + jsonFileExtension);
-	}	
+	}
 
 	/**
 	 * Read the template.<br>
 	 * Shortcut to readFileInClasspath(classpathRoot + "/" + templateDir + "/" + template + jsonFileExtension);
-	 * 
+	 *
 	 * @param template Template name
 	 * @return Template if exists. Null otherwise.
 	 * @throws Exception
@@ -783,7 +783,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	private String readTemplate(String template) throws Exception {
 		return readFileInClasspath(classpathRoot + "/" + templateDir + "/" + template + jsonFileExtension);
 	}
-	
+
 	/**
 	 * Read settings for an index.<br>
 	 * Shortcut to readFileInClasspath(classpathRoot + "/" + index + "/" + indexSettingsFileName);
@@ -793,33 +793,42 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 */
 	public String readIndexSettings(String index) throws Exception {
 		return readFileInClasspath(classpathRoot + "/" + index + "/" + indexSettingsFileName);
-	}	
+	}
 
-	/**
-	 * Read a file in classpath and return its content
-	 * @param url File URL Example : /es/twitter/_settings.json
-	 * @return File content or null if file doesn't exist
-	 * @throws Exception
-	 */
-	public static String readFileInClasspath(String url) throws Exception {
-		StringBuffer bufferJSON = new StringBuffer();
-		
-		try {
-			InputStream ips= ElasticsearchAbstractClientFactoryBean.class.getResourceAsStream(url); 
-			InputStreamReader ipsr = new InputStreamReader(ips);
-			BufferedReader br = new BufferedReader(ipsr);
-			String line;
-			
-			while ((line=br.readLine())!=null){
-				bufferJSON.append(line);
-			}
-			br.close();
-		} catch (Exception e){
-			return null;
-		}
+    /**
+     * Read a file in classpath and return its content. If the file is not found, the error is logged, but null
+     * is returned so that the user is aware of what happened.
+     *
+     * @param url File URL Example : /es/twitter/_settings.json
+     * @return File content or null if file doesn't exist
+     */
+    public static String readFileInClasspath(String url) throws Exception {
+        StringBuilder bufferJSON = new StringBuilder();
 
-		return bufferJSON.toString();
-	}	
+        BufferedReader br = null;
 
-	
+        try {
+            // use Spring's class path resource, easier and more reliable.
+            ClassPathResource classPathResource = new ClassPathResource(url);
+            InputStreamReader ipsr = new InputStreamReader(classPathResource.getInputStream());
+            br = new BufferedReader(ipsr);
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                bufferJSON.append(line);
+            }
+
+        } catch (Exception e) {
+            logger.error(String.format("Failed to load file from url: %s", url), e);
+            return null;
+        } finally {
+            if (br != null) {
+                br.close(); // best practice to use finally when closing resources such as input streams and readers.
+            }
+        }
+
+        return bufferJSON.toString();
+    }
+
+
 }
