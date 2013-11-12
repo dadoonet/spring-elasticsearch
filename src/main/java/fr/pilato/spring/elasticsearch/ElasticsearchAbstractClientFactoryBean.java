@@ -796,30 +796,36 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	}	
 
 	/**
-	 * Read a file in classpath and return its content
+	 * Read a file in classpath and return its content. If the file is not found, the error is logged, but null
+         * is returned so that the user is aware of what happened.
+         *
 	 * @param url File URL Example : /es/twitter/_settings.json
 	 * @return File content or null if file doesn't exist
-	 * @throws Exception
 	 */
 	public static String readFileInClasspath(String url) throws Exception {
-		StringBuffer bufferJSON = new StringBuffer();
-		
-		try {
-			InputStream ips= ElasticsearchAbstractClientFactoryBean.class.getResourceAsStream(url); 
-			InputStreamReader ipsr = new InputStreamReader(ips);
-			BufferedReader br = new BufferedReader(ipsr);
-			String line;
+		StringBuilder bufferJSON = new StringBuilder();
+
+        BufferedReader br = null;
+
+        try {
+            InputStream ips= ElasticsearchAbstractClientFactoryBean.class.getResourceAsStream(url);
+            InputStreamReader ipsr = new InputStreamReader(ips);
+            br = new BufferedReader(ipsr);
+            String line;
 			
-			while ((line=br.readLine())!=null){
-				bufferJSON.append(line);
-			}
-			br.close();
-		} catch (Exception e){
-			return null;
-		}
+	    while ((line=br.readLine())!=null){
+		bufferJSON.append(line);
+	    }
 
-		return bufferJSON.toString();
-	}	
+	} catch (Exception e){
+            logger.error(String.format("Failed to load file from url: %s", url), e);
+	    return null;
+	} finally {
+            if (br != null) {
+                br.close(); // best practice to use finally when closing resources such as input streams and readers.
+            }
+        }
 
-	
+	    return bufferJSON.toString();
+	}		
 }
