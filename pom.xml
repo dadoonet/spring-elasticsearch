@@ -45,6 +45,12 @@
 			<url>https://github.com/nhuray/</url>
 			<timezone>+1</timezone>
 		</developer>
+        <developer>
+            <id>nlabrot</id>
+            <name>Nicolas Labrot</name>
+            <url>https://github.com/nithril‎/</url>
+            <timezone>Europe/Paris</timezone>
+        </developer>
 	</developers>
 
 	<scm>
