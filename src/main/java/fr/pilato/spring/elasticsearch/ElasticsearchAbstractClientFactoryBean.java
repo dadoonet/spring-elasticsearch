@@ -40,13 +40,13 @@ import org.elasticsearch.indices.IndexMissingException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -159,7 +159,7 @@ import java.util.*;
 public abstract class ElasticsearchAbstractClientFactoryBean extends ElasticsearchAbstractFactoryBean 
 	implements FactoryBean<Client>,	InitializingBean, DisposableBean {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	protected static Log logger = LogFactory.getLog(ElasticsearchAbstractClientFactoryBean.class);
 
 	protected Client client;
 
@@ -795,31 +795,40 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		return readFileInClasspath(classpathRoot + "/" + index + "/" + indexSettingsFileName);
 	}	
 
-	/**
-	 * Read a file in classpath and return its content
-	 * @param url File URL Example : /es/twitter/_settings.json
-	 * @return File content or null if file doesn't exist
-	 * @throws Exception
-	 */
-	public static String readFileInClasspath(String url) throws Exception {
-		StringBuffer bufferJSON = new StringBuffer();
-		
-		try {
-			InputStream ips= ElasticsearchAbstractClientFactoryBean.class.getResourceAsStream(url); 
-			InputStreamReader ipsr = new InputStreamReader(ips);
-			BufferedReader br = new BufferedReader(ipsr);
-			String line;
-			
-			while ((line=br.readLine())!=null){
-				bufferJSON.append(line);
-			}
-			br.close();
-		} catch (Exception e){
-			return null;
-		}
+    /**
+     * Read a file in classpath and return its content. If the file is not found, the error is logged, but null
+     * is returned so that the user is aware of what happened.
+     *
+     * @param url File URL Example : /es/twitter/_settings.json
+     * @return File content or null if file doesn't exist
+     */
+    public static String readFileInClasspath(String url) throws Exception {
+        StringBuilder bufferJSON = new StringBuilder();
 
-		return bufferJSON.toString();
-	}	
+        BufferedReader br = null;
 
-	
+        try {
+            // use Spring's class path resource, easier and more reliable.
+            ClassPathResource classPathResource = new ClassPathResource(url);
+            InputStreamReader ipsr = new InputStreamReader(classPathResource.getInputStream());
+            br = new BufferedReader(ipsr);
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                bufferJSON.append(line);
+            }
+
+        } catch (Exception e) {
+            logger.error(String.format("Failed to load file from url: %s", url), e);
+            return null;
+        } finally {
+            if (br != null) {
+                br.close(); // best practice to use finally when closing resources such as input streams and readers.
+            }
+        }
+
+        return bufferJSON.toString();
+    }
+
+
 }
