@@ -3,6 +3,15 @@
           xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 
     <body>
+        <release date="2013-11-15" description="November 2013 Release" version="0.3.0">
+            <action issue="34" dev="dadoonet" type="update" due-to="Matt Friedman Afilias">
+                Don't throw exception when we read a file in classpath but return null.
+            </action>
+            <action issue="35" dev="dadoonet" type="update">
+                Update to Elasticsearch 0.90.6.
+            </action>
+        </release>
+
         <release date="2013-05-01" description="May 2013 Release" version="0.2.0">
             <action issue="27" dev="dadoonet" type="update" due-to="Marius Fink">
                 Improve documentation.
