@@ -3,13 +3,19 @@ Spring factories for Elasticsearch
 
 Welcome to the Spring factories for [Elasticsearch](http://www.elasticsearch.org/) project.
 
+> **Note**
+>
+> I'm currently thinking of moving this project as a contribution to
+> [spring-data-elasticsearch](https://github.com/spring-projects/spring-data-elasticsearch) project if it
+> makes sense to the team to merge it.
 
 Versions
 --------
 
-| spring-elasticsearch | ElasticSearch |   Spring     | Release date |
+| spring-elasticsearch | elasticSearch |   Spring     | Release date |
 |:--------------------:|:-------------:|:------------:|:------------:|
-|   master (0.3.0)     |    0.90.7     |    3.2.2     |  01/12/2013? |
+|   0.4.0-SNAPSHOT     |    0.90.7     |    3.2.2     |              |
+|        0.3.0         |    0.90.7     |    3.2.2     |  18/11/2013  |
 |        0.2.0         |    0.90.0     |    3.2.2     |  17/05/2013  |
 |        0.1.0         |    0.20.6     |    3.1.1     |  05/04/2013  |
 |        0.0.2         |    0.19.4     |    3.1.1     |  07/06/2012  |
@@ -33,7 +39,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
@@ -43,7 +49,7 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 <dependency>
   <groupId>org.elasticsearch</groupId>
   <artifactId>elasticsearch</artifactId>
-  <version>0.90.0</version>
+  <version>0.90.7</version>
 </dependency>
 ```
 
@@ -59,7 +65,7 @@ In your spring context file, just add namespaces like this:
 	xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-        http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd">
+        http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.3.xsd">
 </beans>
 ```
 
@@ -71,7 +77,7 @@ In your spring context file, just define a client like this:
 <elasticsearch:client id="esClient" />
 ```
     
-By default, you will get an [Elasticsearch Transport Client](http://www.elasticsearch.org/guide/reference/java-api/client.html)
+By default, you will get an [Elasticsearch Transport Client](http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html)
 connected to an Elasticsearch node already running at `localhost:9300` using `elasticsearch` as cluster name.
 
 You can set the nodes you want to connect to:
@@ -96,7 +102,7 @@ In your spring context file, just define a node like this:
 <elasticsearch:node id="esNode" />
 ```
 
-By default, it will build an [Elasticsearch Node](http://www.elasticsearch.org/guide/reference/modules/node.html)
+By default, it will build an [Elasticsearch Node](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/modules-node.html)
 running at `localhost:9300`.
 
 Then, you can ask the node to give you a client.
@@ -105,7 +111,7 @@ Then, you can ask the node to give you a client.
 <elasticsearch:client node="esNode" id="esClient" />
 ```
   
-You will get an [Elasticsearch Node Client](http://www.elasticsearch.org/guide/reference/java-api/client.html).
+You will get an [Elasticsearch Node Client](http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html).
 
 
 ### Injecting client in your java project
@@ -197,7 +203,7 @@ If you want to manage indexes and types at startup (creating missing indexes/typ
     mappings="twitter/tweet" />
 ```
 
-This will create an [Elasticsearch Client](http://www.elasticsearch.org/guide/reference/java-api/client.html) that will check
+This will create an [Elasticsearch Client](http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html) that will check
 when starting that index `twitter` exists and `tweet` type is defined.
 
 If you need to manage more than one type or index, just use a comma separated list:
