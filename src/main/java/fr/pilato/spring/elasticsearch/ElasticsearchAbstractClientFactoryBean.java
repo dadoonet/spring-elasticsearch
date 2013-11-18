@@ -23,14 +23,11 @@ import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
-import org.elasticsearch.action.admin.indices.close.CloseIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
-import org.elasticsearch.action.admin.indices.open.OpenIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
-import org.elasticsearch.action.admin.indices.settings.UpdateSettingsRequestBuilder;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
@@ -174,7 +171,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	protected boolean mergeMapping;
 	
-	protected boolean mergeSettings;
+	protected boolean mergeSettings = true;
 	
 	protected boolean autoscan = true;
 	
@@ -191,8 +188,11 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	// TODO Let the user decide
 	protected String indexSettingsFileName = "_settings.json";
-	
-	// TODO Let the user decide
+
+    // TODO Let the user decide
+    protected String updateIndexSettingsFileName = "_update_settings.json";
+
+    // TODO Let the user decide
 	protected String templateDir = "_template";
 
 	/**
@@ -429,7 +429,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 						relPath = relPath.substring(1);
 					}
 					
-					// We should ignore _settings.json files (as they are not really mappings)
+					// We should ignore _settings.json and _update_settings.json files (as they are not really mappings)
 					// We should also ignore _template dir
 					if (!relPath.startsWith(templateDir)) {
 						// We must remove the .json extension
@@ -438,6 +438,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
                         // we should manage it also
                         if (!relPath.endsWith(indexSettingsFileName)) {
                             relPath = relPath.substring(0, relPath.lastIndexOf(".json"));
+                        } else if (relPath.endsWith(updateIndexSettingsFileName)) {
+                            relPath = relPath.substring(0, relPath.lastIndexOf(updateIndexSettingsFileName));
                         } else {
                             relPath = relPath.substring(0, relPath.lastIndexOf(indexSettingsFileName));
                         }
@@ -761,26 +763,23 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		if (logger.isDebugEnabled()) logger.debug("Index " + index + " already exists. Trying to merge settings.");
 		
 		checkClient();
-		
-		// Before merging, we have to close the index
-		CloseIndexRequestBuilder cirb = client.admin().indices().prepareClose(index);
-		CloseIndexResponse closeIndexResponse = cirb.execute().actionGet();
-		if (!closeIndexResponse.isAcknowledged()) throw new Exception("Could not close index ["+index+"].");
 
-		UpdateSettingsRequestBuilder usrb = client.admin().indices().prepareUpdateSettings(index);
+        // If there are settings for this index, we use it. If not, using Elasticsearch defaults.
+        String source = readUpdateIndexSettings(index);
+        if (source != null) {
+            if (logger.isTraceEnabled()) logger.trace("Found settings for index "+index+" : " + source);
 
-		// If there are settings for this index, we use it. If not, using Elasticsearch defaults.
-		String source = readIndexSettings(index);
-		if (source != null) {
-			if (logger.isTraceEnabled()) logger.trace("Found settings for index "+index+" : " + source);
-			usrb.setSettings(source);
+            // Before merging, we have to close the index
+            // TODO Check if we still need it
+            CloseIndexResponse closeIndexResponse = client.admin().indices().prepareClose(index).execute().actionGet();
+            if (!closeIndexResponse.isAcknowledged()) throw new Exception("Could not close index ["+index+"].");
+
+            client.admin().indices().prepareUpdateSettings(index).setSettings(source).execute().actionGet();
+
+            OpenIndexResponse openIndexResponse = client.admin().indices().prepareOpen(index).execute().actionGet();
+            if (!openIndexResponse.isAcknowledged()) throw new Exception("Could not open index ["+index+"].");
 		}
 		
-		usrb.execute().actionGet();
-		
-		OpenIndexRequestBuilder oirb = client.admin().indices().prepareOpen(index);
-		OpenIndexResponse openIndexResponse = oirb.execute().actionGet();
-		if (!openIndexResponse.isAcknowledged()) throw new Exception("Could not open index ["+index+"].");
 
 		if (logger.isTraceEnabled()) logger.trace("/mergeIndexSettings("+index+")");
 	}
@@ -818,7 +817,18 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 */
 	public String readIndexSettings(String index) throws Exception {
 		return readFileInClasspath(classpathRoot + "/" + index + "/" + indexSettingsFileName);
-	}	
+	}
+
+    /**
+     * Read updatable settings for an index.<br>
+     * Shortcut to readFileInClasspath(classpathRoot + "/" + index + "/" + updateIndexSettingsFileName);
+     * @param index Index name
+     * @return Settings if exists. Null otherwise.
+     * @throws Exception
+     */
+    public String readUpdateIndexSettings(String index) throws Exception {
+        return readFileInClasspath(classpathRoot + "/" + index + "/" + updateIndexSettingsFileName);
+    }
 
     /**
      * Read a file in classpath and return its content. If the file is not found, the error is logged, but null
@@ -842,7 +852,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
                 bufferJSON.append(line);
             }
         } catch (Exception e) {
-            logger.error(String.format("Failed to load file from url: %s", url), e);
+            logger.debug(String.format("Failed to load file from url: %s: %s", url, e.getMessage()));
             return null;
         } finally {
             if (br != null) br.close();

@@ -325,10 +325,11 @@ If merging fails, the factory will not start ([BeanCreationException](https://gi
 
 ### Merge settings
 
-If you need to merge settings for an existing `index`, set  `mergeSettings` property to `true`.
+If you need to merge settings for an existing `index`, add a file named  `es/twitter/_update_settings.json` in your
+classpath. The factory will detect it and will try to merge settings unless you explicitly set `mergeSettings` to `false`.
 
 ```xml
-<elasticsearch:client id="esClient" mergeSettings="true" />
+<elasticsearch:client id="esClient" mergeSettings="false" />
 ```
 
 If merging fails, the factory will not start.

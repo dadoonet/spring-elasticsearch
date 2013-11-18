@@ -31,12 +31,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
-public class ElasticsearchSettingsTest {
+public class ElasticsearchUpdateSettingsTest {
 	static protected ConfigurableApplicationContext ctx;
 	
 	@BeforeClass
 	static public void setup() {
-		ctx = new ClassPathXmlApplicationContext("fr/pilato/spring/elasticsearch/xml/es-settings-test-context.xml");
+		ctx = new ClassPathXmlApplicationContext("fr/pilato/spring/elasticsearch/xml/es-update-settings-test-context.xml");
 	}
 	
 	@AfterClass
@@ -62,10 +62,6 @@ public class ElasticsearchSettingsTest {
         // We test how many shards and replica we have
         ClusterStateResponse response = client.admin().cluster().prepareState().execute().actionGet();
         assertEquals(1, response.getState().getMetaData().getIndices().get("twitter").getNumberOfShards());
-
-        // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
-        // See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
-        assertEquals(0, response.getState().getMetaData().getIndices().get("twitter").getNumberOfReplicas());
-
+        assertEquals(1, response.getState().getMetaData().getIndices().get("twitter").getNumberOfReplicas());
     }
 }
