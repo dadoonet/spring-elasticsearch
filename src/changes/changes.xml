@@ -8,7 +8,7 @@
                 Don't throw exception when we read a file in classpath but return null.
             </action>
             <action issue="35" dev="dadoonet" type="update">
-                Update to Elasticsearch 0.90.6.
+                Update to Elasticsearch 0.90.7.
             </action>
             <action issue="31" dev="dadoonet" type="fix" due-to="Paul Avinash">
                 Add `_update_settings.json` feature to allow proper index update.
