@@ -13,6 +13,9 @@
             <action issue="31" dev="dadoonet" type="fix" due-to="Paul Avinash">
                 Add `_update_settings.json` feature to allow proper index update.
             </action>
+            <action issue="29" dev="nlabrot" type="add">
+                Allow async initialization of Node and Client.
+            </action>
         </release>
 
         <release date="2013-05-01" description="May 2013 Release" version="0.2.0">
