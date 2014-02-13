@@ -632,7 +632,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	private boolean isMappingExist(String index, String type) {
         IndexMetaData imd = null;
         try {
-            ClusterState cs = client.admin().cluster().prepareState().setFilterIndices(index).execute().actionGet().getState();
+            ClusterState cs = client.admin().cluster().prepareState().setIndices(index).execute().actionGet().getState();
             imd = cs.getMetaData().index(index);
         } catch (IndexMissingException e) {
             // If there is no index, there is no mapping either
@@ -654,7 +654,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 */
 	private boolean isTemplateExist(String template) {
 		ClusterState cs = client.admin().cluster().prepareState()
-				.setFilterIndexTemplates(template).execute().actionGet()
+                .setIndexTemplates(template).execute().actionGet()
 				.getState();
 		final IndexTemplateMetaData mdd = cs.getMetaData().templates()
 				.get(template);
