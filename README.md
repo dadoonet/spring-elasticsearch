@@ -17,7 +17,8 @@ For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|  1.0.0-SNAPSHOT (master)|      1.0      |    3.2.2     |              |
+|  1.0.1-SNAPSHOT (master)|      1.0      |    3.2.2     |              |
+|           1.0.0         |      1.0      |    3.2.2     |  2014-02-14  |
 
 Build Status
 ------------
@@ -37,7 +38,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>0.3.0</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -47,7 +48,7 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 <dependency>
   <groupId>org.elasticsearch</groupId>
   <artifactId>elasticsearch</artifactId>
-  <version>0.90.7</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
