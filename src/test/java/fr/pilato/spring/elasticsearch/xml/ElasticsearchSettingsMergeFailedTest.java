@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
-import org.elasticsearch.ElasticSearchIllegalArgumentException;
+import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -42,7 +42,7 @@ public class ElasticsearchSettingsMergeFailedTest {
 		try {
 			new ClassPathXmlApplicationContext("fr/pilato/spring/elasticsearch/xml/es-settings-failed-test-context.xml");
 		} catch (BeanCreationException e) {
-			assertEquals(ElasticSearchIllegalArgumentException.class, e.getCause().getClass());
+			assertEquals(ElasticsearchIllegalArgumentException.class, e.getCause().getClass());
 			throw e;
 		}
 	}

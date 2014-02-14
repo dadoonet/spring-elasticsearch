@@ -67,7 +67,7 @@ public class ElasticsearchConventionBadClasspathTest {
     private boolean isMappingExist(Client client, String index, String type) {
         IndexMetaData imd = null;
         try {
-            ClusterState cs = client.admin().cluster().prepareState().setFilterIndices(index).execute().actionGet().getState();
+            ClusterState cs = client.admin().cluster().prepareState().setIndices(index).execute().actionGet().getState();
             imd = cs.getMetaData().index(index);
         } catch (IndexMissingException e) {
             // If there is no index, there is no mapping either

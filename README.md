@@ -15,14 +15,9 @@ Versions
 For 1.0.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
 For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
-|   spring-elasticsearch  | elasticSearch |   Spring     | Release date |
+|   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|  0.4.0-SNAPSHOT (0.x)   | 0.90.7 - 0.90 |    3.2.2     |              |
-|         0.3.0           | 0.90.7 - 0.90 |    3.2.2     |  18/11/2013  |
-|         0.2.0           | 0.90 - 0.90.6 |    3.2.2     |  17/05/2013  |
-|         0.1.0           |    0.20       |    3.1.1     |  05/04/2013  |
-|         0.0.2           |    0.19       |    3.1.1     |  07/06/2012  |
-|         0.0.1           |    0.19       |    3.1.1     |  24/05/2012  |
+|  1.0.0-SNAPSHOT (master)|      1.0      |    3.2.2     |              |
 
 Build Status
 ------------

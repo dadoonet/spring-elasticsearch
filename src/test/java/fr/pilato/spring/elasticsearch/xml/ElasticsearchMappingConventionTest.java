@@ -64,7 +64,7 @@ public class ElasticsearchMappingConventionTest {
 	}
 	
 	private boolean isMappingExist(Client client, String index, String type) {
-		ClusterState cs = client.admin().cluster().prepareState().setFilterIndices(index).execute().actionGet().getState();
+		ClusterState cs = client.admin().cluster().prepareState().setIndices(index).execute().actionGet().getState();
 		IndexMetaData imd = cs.getMetaData().index(index);
 		if (imd == null) return false;
 		
