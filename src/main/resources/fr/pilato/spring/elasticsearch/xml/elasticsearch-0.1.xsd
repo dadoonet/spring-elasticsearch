@@ -11,14 +11,22 @@
 	governing permissions and limitations under the License. -->
 
 <xsd:schema xmlns="http://www.pilato.fr/schema/elasticsearch"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.pilato.fr/schema/elasticsearch"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tool="http://www.springframework.org/schema/tool"
+    targetNamespace="http://www.pilato.fr/schema/elasticsearch"
 	elementFormDefault="qualified">
+
+    <xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool.xsd"/>
 
 	<xsd:element name="node">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 			Configures a org.elasticsearch.node.Node in the application context.
 		]]></xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.elasticsearch.node.Node"/>
+                </tool:annotation>
+            </xsd:appinfo>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:attribute name="id" type="xsd:string">
@@ -52,6 +60,11 @@
 			<xsd:documentation><![CDATA[
 			Configures a org.elasticsearch.client.Client in the application context.
 		]]></xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.elasticsearch.client.Client"/>
+                </tool:annotation>
+            </xsd:appinfo>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:attribute name="id" type="xsd:string">
