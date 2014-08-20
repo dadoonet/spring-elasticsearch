@@ -12,12 +12,12 @@ Welcome to the Spring factories for [Elasticsearch](http://www.elasticsearch.org
 Versions
 --------
 
-For 1.0.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
-For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
+* For 1.0.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
+* For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|  1.0.1-SNAPSHOT (master)|      1.0      |    3.2.2     |              |
+|  1.3.0-SNAPSHOT (master)|      1.3      |    3.2.2     |              |
 |           1.0.0         |      1.0      |    3.2.2     |  2014-02-14  |
 
 Build Status

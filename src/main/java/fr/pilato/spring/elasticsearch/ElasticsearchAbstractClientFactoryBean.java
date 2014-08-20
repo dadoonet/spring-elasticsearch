@@ -32,7 +32,6 @@ import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRespo
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.cluster.metadata.IndexTemplateMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.indices.IndexMissingException;
 import org.springframework.beans.factory.DisposableBean;
@@ -653,14 +652,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * @return true if template exists
 	 */
 	private boolean isTemplateExist(String template) {
-		ClusterState cs = client.admin().cluster().prepareState()
-				.setIndexTemplates(template).execute().actionGet()
-				.getState();
-		final IndexTemplateMetaData mdd = cs.getMetaData().templates()
-				.get(template);
-
-		if (mdd != null) return true;
-		return false;
+        return !client.admin().indices().prepareGetTemplates(template).get().getIndexTemplates().isEmpty();
 	}
 	
 	/**
