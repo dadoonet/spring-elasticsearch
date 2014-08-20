@@ -17,7 +17,7 @@ Versions
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|  1.3.0-SNAPSHOT (master)|      1.3      |    3.2.2     |              |
+|  1.3.0-SNAPSHOT (master)|      1.3      |    3.2.10    |              |
 |           1.0.0         |      1.0      |    3.2.2     |  2014-02-14  |
 
 Build Status

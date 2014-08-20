@@ -5,7 +5,10 @@
     <body>
         <release date="2014-02-14" description="August 2014 Release" version="1.3.0">
             <action issue="47" dev="dadoonet" type="update">
-                Update to Elasticsearch 1.3.x.
+                Update to Elasticsearch 1.3.0.
+            </action>
+            <action issue="48" dev="dadoonet" type="update">
+                Update to Spring 3.2.10.RELEASE.
             </action>
         </release>
 
