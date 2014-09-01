@@ -28,8 +28,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AppConfig {
-	
-	
+
 	@Bean
 	public Node esNode() throws Exception {
 		ElasticsearchNodeFactoryBean factory = new ElasticsearchNodeFactoryBean();
@@ -43,7 +42,5 @@ public class AppConfig {
 		factory.setNode(esNode());
 		factory.afterPropertiesSet();
 		return factory.getObject();
-		}
-
-
+    }
 }

@@ -1,8 +1,0 @@
-{
-    "tweet" : {
-        "properties" : {
-            "message" : {"type" : "date", "store" : "yes"},
-            "author" : {"type" : "string", "store" : "no"}
-        }
-    }
-}

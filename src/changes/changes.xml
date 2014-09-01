@@ -13,6 +13,9 @@
             <action issue="43" dev="dadoonet" type="new">
                 Adding tool namespace to better support IDEs.
             </action>
+            <action issue="50" dev="dadoonet" type="update">
+                Refactor integration tests.
+            </action>
         </release>
 
         <release date="2014-02-14" description="February 2014 Release - Valentine's Day" version="1.0.0">
