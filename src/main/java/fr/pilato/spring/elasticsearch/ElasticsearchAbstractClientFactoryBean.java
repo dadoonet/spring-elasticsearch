@@ -23,11 +23,9 @@ import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
-import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
-import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
@@ -760,16 +758,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
         String source = readUpdateIndexSettings(index);
         if (source != null) {
             if (logger.isTraceEnabled()) logger.trace("Found settings for index "+index+" : " + source);
-
-            // Before merging, we have to close the index
-            // TODO Check if we still need it
-            CloseIndexResponse closeIndexResponse = client.admin().indices().prepareClose(index).execute().actionGet();
-            if (!closeIndexResponse.isAcknowledged()) throw new Exception("Could not close index ["+index+"].");
-
             client.admin().indices().prepareUpdateSettings(index).setSettings(source).execute().actionGet();
-
-            OpenIndexResponse openIndexResponse = client.admin().indices().prepareOpen(index).execute().actionGet();
-            if (!openIndexResponse.isAcknowledged()) throw new Exception("Could not open index ["+index+"].");
 		}
 		
 
