@@ -288,7 +288,7 @@ To configure your template you have to define a file named `es/_template/twitter
 
 ```javascript
 {
-    "template" : "twee*",
+    "template" : "twitter*",
     "settings" : {
         "number_of_shards" : 1
     },
