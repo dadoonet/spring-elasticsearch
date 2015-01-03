@@ -16,6 +16,9 @@
             <action issue="56" dev="dadoonet" type="update">
                 Update to Junit 4.12.
             </action>
+            <action issue="57" dev="dadoonet" type="update">
+                Update to Spring 4.1.4.RELEASE.
+            </action>
         </release>
 
         <release date="2014-02-14" description="August 2014 Release" version="1.3.0">
