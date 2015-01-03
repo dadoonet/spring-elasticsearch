@@ -57,14 +57,12 @@
 		<url>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</url>
 		<connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
 		<developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+    </scm>
 	
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/dadoonet/spring-elasticsearch/issues/</url>
 	</issueManagement>
-	
 
 	<build>
 		<plugins>
@@ -183,7 +181,7 @@
         <dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
-			<version>2.2.2</version>
+			<version>3.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
