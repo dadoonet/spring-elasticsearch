@@ -12,11 +12,12 @@ Welcome to the Spring factories for [Elasticsearch](http://www.elasticsearch.org
 Versions
 --------
 
-* For 1.0.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
+* For 1.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
 * For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
+|           1.4.0         |      1.4      |    4.0.6     |  2015-01-03  |
 |           1.3.0         |      1.3      |    4.0.6     |  2014-09-01  |
 |           1.0.0         |      1.0      |    3.2.2     |  2014-02-14  |
 
@@ -38,7 +39,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>1.3.0</version>
+  <version>1.4.0</version>
 </dependency>
 ```
 
@@ -48,7 +49,7 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 <dependency>
   <groupId>org.elasticsearch</groupId>
   <artifactId>elasticsearch</artifactId>
-  <version>1.3.2</version>
+  <version>1.4.2</version>
 </dependency>
 ```
 
@@ -453,7 +454,7 @@ License
 
 This software is licensed under the Apache 2 license, quoted below.
 
-	Copyright 2011-2013 David Pilato
+	Copyright 2011-2015 David Pilato
 	
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not
 	use this file except in compliance with the License. You may obtain a copy of
