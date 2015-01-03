@@ -10,6 +10,9 @@
             <action issue="54" dev="dadoonet" type="update" due-to="Michael Dittenbach">
                 Race condition with embedded data node and mappings.
             </action>
+            <action issue="55" dev="dadoonet" type="update">
+                Update Maven plugins.
+            </action>
         </release>
 
         <release date="2014-02-14" description="August 2014 Release" version="1.3.0">
