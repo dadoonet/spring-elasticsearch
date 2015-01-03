@@ -109,8 +109,6 @@
                         <toAddress implementation="java.lang.String">elasticsearch@googlegroups.com</toAddress>
                         <toAddress implementation="java.lang.String">elasticsearch-fr@googlegroups.com</toAddress>
                     </toAddresses>
-                    <template>es-announcement.vm</template>
-                    <templateDirectory>changes</templateDirectory>
                 </configuration>
             </plugin>
             <plugin>

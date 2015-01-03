@@ -3,6 +3,11 @@
           xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 
     <body>
+        <release date="2015-02-01" description="February 2015 Release" version="1.5.0">
+            <action issue="61" dev="dadoonet" type="update">
+                [maven] changes:mail plugin uses `announcement.vm` file.
+            </action>
+        </release>
         <release date="2015-01-03" description="January 2015 Release" version="1.4.0">
             <action issue="53" dev="dadoonet" type="update">
                 Update to Elasticsearch 1.4.0.
