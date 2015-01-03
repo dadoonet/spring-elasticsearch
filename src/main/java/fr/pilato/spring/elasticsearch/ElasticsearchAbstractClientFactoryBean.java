@@ -345,6 +345,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	private Client initialize() throws Exception {
 		client = buildClient();
+		client.admin().cluster().prepareHealth().setWaitForYellowStatus().get();
 		if (autoscan) {
 			computeMappings();
 		}
