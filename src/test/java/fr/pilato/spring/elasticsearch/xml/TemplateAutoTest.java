@@ -19,29 +19,26 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
-import fr.pilato.spring.elasticsearch.BaseTest;
-import org.elasticsearch.index.mapper.MergeMappingException;
+import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
+import org.elasticsearch.client.Client;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * We try to merge non merging mapping.
- * An exception should be raised.
- * @author David Pilato aka dadoonet
- *
- */
-public class MappingFailedTest extends BaseTest {
-	
-	@Test(expected=BeanCreationException.class)
-	public void test_transport_client() {
-		try {
-			new ClassPathXmlApplicationContext("models/mapping-failed/mapping-failed-context.xml");
-		} catch (BeanCreationException e) {
-			assertEquals(MergeMappingException.class, e.getCause().getClass());
-			throw e;
-		}
-	}
+public class TemplateAutoTest extends AbstractXmlContextModel {
+    private String[] xmlBeans = {"models/template-auto/template-auto-context.xml"};
+
+    @Override
+    String[] xmlBeans() {
+        return xmlBeans;
+    }
+
+	@Test
+	public void test_template() {
+		Client client = checkClient();
+
+        GetIndexTemplatesResponse response = client.admin().indices().prepareGetTemplates().get();
+        assertThat(response.getIndexTemplates().size(), is(1));
+    }
 }

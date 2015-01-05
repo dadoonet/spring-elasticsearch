@@ -19,6 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
+import fr.pilato.spring.elasticsearch.BaseTest;
 import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
@@ -34,9 +35,9 @@ import static org.junit.Assert.assertEquals;
  * @author David Pilato aka dadoonet
  *
  */
-public class SettingsFailedTest {
+public class SettingsFailedTest extends BaseTest {
 	static protected ConfigurableApplicationContext ctx;
-	
+
 	@Test(expected=BeanCreationException.class)
 	public void test_merge_settings_failure() {
 		try {

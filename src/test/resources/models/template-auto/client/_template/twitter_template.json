@@ -1,0 +1,16 @@
+{
+    "template" : "twee*",
+    "settings" : {
+        "number_of_shards" : 1
+    },
+    "mappings" : {
+        "tweet" : {
+            "properties" : {
+                "message" : {
+                    "type" : "string",
+                    "store" : "yes"
+                }
+            }
+        }
+    }
+}

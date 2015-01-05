@@ -3,11 +3,15 @@ Spring factories for Elasticsearch
 
 Welcome to the Spring factories for [Elasticsearch](http://www.elasticsearch.org/) project.
 
-> **Note**
->
-> I'm currently thinking of moving this project as a contribution to
-> [spring-data-elasticsearch](https://github.com/spring-projects/spring-data-elasticsearch) project if it
-> makes sense to the team to merge it.
+Actually, since version 1.4.1, this project has been split in two parts:
+
+* [Elasticsearch Beyonder](https://github.com/dadoonet/elasticsearch-beyonder/) which find resources in
+project classpath to automatically create indices, types and templates.
+* This project which is building Client and Node beans using Spring.
+
+The Spring specific part of this project will basically move to
+[spring-data-elasticsearch](https://github.com/spring-projects/spring-data-elasticsearch) project.
+
 
 Versions
 --------

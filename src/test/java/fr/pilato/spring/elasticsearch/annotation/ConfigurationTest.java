@@ -19,7 +19,6 @@
 
 package fr.pilato.spring.elasticsearch.annotation;
 
-import junit.framework.Assert;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.junit.Test;
@@ -27,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -40,8 +41,8 @@ public class ConfigurationTest {
 
 	@Test
 	public void testNode() {
-		Assert.assertNotNull(node);
-		Assert.assertNotNull(client);
+		assertNotNull(node);
+		assertNotNull(client);
 	}
 	
 }

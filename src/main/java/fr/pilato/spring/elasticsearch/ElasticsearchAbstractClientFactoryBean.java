@@ -19,34 +19,29 @@
 
 package fr.pilato.spring.elasticsearch;
 
+import fr.pilato.elasticsearch.tools.index.IndexFinder;
+import fr.pilato.elasticsearch.tools.template.TemplateFinder;
+import fr.pilato.elasticsearch.tools.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.action.admin.indices.alias.IndicesAliasesResponse;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
-import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.cluster.ClusterState;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.indices.IndexMissingException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+
+import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.createAlias;
+import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.createIndex;
+import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.updateSettings;
+import static fr.pilato.elasticsearch.tools.template.TemplateElasticsearchUpdater.createTemplate;
+import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.createMapping;
 
 /**
  * An abstract {@link FactoryBean} used to create an ElasticSearch
@@ -157,7 +152,7 @@ import java.util.concurrent.Future;
 public abstract class ElasticsearchAbstractClientFactoryBean extends ElasticsearchAbstractFactoryBean 
 	implements FactoryBean<Client>,	InitializingBean, DisposableBean {
 
-	protected static Log logger = LogFactory.getLog(ElasticsearchAbstractClientFactoryBean.class);
+	private static final Logger logger = LogManager.getLogger(ElasticsearchAbstractClientFactoryBean.class);
 
 	protected Client client;
 	protected Client proxyfiedClient;
@@ -178,20 +173,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	protected String[] templates;
 	
-	protected String classpathRoot = "/es";
+	protected String classpathRoot = "es";
 	
-	// TODO Let the user decide
-	protected String jsonFileExtension = ".json";
-
-	// TODO Let the user decide
-	protected String indexSettingsFileName = "_settings.json";
-
-    // TODO Let the user decide
-    protected String updateIndexSettingsFileName = "_update_settings.json";
-
-    // TODO Let the user decide
-	protected String templateDir = "_template";
-
 	/**
 	 * Implement this method to build a client
 	 * @return ES Client
@@ -319,7 +302,12 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * @see #setMappings(String[])
 	 */
 	public void setClasspathRoot(String classpathRoot) {
-		this.classpathRoot = classpathRoot;
+		// For compatibility reasons, we need to convert "/classpathroot" to "classpathroot"
+		if (classpathRoot.startsWith("/")) {
+			this.classpathRoot = classpathRoot.substring(1, classpathRoot.length());
+		} else {
+			this.classpathRoot = classpathRoot;
+		}
 	}
 
 	@Override
@@ -336,18 +324,18 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			});
 			proxyfiedClient = (Client) Proxy.newProxyInstance(Client.class.getClassLoader(),
 					new Class[]{Client.class}, new GenericInvocationHandler(future));
-
 		} else {
 			client = initialize();
 		}
 	}
 
-
 	private Client initialize() throws Exception {
 		client = buildClient();
+		// TODO Only wait for potential indices
 		client.admin().cluster().prepareHealth().setWaitForYellowStatus().get();
 		if (autoscan) {
 			computeMappings();
+			computeTemplates();
 		}
 		initTemplates();	
 		initMappings();
@@ -398,7 +386,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				Assert.hasText(template, "Can not read template in ["
 						+ templates[i]
 						+ "]. Check that templates is not empty.");
-				createTemplate(template, forceTemplate);
+				createTemplate(client, classpathRoot, template, forceTemplate);
 			}
 		}
 	}
@@ -409,55 +397,57 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	private void computeMappings() {
 		if (mappings == null || mappings.length == 0) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Automatic discovery is activated. Looking for definition files in classpath under " + classpathRoot + ".");
+				logger.debug("Automatic discovery is activated. Looking for definition files in classpath under [{}].",
+						classpathRoot);
 			}
-			
-			ArrayList<String> autoMappings = new ArrayList<String>();
-			// Let's scan our resources
-			PathMatchingResourcePatternResolver pathResolver = new PathMatchingResourcePatternResolver();
-			Resource resourceRoot = pathResolver.getResource(classpathRoot);
+
+			ArrayList<String> autoMappings = new ArrayList<>();
+
 			try {
-				Resource[] resources = pathResolver.getResources("classpath:"+classpathRoot + "/**/*"+jsonFileExtension);
-				for (int i = 0; i < resources.length; i++) {
-					String relPath = resources[i].getURI().toString().substring(resourceRoot.getURI().toString().length());
-					
-					// If relPath starts with / we must ignore first char
-					// TODO : check why sometimes there is a / and sometimes not ! :-(
-					if (relPath.startsWith("/")) {
-						relPath = relPath.substring(1);
-					}
-					
-					// We should ignore _settings.json and _update_settings.json files (as they are not really mappings)
-					// We should also ignore _template dir
-					if (!relPath.startsWith(templateDir)) {
-						// We must remove the .json extension
-
-                        // Issue #21: If there are only _settings.json and no mapping
-                        // we should manage it also
-                        if (!relPath.endsWith(indexSettingsFileName)) {
-                            relPath = relPath.substring(0, relPath.lastIndexOf(".json"));
-                        } else if (relPath.endsWith(updateIndexSettingsFileName)) {
-                            relPath = relPath.substring(0, relPath.lastIndexOf(updateIndexSettingsFileName));
-                        } else {
-                            relPath = relPath.substring(0, relPath.lastIndexOf(indexSettingsFileName));
-                        }
-						autoMappings.add(relPath);
-
-						if (logger.isDebugEnabled()) {
-							logger.debug("Automatic discovery found " + relPath + " json file in classpath under " + classpathRoot + ".");
+				// Let's scan our resources
+				Collection<String> indices = IndexFinder.findIndexNames(classpathRoot);
+				for (String index : indices) {
+					Collection<String> types = TypeFinder.findTypes(classpathRoot, index);
+					if (types.isEmpty()) {
+						autoMappings.add(index);
+					} else {
+						for (String type : types) {
+							autoMappings.add(index+"/"+type);
 						}
 					}
 				}
 				
-				mappings = (String[]) autoMappings.toArray(new String[autoMappings.size()]);
-			
+				mappings = autoMappings.toArray(new String[autoMappings.size()]);
 			} catch (IOException e) {
-				if (!logger.isTraceEnabled() && logger.isDebugEnabled()) {
-					logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
+				logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
+				logger.trace(e);
+			}
+		}
+	}
+
+	/**
+	 * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
+	 */
+	private void computeTemplates() {
+		if (templates == null || templates.length == 0) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Automatic discovery is activated. Looking for template files in classpath under [{}].",
+						classpathRoot);
+			}
+
+			ArrayList<String> autoTemplates = new ArrayList<>();
+
+			try {
+				// Let's scan our resources
+				List<String> scannedTemplates = TemplateFinder.findTemplates(classpathRoot);
+				for (String template : scannedTemplates) {
+					autoTemplates.add(template);
 				}
-				if (logger.isTraceEnabled()) {
-					logger.trace("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".", e);
-				}
+
+				templates = autoTemplates.toArray(new String[autoTemplates.size()]);
+			} catch (IOException e) {
+				logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
+				logger.trace(e);
 			}
 		}
 	}
@@ -468,9 +458,10 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * @throws Exception 
 	 */
 	private void initMappings() throws Exception {
+		checkClient();
 		// We extract indexes and mappings to manage from mappings definition
 		if (mappings != null && mappings.length > 0) {
-			Map<String, Collection<String>> indexes = new HashMap<String, Collection<String>>();
+			Map<String, Collection<String>> indexes = new HashMap<>();
 			
 			for (int i = 0; i < mappings.length; i++) {
 				String indexmapping = mappings[i];
@@ -493,19 +484,16 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			
 			// Let's initialize indexes and mappings if needed
 			for (String index : indexes.keySet()) {
-				if (!isIndexExist(index)) {
-					createIndex(index);
-				} else {
-					if (mergeSettings) {
-						mergeIndexSettings(index);
-					}
+				createIndex(client, classpathRoot, index);
+				if (mergeSettings) {
+					updateSettings(client, classpathRoot, index);
 				}
-				
+
 				Collection<String> mappings = indexes.get(index);
 				for (Iterator<String> iterator = mappings.iterator(); iterator
 						.hasNext();) {
 					String type = iterator.next();
-					pushMapping(index, type, forceMapping, mergeMapping);
+					createMapping(client, classpathRoot, index, type, mergeMapping, forceMapping);
 				}
 			}
 		}
@@ -516,7 +504,6 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * @throws Exception 
 	 */
 	private void initAliases() throws Exception {
-
 		if (aliases != null && aliases.length > 0) {
 			for (int i = 0; i < aliases.length; i++) {
 				String[] aliasessplitted = aliases[i].split(":");
@@ -528,7 +515,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				if (alias == null) throw new Exception("Can not read mapping in [" + aliases[i] + 
 						"]. Check that aliases contains only aliasname:indexname elements.");
 
-				createAlias(alias, index);
+				createAlias(client, alias, index);
 			}
 		}
 	}
@@ -542,306 +529,4 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			throw new Exception("ElasticSearch client doesn't exist. Your factory is not properly initialized.");
 		}
 	}
-	
-	/**
-	 * Create an alias if needed
-	 * @param alias
-	 * @param index
-	 * @throws Exception
-	 */
-    private void createAlias(String alias, String index) throws Exception {
-		if (logger.isTraceEnabled()) logger.trace("createAlias("+alias+","+index+")");
-		checkClient();
-		
-		IndicesAliasesResponse response = client.admin().indices().prepareAliases().addAlias(index, alias).execute().actionGet();
-		if (!response.isAcknowledged()) throw new Exception("Could not define alias [" + alias + "] for index [" + index + "].");
-		if (logger.isTraceEnabled()) logger.trace("/createAlias("+alias+","+index+")");
-	}
-
-	/**
-	 * Create a template if needed
-	 * 
-	 * @param template template name
-	 * @param force    force recreate template
-	 * @throws Exception
-	 */
-	private void createTemplate(String template, boolean force)
-			throws Exception {
-		if (logger.isTraceEnabled())
-			logger.trace("createTemplate(" + template + ")");
-		checkClient();
-
-		// If template already exists and if we are in force mode, we delete the template
-		if (force && isTemplateExist(template)) {
-			if (logger.isDebugEnabled())
-				logger.debug("Force remove template [" + template + "]");
-			// Remove template in ElasticSearch !
-			client.admin()
-					.indices().prepareDeleteTemplate(template).execute()
-					.actionGet();
-		}
-
-		// Read the template json file if exists and use it
-		String source = readTemplate(template);
-		if (source != null) {
-			if (logger.isTraceEnabled())
-				logger.trace("Template [" + template + "]=" + source);
-			// Create template
-			final PutIndexTemplateResponse response = client.admin().indices()
-					.preparePutTemplate(template).setSource(source).execute()
-					.actionGet();
-			if (!response.isAcknowledged()) {
-				throw new Exception("Could not define template [" + template
-						+ "].");
-			} else {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Template [" + template
-							+ "] successfully created.");
-				}
-			}
-		} else {
-			if (logger.isWarnEnabled()) {
-				logger.warn("No template definition for [" + template
-						+ "]. Ignoring.");
-			}
-		}
-
-		if (logger.isTraceEnabled())
-			logger.trace("/createTemplate(" + template + ")");
-	}
-    
-	/**
-	 * Check if an index already exists
-	 * @param index Index name
-	 * @return true if index already exists
-	 * @throws Exception
-	 */
-    private boolean isIndexExist(String index) throws Exception {
-		checkClient();
-		return client.admin().indices().prepareExists(index).execute().actionGet().isExists();
-	}
-    
-    /**
-	 * Check if a mapping already exists in an index
-	 * @param index Index name
-	 * @param type Mapping name
-	 * @return true if mapping exists
-	 */
-	private boolean isMappingExist(String index, String type) {
-        IndexMetaData imd = null;
-        try {
-            ClusterState cs = client.admin().cluster().prepareState().setIndices(index).execute().actionGet().getState();
-            imd = cs.getMetaData().index(index);
-        } catch (IndexMissingException e) {
-            // If there is no index, there is no mapping either
-        }
-
-        if (imd == null) return false;
-
-		MappingMetaData mdd = imd.mapping(type);
-
-		if (mdd != null) return true;
-		return false;
-	}
-
-	/**
-	 * Check if a template already exists
-	 * 
-	 * @param template template name
-	 * @return true if template exists
-	 */
-	private boolean isTemplateExist(String template) {
-        return !client.admin().indices().prepareGetTemplates(template).get().getIndexTemplates().isEmpty();
-	}
-	
-	/**
-	 * Define a type for a given index and if exists with its mapping definition
-	 * @param index Index name
-	 * @param type Type name
-	 * @param force Force rebuild the type : <b>Caution</b> : if true, all your datas for
-	 * this type will be erased. Use only for developpement or continuous integration
-	 * @param merge Merge existing mappings
-	 * @throws Exception
-	 */
-	private void pushMapping(String index, String type, boolean force, boolean merge) throws Exception {
-		if (logger.isTraceEnabled()) logger.trace("pushMapping("+index+","+type+","+force+")");
-
-		checkClient();
-
-		// If type already exists and if we are in force mode, we delete the type and its mapping
-		if (force && isMappingExist(index, type)) {
-			if (logger.isDebugEnabled()) logger.debug("Force remove old type and mapping ["+index+"]/["+type+"]");
-			// Remove mapping and type in ElasticSearch !
-			client.admin().indices()
-				.prepareDeleteMapping(index)
-				.setType(type)
-				.execute().actionGet();
-			// client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet(); 
-		}
-		
-		// If type does not exist, we create it
-		boolean mappingExist = isMappingExist(index, type);
-		if (merge || !mappingExist) {
-			if (logger.isDebugEnabled()) {
-				if (mappingExist) {
-					logger.debug("Updating mapping ["+index+"]/["+type+"].");
-				} else {
-					logger.debug("Mapping ["+index+"]/["+type+"] doesn't exist. Creating it.");
-				}
-			}
-			// Read the mapping json file if exists and use it
-			String source = readMapping(index, type);
-			if (source != null) {
-				if (logger.isTraceEnabled()) logger.trace("Mapping for ["+index+"]/["+type+"]="+source);
-				// Create type and mapping
-				PutMappingResponse response = client.admin().indices()
-					.preparePutMapping(index)
-					.setType(type)
-					.setSource(source)
-					.execute().actionGet();			
-				if (!response.isAcknowledged()) {
-					throw new Exception("Could not define mapping for type ["+index+"]/["+type+"].");
-				} else {
-					if (logger.isDebugEnabled()) {
-						if (mappingExist) {
-							logger.debug("Mapping definition for ["+index+"]/["+type+"] succesfully merged.");
-						} else {
-							logger.debug("Mapping definition for ["+index+"]/["+type+"] succesfully created.");
-						}
-					}
-				}
-			} else {
-				if (logger.isDebugEnabled()) logger.debug("No mapping definition for ["+index+"]/["+type+"]. Ignoring.");
-			}
-		} else {
-			if (logger.isDebugEnabled()) logger.debug("Mapping ["+index+"]/["+type+"] already exists and mergeMapping is not set.");
-		}
-		if (logger.isTraceEnabled()) logger.trace("/pushMapping("+index+","+type+","+force+")");
-	}
-
-	/**
-	 * Create a new index in Elasticsearch
-	 * @param index Index name
-	 * @throws Exception
-	 */
-	private void createIndex(String index) throws Exception {
-		if (logger.isTraceEnabled()) logger.trace("createIndex("+index+")");
-		if (logger.isDebugEnabled()) logger.debug("Index " + index + " doesn't exist. Creating it.");
-		
-		checkClient();
-		
-		CreateIndexRequestBuilder cirb = client.admin().indices().prepareCreate(index);
-
-		// If there are settings for this index, we use it. If not, using Elasticsearch defaults.
-		String source = readIndexSettings(index);
-		if (source != null) {
-			if (logger.isTraceEnabled()) logger.trace("Found settings for index "+index+" : " + source);
-			cirb.setSettings(source);
-		}
-		
-		CreateIndexResponse createIndexResponse = cirb.execute().actionGet();
-		if (!createIndexResponse.isAcknowledged()) throw new Exception("Could not create index ["+index+"].");
-		if (logger.isTraceEnabled()) logger.trace("/createIndex("+index+")");
-	}
-
-	/**
-	 * Create a new index in ElasticSearch
-	 * @param index Index name
-	 * @throws Exception
-	 */
-	private void mergeIndexSettings(String index) throws Exception {
-		if (logger.isTraceEnabled()) logger.trace("mergeIndexSettings("+index+")");
-		if (logger.isDebugEnabled()) logger.debug("Index " + index + " already exists. Trying to merge settings.");
-		
-		checkClient();
-
-        // If there are settings for this index, we use it. If not, using Elasticsearch defaults.
-        String source = readUpdateIndexSettings(index);
-        if (source != null) {
-            if (logger.isTraceEnabled()) logger.trace("Found settings for index "+index+" : " + source);
-            client.admin().indices().prepareUpdateSettings(index).setSettings(source).execute().actionGet();
-		}
-		
-
-		if (logger.isTraceEnabled()) logger.trace("/mergeIndexSettings("+index+")");
-	}
-
-	/**
-	 * Read the mapping for a type.<br>
-	 * Shortcut to readFileInClasspath(classpathRoot + "/" + index + "/" + mapping + jsonFileExtension);
-	 * @param index Index name
-	 * @param type Type name
-	 * @return Mapping if exists. Null otherwise.
-	 * @throws Exception
-	 */
-	private String readMapping(String index, String type) throws Exception {
-		return readFileInClasspath(classpathRoot + "/" + index + "/" + type + jsonFileExtension);
-	}	
-
-	/**
-	 * Read the template.<br>
-	 * Shortcut to readFileInClasspath(classpathRoot + "/" + templateDir + "/" + template + jsonFileExtension);
-	 * 
-	 * @param template Template name
-	 * @return Template if exists. Null otherwise.
-	 * @throws Exception
-	 */
-	private String readTemplate(String template) throws Exception {
-		return readFileInClasspath(classpathRoot + "/" + templateDir + "/" + template + jsonFileExtension);
-	}
-	
-	/**
-	 * Read settings for an index.<br>
-	 * Shortcut to readFileInClasspath(classpathRoot + "/" + index + "/" + indexSettingsFileName);
-	 * @param index Index name
-	 * @return Settings if exists. Null otherwise.
-	 * @throws Exception
-	 */
-	public String readIndexSettings(String index) throws Exception {
-		return readFileInClasspath(classpathRoot + "/" + index + "/" + indexSettingsFileName);
-	}
-
-    /**
-     * Read updatable settings for an index.<br>
-     * Shortcut to readFileInClasspath(classpathRoot + "/" + index + "/" + updateIndexSettingsFileName);
-     * @param index Index name
-     * @return Settings if exists. Null otherwise.
-     * @throws Exception
-     */
-    public String readUpdateIndexSettings(String index) throws Exception {
-        return readFileInClasspath(classpathRoot + "/" + index + "/" + updateIndexSettingsFileName);
-    }
-
-    /**
-     * Read a file in classpath and return its content. If the file is not found, the error is logged, but null
-     * is returned so that the user is aware of what happened.
-     *
-     * @param url File URL Example : /es/twitter/_settings.json
-     * @return File content or null if file doesn't exist
-     */
-    public static String readFileInClasspath(String url) throws Exception {
-        StringBuilder bufferJSON = new StringBuilder();
-
-        BufferedReader br = null;
-
-        try {
-            ClassPathResource classPathResource = new ClassPathResource(url);
-            InputStreamReader ipsr = new InputStreamReader(classPathResource.getInputStream());
-            br = new BufferedReader(ipsr);
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                bufferJSON.append(line);
-            }
-        } catch (Exception e) {
-            logger.debug(String.format("Failed to load file from url: %s: %s", url, e.getMessage()));
-            return null;
-        } finally {
-            if (br != null) br.close();
-        }
-
-        return bufferJSON.toString();
-    }
-
-
 }

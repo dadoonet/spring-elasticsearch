@@ -19,12 +19,11 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
+import fr.pilato.spring.elasticsearch.BaseTest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.junit.After;
@@ -39,9 +38,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public abstract class AbstractXmlContextModel {
+public abstract class AbstractXmlContextModel extends BaseTest {
     protected ConfigurableApplicationContext ctx;
-    protected ESLogger logger = ESLoggerFactory.getLogger(this.getClass().getName());
 
     /**
      * @return list of xml files needed to be loaded for this test
