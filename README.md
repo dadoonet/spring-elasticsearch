@@ -21,6 +21,7 @@ Versions
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
+|           1.4.2         |      1.4      |    4.1.4     |  2015-03-03  |
 |           1.4.1         |      1.4      |    4.1.4     |  2015-02-28  |
 |           1.4.0         |      1.4      |    4.1.4     |  2015-01-03  |
 |           1.3.0         |      1.3      |    4.0.6     |  2014-09-01  |
@@ -44,7 +45,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>1.4.1</version>
+  <version>1.4.2</version>
 </dependency>
 ```
 

@@ -33,6 +33,7 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.lang.reflect.Proxy;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -418,11 +419,11 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				}
 				
 				mappings = autoMappings.toArray(new String[autoMappings.size()]);
-			} catch (IOException e) {
+			} catch (IOException|URISyntaxException e) {
 				logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
 				logger.trace(e);
-			}
-		}
+            }
+        }
 	}
 
 	/**
@@ -445,11 +446,11 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				}
 
 				templates = autoTemplates.toArray(new String[autoTemplates.size()]);
-			} catch (IOException e) {
+			} catch (IOException|URISyntaxException e) {
 				logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
 				logger.trace(e);
-			}
-		}
+            }
+        }
 	}
 
 	/**

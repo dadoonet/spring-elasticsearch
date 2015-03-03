@@ -29,7 +29,7 @@
 	<properties>
 		<spring.version>4.1.4.RELEASE</spring.version>
 		<elasticsearch.version>1.4.4</elasticsearch.version>
-		<beyonder.version>1.4.0</beyonder.version>
+		<beyonder.version>1.4.1</beyonder.version>
 		<log4j.version>2.1</log4j.version>
 		<commons.io.version>2.4</commons.io.version>
 	</properties>
@@ -60,7 +60,6 @@
 		<url>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</url>
 		<connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
 		<developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
-      <tag>HEAD</tag>
   </scm>
 	
 	<issueManagement>
