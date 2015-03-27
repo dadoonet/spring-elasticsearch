@@ -28,8 +28,8 @@
   	
 	<properties>
 		<spring.version>4.1.4.RELEASE</spring.version>
-		<elasticsearch.version>1.4.4</elasticsearch.version>
-		<beyonder.version>1.4.1</beyonder.version>
+		<elasticsearch.version>1.5.0</elasticsearch.version>
+		<beyonder.version>1.5.0</beyonder.version>
 		<log4j.version>2.1</log4j.version>
 		<commons.io.version>2.4</commons.io.version>
 	</properties>

@@ -3,6 +3,11 @@
           xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 
     <body>
+        <release date="2015-03-03" description="March 2015 Release" version="1.5.0">
+            <action issue="xx" dev="dadoonet" type="update">
+                Update to elasticsearch 1.5.0.
+            </action>
+        </release>
         <release date="2015-03-03" description="1.4 bug fix" version="1.4.2">
             <action issue="66" dev="dadoonet" type="fix">
                 Classloader issues when running in a web container.
