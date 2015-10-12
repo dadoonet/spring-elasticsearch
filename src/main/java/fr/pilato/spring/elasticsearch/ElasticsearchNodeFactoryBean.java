@@ -22,7 +22,6 @@ package fr.pilato.spring.elasticsearch;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
@@ -108,8 +107,8 @@ public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBe
 		}
 
 		if (null != settingsFile && null == properties) {
-			Settings settings = ImmutableSettings.settingsBuilder()
-					.loadFromClasspath(this.settingsFile)
+			Settings settings = Settings.builder()
+					.loadFromStream(settingsFile, ElasticsearchNodeFactoryBean.class.getResourceAsStream("/" + settingsFile))
 					.build();
 			nodeBuilder.getSettings().put(settings);
 		}
@@ -121,6 +120,7 @@ public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBe
 		if (logger.isDebugEnabled()) logger.debug("Starting ElasticSearch node...");
 		node = nodeBuilder.node();
 		logger.info("Node [" + node.settings().get("name") + "] for [" + node.settings().get("cluster.name") + "] cluster started...");
+		if (logger.isDebugEnabled()) logger.debug("  - home : " + node.settings().get("path.home"));
 		if (logger.isDebugEnabled()) logger.debug("  - data : " + node.settings().get("path.data"));
 		if (logger.isDebugEnabled()) logger.debug("  - logs : " + node.settings().get("path.logs"));
 

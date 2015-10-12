@@ -47,18 +47,13 @@ public class BaseTest {
         testDir = File.createTempFile("junit", "");
         testDir.delete();
         testDir.mkdir();
-        File dataDir = new File(testDir, "data");
-        File logsDir = new File(testDir, "logs");
-
-        System.setProperty("es.path.data", dataDir.getAbsolutePath());
-        System.setProperty("es.path.logs", logsDir.getAbsolutePath());
+        System.setProperty("es.path.home", testDir.getAbsolutePath());
     }
 
 
     @After
     public void removeTempDir() {
         recursiveDelete(testDir);
-        System.clearProperty("es.path.data");
-        System.clearProperty("es.path.logs");
+        System.clearProperty("es.path.home");
     }
 }

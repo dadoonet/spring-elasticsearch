@@ -23,9 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.springframework.beans.factory.FactoryBean;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * An {@link FactoryBean} used to create an ElasticSearch Transport {@link Client}.
@@ -88,7 +91,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	
 	@Override
 	protected Client buildClient() throws Exception {
-        ImmutableSettings.Builder builder = ImmutableSettings.settingsBuilder();
+		Settings.Builder builder = Settings.builder();
 
         if (null != this.settings && null == properties) {
             builder.put(this.settings);
@@ -96,14 +99,16 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 
         if (null != this.settingsFile && null == properties) {
             logger.warn("settings has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
-            builder.loadFromClasspath(this.settingsFile);
+			builder.loadFromStream(settingsFile, ElasticsearchTransportClientFactoryBean.class.getResourceAsStream("/" + settingsFile));
         }
 
         if (null != this.properties) {
             builder.put(this.properties);
         }
 
-		TransportClient client = new TransportClient(builder.build());
+		TransportClient client = TransportClient.builder()
+				.settings(builder.build())
+				.build();
 
 		for (int i = 0; i < esNodes.length; i++) {
 			client.addTransportAddress(toAddress(esNodes[i]));
@@ -117,7 +122,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	 * @param address Node address hostname:port (or hostname)
 	 * @return
 	 */
-	private InetSocketTransportAddress toAddress(String address) {
+	private InetSocketTransportAddress toAddress(String address) throws UnknownHostException {
 		if (address == null) return null;
 		
 		String[] splitted = address.split(":");
@@ -126,7 +131,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 			port = Integer.parseInt(splitted[1]);
 		}
 		
-		return new InetSocketTransportAddress(splitted[0], port);
+		return new InetSocketTransportAddress(InetAddress.getByName(splitted[0]), port);
 	}
 	
 }

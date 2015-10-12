@@ -9,11 +9,8 @@
 
     <util:map id="esProperties">
         <entry key="cluster.name" value="newclustername"/>
+        <entry key="path.home" value="${project.build.directory}/es"/>
         <entry key="path.data" value="${project.build.directory}/es/data"/>
-        <entry key="index.store.type" value="memory"/>
-        <entry key="index.store.fs.memory.enabled" value="true"/>
-        <entry key="index.gateway.type" value="none"/>
-        <entry key="gateway.type" value="none"/>
     </util:map>
   
     <elasticsearch:node id="esNode" properties="esProperties" />

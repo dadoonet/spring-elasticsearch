@@ -21,9 +21,10 @@ package fr.pilato.spring.elasticsearch.xml;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.emptyCollectionOf;
@@ -46,7 +47,7 @@ public class Settings13Test extends AbstractXmlContextModel {
         assertThat(client, instanceOf(org.elasticsearch.client.transport.TransportClient.class));
 
         TransportClient tClient = (TransportClient) client;
-        ImmutableList<TransportAddress> adresses = tClient.transportAddresses();
+        List<TransportAddress> adresses = tClient.transportAddresses();
         assertThat(adresses, not(emptyCollectionOf(TransportAddress.class)));
         assertThat(adresses.size(), is(2));
 	}

@@ -20,7 +20,6 @@
 package fr.pilato.spring.elasticsearch.xml;
 
 import fr.pilato.spring.elasticsearch.BaseTest;
-import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -43,7 +42,7 @@ public class SettingsFailedTest extends BaseTest {
 		try {
 			new ClassPathXmlApplicationContext("models/settings-failed/settings-failed-context.xml");
 		} catch (BeanCreationException e) {
-			assertEquals(ElasticsearchIllegalArgumentException.class, e.getCause().getClass());
+			assertEquals(IllegalArgumentException.class, e.getCause().getClass());
 			throw e;
 		}
 	}
