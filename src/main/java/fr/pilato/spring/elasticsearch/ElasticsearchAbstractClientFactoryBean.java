@@ -485,7 +485,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 			
 			// Let's initialize indexes and mappings if needed
 			for (String index : indexes.keySet()) {
-				createIndex(client, classpathRoot, index);
+				createIndex(client, classpathRoot, index, forceMapping);
 				if (mergeSettings) {
 					updateSettings(client, classpathRoot, index);
 				}
@@ -494,7 +494,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				for (Iterator<String> iterator = mappings.iterator(); iterator
 						.hasNext();) {
 					String type = iterator.next();
-					createMapping(client, classpathRoot, index, type, mergeMapping, forceMapping);
+					createMapping(client, classpathRoot, index, type, mergeMapping);
 				}
 			}
 		}

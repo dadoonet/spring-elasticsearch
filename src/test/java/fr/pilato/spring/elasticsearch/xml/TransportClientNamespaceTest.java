@@ -22,15 +22,14 @@ package fr.pilato.spring.elasticsearch.xml;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
-import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.emptyCollectionOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 
 public class TransportClientNamespaceTest extends AbstractXmlContextModel {
@@ -48,7 +47,7 @@ public class TransportClientNamespaceTest extends AbstractXmlContextModel {
         assertThat(client, instanceOf(org.elasticsearch.client.transport.TransportClient.class));
 
 		TransportClient tClient = (TransportClient) client;
-		ImmutableList<TransportAddress> adresses = tClient.transportAddresses();
+		List<TransportAddress> adresses = tClient.transportAddresses();
         assertThat("Nodes urls must not be empty...", adresses, not(emptyCollectionOf(TransportAddress.class)));
 
 		// Testing if we are really connected to a cluster node
