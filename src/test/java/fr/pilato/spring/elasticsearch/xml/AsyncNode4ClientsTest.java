@@ -23,6 +23,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.aop.support.AopUtils;
 
 import java.lang.reflect.Proxy;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class AsyncNode4ClientsTest extends AbstractXmlContextModel {
     @Test
     public void test_node_client() throws Exception {
         Node node = ctx.getBean(Node.class);
-        Assert.assertNotNull(Proxy.getInvocationHandler(node));
+        Assert.assertTrue(AopUtils.isAopProxy(node));
 
         Map<String,Client> clientMap = ctx.getBeansOfType(Client.class);
 

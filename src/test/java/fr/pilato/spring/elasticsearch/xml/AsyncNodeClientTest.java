@@ -23,6 +23,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.aop.support.AopUtils;
 
 import java.lang.reflect.Proxy;
 import java.util.concurrent.ExecutionException;
@@ -39,11 +40,9 @@ public class AsyncNodeClientTest extends AbstractXmlContextModel {
     @Test
     public void test_node_client() throws ExecutionException, InterruptedException {
         Node node = ctx.getBean(Node.class);
-        Assert.assertNotNull(Proxy.getInvocationHandler(node));
+        Assert.assertTrue(AopUtils.isAopProxy(node));
         Client client = checkClient("testNodeClient");
         Assert.assertNotNull(Proxy.getInvocationHandler(client));
-
-        checkClient("testNodeClient");
         client.admin().cluster().prepareState().execute().get();
     }
 }
