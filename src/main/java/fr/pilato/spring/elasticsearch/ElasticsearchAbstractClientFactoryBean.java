@@ -26,13 +26,13 @@ import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -323,8 +323,12 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 					return initialize();
 				}
 			});
-			proxyfiedClient = (Client) Proxy.newProxyInstance(Client.class.getClassLoader(),
-					new Class[]{Client.class}, new GenericInvocationHandler(future));
+
+			ProxyFactory proxyFactory = new ProxyFactory();
+			proxyFactory.setProxyTargetClass(true);
+			proxyFactory.setTargetClass(Client.class);
+			proxyFactory.addAdvice(new GenericInvocationHandler(future));
+			proxyfiedClient = (Client) proxyFactory.getProxy();
 		} else {
 			client = initialize();
 		}
