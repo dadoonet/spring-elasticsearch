@@ -1,12 +1,12 @@
 package fr.pilato.spring.elasticsearch.proxy;
 
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.util.concurrent.Future;
 
-public class GenericInvocationHandler<T> implements InvocationHandler {
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.util.ReflectionUtils;
+
+public class GenericInvocationHandler<T> implements MethodInterceptor {
 
 	private volatile T bean;
 	private Future<T> nodeFuture;
@@ -16,12 +16,13 @@ public class GenericInvocationHandler<T> implements InvocationHandler {
 	}
 
 	@Override
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+	public Object invoke(MethodInvocation invocation) throws Throwable {
 		if (bean == null) {
 			bean = nodeFuture.get();
 			//release reference
 			nodeFuture = null;
 		}
-		return ReflectionUtils.invokeMethod(method, bean, args);
+		return ReflectionUtils.invokeMethod(invocation.getMethod(), bean, invocation.getArguments());
 	}
+
 }

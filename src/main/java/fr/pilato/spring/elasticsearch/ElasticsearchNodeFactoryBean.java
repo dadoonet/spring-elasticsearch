@@ -20,17 +20,18 @@
 package fr.pilato.spring.elasticsearch;
 
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-import java.lang.reflect.Proxy;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -55,6 +56,7 @@ public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBe
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+
 		if (async) {
 			Assert.notNull(taskExecutor);
 
@@ -64,8 +66,12 @@ public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBe
 					return initialize();
 				}
 			});
-			proxyfiedNode = (Node) Proxy.newProxyInstance(Node.class.getClassLoader(),
-					new Class[]{Node.class}, new GenericInvocationHandler(nodeFuture));
+
+			ProxyFactory proxyFactory = new ProxyFactory();
+			proxyFactory.setProxyTargetClass(true);
+			proxyFactory.setTargetClass(Node.class);
+			proxyFactory.addAdvice(new GenericInvocationHandler(nodeFuture));
+			proxyfiedNode = (Node) proxyFactory.getProxy();
 
 		} else {
 			node = initialize();
