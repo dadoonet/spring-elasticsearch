@@ -16,12 +16,16 @@ The Spring specific part of this project will basically move to
 Versions
 --------
 
-* For 1.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
+* For 3.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
+* For 2.x elasticsearch versions, look at [es-2.0 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-2.0).
+* For 1.x elasticsearch versions, look at [es-1.5 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.5).
 * For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|           1.4.2         |      1.4      |    4.1.4     |  2015-03-03  |
+|           3.0.0         |      3.0      |    4.1.4     |       ?      |
+|     2.0.0-SNAPSHOT      |      2.0      |    4.1.4     |  2015-10-31? |
+|           1.4.2         |     < 2.0     |    4.1.4     |  2015-03-03  |
 |           1.4.1         |      1.4      |    4.1.4     |  2015-02-28  |
 |           1.4.0         |      1.4      |    4.1.4     |  2015-01-03  |
 |           1.3.0         |      1.3      |    4.0.6     |  2014-09-01  |
