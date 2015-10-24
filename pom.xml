@@ -187,9 +187,18 @@
                     <smtpPort implementation="java.lang.Integer">25</smtpPort>
                     <fromDeveloperId>dadoonet</fromDeveloperId>
                     <toAddresses>
-                        <toAddress implementation="java.lang.String">elasticsearch@googlegroups.com</toAddress>
-                        <toAddress implementation="java.lang.String">elasticsearch-fr@googlegroups.com</toAddress>
+                        <toAddress implementation="java.lang.String">discuss+announcements@elastic.co</toAddress>
                     </toAddresses>
+					<issueManagementSystems>
+						<issueManagementSystem>GitHub</issueManagementSystem>
+					</issueManagementSystems>
+					<issueTypes>
+						<add>new,doc</add>
+						<fix>bug</fix>
+						<update>update</update>
+					</issueTypes>
+                    <onlyCurrentVersion>true</onlyCurrentVersion>
+                    <urlDownload>https://repo1.maven.org/maven2/fr/pilato/spring/spring-elasticsearch/${project.version}/</urlDownload>
                 </configuration>
             </plugin>
             <plugin>
