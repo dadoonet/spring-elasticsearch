@@ -13,27 +13,7 @@ project classpath to automatically create indices, types and templates.
 Versions
 --------
 
-* For 3.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
-* For 2.x elasticsearch versions, look at [es-2.0 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-2.0).
-* For 1.x elasticsearch versions, look at [es-1.5 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.5).
-* For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
-
-|   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
-|:-----------------------:|:-------------:|:------------:|:------------:|
-|           3.0.0         |      3.0      |    4.1.4     |       ?      |
-|           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
-|           1.4.2         |     < 2.0     |    4.1.4     |  2015-03-03  |
-|           1.4.1         |      1.4      |    4.1.4     |  2015-02-28  |
-|           1.4.0         |      1.4      |    4.1.4     |  2015-01-03  |
-|           1.3.0         |      1.3      |    4.0.6     |  2014-09-01  |
-|           1.0.0         |      1.0      |    3.2.2     |  2014-02-14  |
-
-Build Status
-------------
-
-Thanks to cloudbees for the [build status](https://buildhive.cloudbees.com):
-[![Build Status](https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/badge/icon)](https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/)
-
+List of existing versions can be found in [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
 
 Getting Started
 ---------------
