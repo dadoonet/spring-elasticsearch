@@ -69,8 +69,8 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	
 	/**
 	 * Define ES nodes to communicate with.
-	 * <br/>use : hostname:port form
-	 * <p>Example :<br/>
+	 * <br>use : hostname:port form
+	 * <p>Example :</p>
  	 * <pre>
 	 * {@code
 	 * <property name="esNodes">

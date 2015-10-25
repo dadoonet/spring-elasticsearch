@@ -60,8 +60,7 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * contains all information needed for your client, e.g.: cluster.name
  * <br>
  * If you want to  modify the filename used for properties, just define the settingsFile property.
- * <p>
- * In the following example, we will create two indexes :
+ * <p>In the following example, we will create two indexes :</p>
  * <ul>
  *   <li>twitter
  *   <li>rss
@@ -76,8 +75,7 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  *   <li>source
  * </ul>
  * Then we will define an alias alltheworld for twitter and rss indexes.
- * </p>
- * 
+ *
  * <pre>
  * {@code
  *  <bean id="esClient"
@@ -116,7 +114,6 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * So if you create a file named /es/twitter/_settings.json in your src/main/resources folder (for maven lovers),
  * it will be used by the factory to create the twitter index.
  * <pre>
- * {@code
  * {
  *   "index" : {
  *     "number_of_shards" : 3,
@@ -131,7 +128,6 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * So if you create a file named /es/twitter/tweet.json in your src/main/resources folder (for maven lovers),
  * it will be used by the factory to create the tweet type in twitter index.
  * <pre>
- * {@code
  * {
  *   "tweet" : {
  *     "properties" : {
@@ -144,10 +140,8 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * By convention, the factory will create all settings and mappings found under the /es classpath.<br>
  * You can disable convention and use configuration by setting autoscan to false.
  * 
- * @see {@link ElasticsearchTransportClientFactoryBean} to get a *simple*
- *      client.
- * @see {@link ElasticsearchClientFactoryBean} to get a client from a cluster
- *      node.
+ * @see ElasticsearchTransportClientFactoryBean to get a *simple* client.
+ * @see ElasticsearchClientFactoryBean to get a client from a cluster node.
  * @author David Pilato
  */
 public abstract class ElasticsearchAbstractClientFactoryBean extends ElasticsearchAbstractFactoryBean 
@@ -227,8 +221,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	/**
 	 * Define mappings you want to manage with this factory
-	 * <br/>use : indexname/mappingname form
-	 * <p>Example :<br/>
+	 * <br>use : indexname/mappingname form
+	 * <p>Example :</p>
  	 * <pre>
 	 * {@code
 	 * <property name="mappings">
@@ -248,8 +242,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Define aliases you want to manage with this factory
-	 * <br/>use : aliasname:indexname form
-	 * <p>Example :<br/>
+	 * <br>use : aliasname:indexname form
+	 * <p>Example :</p>
  	 * <pre>
 	 * {@code
 	 * <property name="aliases">
@@ -267,9 +261,8 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	}
 
 	/**
-	 * Define templates you want to manage with this factory <br/>
-	 * <p>
-	 * Example :<br/>
+	 * Define templates you want to manage with this factory
+	 * <p>Example :</p>
 	 * 
 	 * <pre>
 	 * {@code
@@ -290,14 +283,14 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	/**
 	 * Classpath root for index and mapping files (default : /es)
-	 * <p>Example :<br/>
+	 * <p>Example :</p>
  	 * <pre>
 	 * {@code
 	 * <property name="classpathRoot" value="/es" />
 	 * }
 	 * </pre>
 	 * That means that the factory will look in es folder to find index and mappings settings.
-	 * <br/>So if you want to define a mapping for the tweet mapping in the twitter index, you
+	 * <br>So if you want to define a mapping for the tweet mapping in the twitter index, you
 	 * should put a tweet.json file under /es/twitter/ folder.
 	 * @param classpathRoot Classpath root for index and mapping files
 	 * @see #setMappings(String[])
@@ -307,6 +300,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		if (classpathRoot.startsWith("/")) {
 			this.classpathRoot = classpathRoot.substring(1, classpathRoot.length());
 		} else {
+
 			this.classpathRoot = classpathRoot;
 		}
 	}
