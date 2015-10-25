@@ -187,7 +187,7 @@
                     <smtpPort implementation="java.lang.Integer">25</smtpPort>
                     <fromDeveloperId>dadoonet</fromDeveloperId>
                     <toAddresses>
-                        <toAddress implementation="java.lang.String">discuss+announcements@elastic.co</toAddress>
+                        <toAddress implementation="java.lang.String">discuss+community-plugins@elastic.co</toAddress>
                     </toAddresses>
 					<issueManagementSystems>
 						<issueManagementSystem>GitHub</issueManagementSystem>
