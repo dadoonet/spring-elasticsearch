@@ -31,6 +31,7 @@
 		<elasticsearch.version>2.0.0-rc1</elasticsearch.version>
 		<beyonder.version>2.0.0</beyonder.version>
 		<log4j.version>2.1</log4j.version>
+		<slf4j.version>1.7.12</slf4j.version>
 		<commons.io.version>2.4</commons.io.version>
 	</properties>
 
@@ -109,6 +110,17 @@
 			<artifactId>log4j-jcl</artifactId>
 			<version>${log4j.version}</version>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 
 		<dependency>

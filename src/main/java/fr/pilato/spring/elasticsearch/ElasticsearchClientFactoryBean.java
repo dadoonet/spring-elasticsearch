@@ -19,8 +19,6 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.springframework.beans.factory.FactoryBean;
@@ -35,8 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ElasticsearchClientFactoryBean extends ElasticsearchAbstractClientFactoryBean {
 
-	protected final Log logger = LogFactory.getLog(getClass());
-
 	@Autowired Node node;
 
 	/**
@@ -46,7 +42,7 @@ public class ElasticsearchClientFactoryBean extends ElasticsearchAbstractClientF
 	public void setNode(Node node) {
 		this.node = node;
 	}
-	
+
 	@Override
 	protected Client buildClient() throws Exception {
 		if (node == null)
