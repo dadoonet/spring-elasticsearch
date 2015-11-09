@@ -30,8 +30,8 @@
 		<spring.version>4.1.4.RELEASE</spring.version>
 		<elasticsearch.version>2.1.0</elasticsearch.version>
 		<beyonder.version>2.1.0-SNAPSHOT</beyonder.version>
-		<log4j.version>2.1</log4j.version>
-		<slf4j.version>1.7.12</slf4j.version>
+		<slf4j.version>1.7.13</slf4j.version>
+		<log4j.version>2.4.1</log4j.version>
 		<commons.io.version>2.4</commons.io.version>
 	</properties>
 
@@ -61,7 +61,6 @@
 		<url>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</url>
 		<connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
 		<developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
-    <tag>HEAD</tag>
   </scm>
 	
 	<issueManagement>
@@ -93,12 +92,14 @@
 			<version>${spring.version}</version>
 		</dependency>
 
+        <!-- Logging dependencies -->
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-			<optional>true</optional>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
+
+		<!-- LOG4J2 implementation is optional -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-1.2-api</artifactId>
@@ -107,20 +108,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-jcl</artifactId>
+			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>${log4j.version}</version>
 			<optional>true</optional>
 		</dependency>
-
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

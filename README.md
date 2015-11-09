@@ -60,6 +60,32 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 </dependency>
 ```
 
+### Logger
+
+We are using [slf4j](http://www.slf4j.org/) for logging but you have to provide the logging implementation
+you want to use and bind it.
+
+For example for this project we are using for tests [log4j2](http://logging.apache.org/log4j/). 
+If you want to do so, add to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-1.2-api</artifactId>
+    <version>2.4.1</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-slf4j-impl</artifactId>
+    <version>2.4.1</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.4.1</version>
+</dependency>
+```
+
 ### Using elasticsearch spring namespace for XML files
 
 In your spring context file, just add namespaces like this:
