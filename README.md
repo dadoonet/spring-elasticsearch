@@ -7,21 +7,19 @@ Actually, since version 1.4.1, this project has been split in two parts:
 
 * [Elasticsearch Beyonder](https://github.com/dadoonet/elasticsearch-beyonder/) which find resources in
 project classpath to automatically create indices, types and templates.
-* This project which is building Client and Node beans using Spring.
+* This project which is building Client and Node beans using [Spring framework](http://projects.spring.io/spring-framework/).
 
 
-Versions
---------
+Documentation
+-------------
 
-* For 3.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/tree/master).
-* For 2.x elasticsearch versions, look at [es-2.0 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-2.0).
+* For 2.x elasticsearch versions, you are reading the latest documentation.
 * For 1.x elasticsearch versions, look at [es-1.5 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.5).
 * For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|           3.0.0         |      3.0      |    4.1.4     |       ?      |
-|           2.1.0         |  2.0, 2.1     |    4.1.4     |  2015-11-25? |
+|           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25? |
 |           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
 |           1.4.2         |     < 2.0     |    4.1.4     |  2015-03-03  |
 |           1.4.1         |      1.4      |    4.1.4     |  2015-02-28  |
@@ -57,7 +55,7 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 <dependency>
   <groupId>org.elasticsearch</groupId>
   <artifactId>elasticsearch</artifactId>
-  <version>2.0.0-rc1</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
