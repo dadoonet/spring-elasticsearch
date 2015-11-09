@@ -19,8 +19,8 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -33,7 +33,7 @@ import java.util.Properties;
  */
 public abstract class ElasticsearchAbstractFactoryBean {
 
-    protected final Log logger = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected String settingsFile = "es.properties";
 	

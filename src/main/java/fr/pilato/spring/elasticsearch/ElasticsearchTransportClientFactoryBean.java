@@ -19,12 +19,12 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.net.InetAddress;
@@ -55,10 +55,10 @@ import java.net.UnknownHostException;
  */
 public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstractClientFactoryBean {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private String[] esNodes =  { "localhost:9300" };
-	
+
 	/**
 	 * Define ES nodes to communicate with.
 	 * @return An array of nodes hostname:port
@@ -66,7 +66,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	public String[] getEsNodes() {
 		return esNodes;
 	}
-	
+
 	/**
 	 * Define ES nodes to communicate with.
 	 * <br>use : hostname:port form
@@ -88,7 +88,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	public void setEsNodes(String[] esNodes) {
 		this.esNodes = esNodes;
 	}
-	
+
 	@Override
 	protected Client buildClient() throws Exception {
 		Settings.Builder builder = Settings.builder();
@@ -116,7 +116,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 
 		return client;
 	}
-	
+
 	/**
 	 * Helper to define an hostname and port with a String like hostname:port
 	 * @param address Node address hostname:port (or hostname)
@@ -124,14 +124,14 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	 */
 	private InetSocketTransportAddress toAddress(String address) throws UnknownHostException {
 		if (address == null) return null;
-		
+
 		String[] splitted = address.split(":");
 		int port = 9300;
 		if (splitted.length > 1) {
 			port = Integer.parseInt(splitted[1]);
 		}
-		
+
 		return new InetSocketTransportAddress(InetAddress.getByName(splitted[0]), port);
 	}
-	
+
 }

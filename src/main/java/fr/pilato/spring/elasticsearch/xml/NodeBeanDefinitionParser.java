@@ -20,8 +20,8 @@
 package fr.pilato.spring.elasticsearch.xml;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -30,7 +30,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 public class NodeBeanDefinitionParser implements BeanDefinitionParser {
-    protected static final Log logger = LogFactory.getLog(NodeBeanDefinitionParser.class);
+    protected static final Logger logger = LoggerFactory.getLogger(NodeBeanDefinitionParser.class);
 
     public BeanDefinition parse(Element element, ParserContext parserContext) {
 		GenericBeanDefinition bdef = new GenericBeanDefinition();
