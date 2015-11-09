@@ -23,9 +23,9 @@ import fr.pilato.elasticsearch.tools.index.IndexFinder;
 import fr.pilato.elasticsearch.tools.template.TemplateFinder;
 import fr.pilato.elasticsearch.tools.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
@@ -147,7 +147,7 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
 public abstract class ElasticsearchAbstractClientFactoryBean extends ElasticsearchAbstractFactoryBean 
 	implements FactoryBean<Client>,	InitializingBean, DisposableBean {
 
-	private static final Logger logger = LogManager.getLogger(ElasticsearchAbstractClientFactoryBean.class);
+	private static final Logger logger = LoggerFactory.getLogger(ElasticsearchAbstractClientFactoryBean.class);
 
 	protected Client client;
 	protected Client proxyfiedClient;
@@ -419,7 +419,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				mappings = autoMappings.toArray(new String[autoMappings.size()]);
 			} catch (IOException|URISyntaxException e) {
 				logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-				logger.trace(e);
+				logger.trace("", e);
             }
         }
 	}
@@ -446,7 +446,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				templates = autoTemplates.toArray(new String[autoTemplates.size()]);
 			} catch (IOException|URISyntaxException e) {
 				logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-				logger.trace(e);
+				logger.trace("", e);
             }
         }
 	}
