@@ -31,8 +31,8 @@ Versions
 Build Status
 ------------
 
-Thanks to cloudbees for the [build status](https://buildhive.cloudbees.com):
-[![Build Status](https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/badge/icon)](https://buildhive.cloudbees.com/job/dadoonet/job/spring-elasticsearch/)
+Thanks to Travis for the [build status](https://travis-ci.org/dadoonet/spring-elasticsearch): 
+[![Build Status](https://travis-ci.org/dadoonet/spring-elasticsearch.svg)](https://travis-ci.org/dadoonet/spring-elasticsearch)
 
 
 Getting Started
