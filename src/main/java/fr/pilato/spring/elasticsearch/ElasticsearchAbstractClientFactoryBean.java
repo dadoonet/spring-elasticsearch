@@ -23,6 +23,12 @@ import fr.pilato.elasticsearch.tools.index.IndexFinder;
 import fr.pilato.elasticsearch.tools.template.TemplateFinder;
 import fr.pilato.elasticsearch.tools.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequestBuilder;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
+import org.elasticsearch.action.admin.cluster.health.ClusterIndexHealth;
+import org.elasticsearch.action.admin.cluster.state.ClusterStateRequestBuilder;
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -330,13 +336,48 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	private Client initialize() throws Exception {
 		client = buildClient();
-		// TODO Only wait for potential indices
-		client.admin().cluster().prepareHealth().setWaitForYellowStatus().get();
 		if (autoscan) {
 			computeMappings();
 			computeTemplates();
 		}
-		initTemplates();	
+
+		// We extract indexes and mappings to manage from mappings definition
+		if (mappings != null && mappings.length > 0) {
+            ClusterHealthRequestBuilder healthRequestBuilder = client.admin().cluster().prepareHealth().setWaitForYellowStatus();
+            ClusterStateRequestBuilder clusterStateRequestBuilder = client.admin().cluster().prepareState();
+            Map<String, Collection<String>> indices = getIndexMappings(mappings);
+            for (String index : indices.keySet()) {
+                clusterStateRequestBuilder.setIndices(index);
+            }
+            ClusterStateResponse clusterStateResponse = clusterStateRequestBuilder.get();
+
+            boolean checkIndicesStatus = false;
+            for (String index : indices.keySet()) {
+                if (clusterStateResponse.getState().getMetaData().indices().containsKey(index)) {
+                    healthRequestBuilder.setIndices(index);
+                    checkIndicesStatus = true;
+                }
+            }
+
+            if (checkIndicesStatus) {
+                logger.debug("we have to check some indices status as they already exist...");
+                ClusterHealthResponse healths = healthRequestBuilder.get();
+                if (healths.isTimedOut()) {
+                    logger.warn("we got a timeout when checking indices status...");
+                    if (healths.getIndices() != null) {
+                        for (ClusterIndexHealth health : healths.getIndices().values()) {
+                            if (health.getStatus() == ClusterHealthStatus.RED) {
+                                logger.warn("index [{}] is in RED state", health.getIndex());
+                            } else {
+                                logger.debug("index [{}] is in [{}] state", health.getIndex(), health.getStatus().name());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+		initTemplates();
 		initMappings();
 		initAliases();
 
@@ -460,35 +501,16 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		checkClient();
 		// We extract indexes and mappings to manage from mappings definition
 		if (mappings != null && mappings.length > 0) {
-			Map<String, Collection<String>> indexes = new HashMap<>();
-			
-			for (int i = 0; i < mappings.length; i++) {
-				String indexmapping = mappings[i];
-				String[] indexmappingsplitted = indexmapping.split("/");
-				String index = indexmappingsplitted[0];
-
-                if (index == null) throw new Exception("Can not read index in [" + indexmapping +
-                        "]. Check that mappings contains only indexname/mappingname elements.");
-
-                // We add the mapping in the collection of its index
-                if (!indexes.containsKey(index)) {
-                    indexes.put(index, new ArrayList<String>());
-                }
-
-                if (indexmappingsplitted.length > 1) {
-                    String mapping = indexmappingsplitted[1];
-                    indexes.get(index).add(mapping);
-                }
-			}
+            Map<String, Collection<String>> indices = getIndexMappings(mappings);
 			
 			// Let's initialize indexes and mappings if needed
-			for (String index : indexes.keySet()) {
+			for (String index : indices.keySet()) {
 				createIndex(client, classpathRoot, index, forceMapping);
 				if (mergeSettings) {
 					updateSettings(client, classpathRoot, index);
 				}
 
-				Collection<String> mappings = indexes.get(index);
+				Collection<String> mappings = indices.get(index);
 				for (Iterator<String> iterator = mappings.iterator(); iterator
 						.hasNext();) {
 					String type = iterator.next();
@@ -498,7 +520,30 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		}
 	}
 
-	/**
+    private static Map<String, Collection<String>> getIndexMappings(String[] mappings) throws Exception {
+        Map<String, Collection<String>> indices = new HashMap<>();
+
+        for (int i = 0; i < mappings.length; i++) {
+            String indexmapping = mappings[i];
+            String[] indexmappingsplitted = indexmapping.split("/");
+            String index = indexmappingsplitted[0];
+
+            if (index == null) throw new Exception("Can not read index in [" + indexmapping +
+            "]. Check that mappings contains only indexname/mappingname elements.");
+
+            // We add the mapping in the collection of its index
+            if (!indices.containsKey(index)) {
+                indices.put(index, new ArrayList<String>());
+            }
+
+            if (indexmappingsplitted.length > 1) {
+                indices.get(index).add(indexmappingsplitted[1]);
+            }
+        }
+        return indices;
+    }
+
+    /**
 	 * Init aliases if needed.
 	 * @throws Exception 
 	 */
