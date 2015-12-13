@@ -373,10 +373,10 @@ classpath. The factory will detect it and will try to merge settings unless you 
 If merging fails, the factory will not start.
 
 
-### Force rebuild mappings (use with caution)
+### Force rebuild indices (use with caution)
 
-For test purpose or for continuous integration, you could force the factory to clean the previous `type` when starting the client.
-It will *remove all your datas* for that `type`. Just set  `forceMapping` property to `true`.
+For test purpose or for continuous integration, you could force the factory to clean the previous `indices` when starting the client.
+It will *remove all your datas* for every index which has been defined. Just set  `forceMapping` property to `true`.
 
 ```xml
 <elasticsearch:client id="esClient" forceMapping="true" />
