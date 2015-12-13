@@ -21,6 +21,7 @@ package fr.pilato.spring.elasticsearch.annotation;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,5 +45,14 @@ public class ConfigurationTest {
 		assertNotNull(node);
 		assertNotNull(client);
 	}
-	
+
+	@After
+	public void tearDown() {
+		if (client != null) {
+			client.close();
+		}
+		if (node != null) {
+			node.close();
+		}
+	}
 }

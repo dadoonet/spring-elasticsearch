@@ -37,7 +37,7 @@ public class NodeNamespaceTest extends AbstractXmlContextModel {
 	@Test
 	public void test_simple_node() {
 		Node node = checkNode("testNode");
-        assertThat(node.settings().get("cluster.name"), is("junit.cluster"));
+        assertThat(node.settings().get("cluster.name"), is("elasticsearch"));
 	}
 	
 	@Test

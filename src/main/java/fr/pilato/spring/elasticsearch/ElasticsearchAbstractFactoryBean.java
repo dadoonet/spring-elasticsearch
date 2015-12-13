@@ -35,7 +35,7 @@ public abstract class ElasticsearchAbstractFactoryBean {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected String settingsFile = "es.properties";
+    protected String settingsFile = null;
 	
 	protected Map<String, String> settings;
 

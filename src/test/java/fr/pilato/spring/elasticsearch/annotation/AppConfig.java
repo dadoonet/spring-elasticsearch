@@ -26,12 +26,15 @@ import org.elasticsearch.node.Node;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Properties;
+
 @Configuration
 public class AppConfig {
 
 	@Bean
 	public Node esNode() throws Exception {
 		ElasticsearchNodeFactoryBean factory = new ElasticsearchNodeFactoryBean();
+		factory.setSettingsFile("es.properties");
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}
@@ -40,6 +43,9 @@ public class AppConfig {
 	public Client esClient() throws Exception {
 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
 		factory.setNode(esNode());
+        Properties properties = new Properties();
+        properties.setProperty("cluster.name", "junit.cluster");
+        factory.setProperties(properties);
 		factory.afterPropertiesSet();
 		return factory.getObject();
     }
