@@ -97,7 +97,7 @@ In your spring context file, just add namespaces like this:
 	xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-        http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.3.xsd">
+        http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.4.xsd">
 </beans>
 ```
 
@@ -208,6 +208,13 @@ You can (you should) define your nodes settings when using a transport client:
 ```xml
 <elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301" />
 ```
+
+You can also add plugins to the transport client in case it needs it:
+
+```xml
+<elasticsearch:client id="esClient" plugins="org.elasticsearch.plugin.deletebyquery.DeleteByQueryPlugin" />
+```
+
 
 Node Client Properties
 ----------------------

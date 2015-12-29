@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Licensed to David Pilato (the "Author") under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. Author licenses this file to you 
+	under the Apache License, Version 2.0 (the "License"); you may not use this 
+	file except in compliance with the License. You may obtain a copy of the 
+	License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by 
+	applicable law or agreed to in writing, software distributed under the License 
+	is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+	KIND, either express or implied. See the License for the specific language 
+	governing permissions and limitations under the License. -->
+
+<xsd:schema xmlns="http://www.pilato.fr/schema/elasticsearch"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tool="http://www.springframework.org/schema/tool"
+    targetNamespace="http://www.pilato.fr/schema/elasticsearch"
+	elementFormDefault="qualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool.xsd"/>
+
+	<xsd:element name="node">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+			Configures a org.elasticsearch.node.Node in the application context.
+		]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="org.elasticsearch.node.Node"/>
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The bean id registered in the application context.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="name" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The bean name
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+            <xsd:attribute name="properties" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Elasticsearch properties.
+					example:
+                        <util:map id="esProperties">
+                            <entry key="cluster.name" value="newclustername"/>
+                        </util:map>
+
+                        <elasticsearch:node id="esNode" properties="esProperties"  />
+				]]></xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java.util.Properties"/>
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="settingsFile" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Deprecated by properties !
+					Elasticsearch Settings file classpath URL (default : es.properties).
+					example: es.properties
+					Use this parameter if you want to define a settings file.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			
+			<xsd:attributeGroup ref="asyncAttribute"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="client">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+			Configures a org.elasticsearch.client.Client in the application context.
+		]]></xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.elasticsearch.client.Client"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The bean id registered in the application context.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="name" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The bean name
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="node" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Elasticsearch node bean name.
+					example: mynode
+					You must set this property to build a client from a node or
+					you must set esNodes property to build a transport client.
+				]]></xsd:documentation>
+                    <xsd:appinfo>
+                        <tool:annotation kind="ref">
+                            <tool:expected-type type="org.elasticsearch.node.Node"/>
+                        </tool:annotation>
+                    </xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="esNodes" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Elasticsearch esNodes urls bean name.
+					example: localhost:9300,localhost:9301
+					you must set this property to build a transport client or
+					You must set node property to build a client from a node.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="plugins" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Elasticsearch fully qualified plugins.
+					example: fr.pilato.spring.elasticsearch.plugin.Dummy1Plugin,fr.pilato.spring.elasticsearch.plugin.Dummy2Plugin
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+            <xsd:attribute name="properties" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Elasticsearch properties.
+					example:
+                        <util:map id="esProperties">
+                            <entry key="cluster.name" value="newclustername"/>
+                        </util:map>
+
+                        <elasticsearch:node id="esNode" properties="esProperties"  />
+				]]></xsd:documentation>
+                    <xsd:appinfo>
+                        <tool:annotation kind="ref">
+                            <tool:expected-type type="java.util.Properties"/>
+                        </tool:annotation>
+                    </xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="settingsFile" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					Deprecated by properties !
+					Elasticsearch Settings file classpath URL (default : es.properties).
+					example: es.properties
+					Use this parameter if you want to define a settings file.
+				]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+            <xsd:attribute name="forceMapping" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to true if you want to force reinit indexes/mapping.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="forceTemplate" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to true if you want to force recreate templates.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="mergeMapping" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to true if you want to try to merge mappings.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="mergeSettings" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to true if you want to try to merge index settings.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="autoscan" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to false if you want to use configuration instead of convention.
+					It means that we won't scan the classpathRoot to find existing mapping
+					and setting definition.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="classpathRoot" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Classpath root for index and mapping files (default : /es)
+                    Example:
+                        "/es"
+                    That means that the factory will look in es folder to find index and mappings settings.
+                    So if you want to define a mapping for the tweet mapping in the twitter index, you
+                    should put a tweet.json file under /es/twitter/ folder.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="mappings" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of index/type (comma separated)
+                    Example:
+                        "twitter/tweet,twitter/user,facebook/post"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="aliases" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of alias:index (comma separated)
+					Example:
+					    "twitter:twitter2012,twitter:twitter2013"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="templates" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of templates (comma separated)
+                    Example:
+                        "twitter_template,facebook_template"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+			
+			<xsd:attributeGroup ref="asyncAttribute"/>
+        </xsd:complexType>
+	</xsd:element>
+
+	<xsd:attributeGroup name="asyncAttribute">
+		<xsd:attribute name="async" type="xsd:boolean">
+			<xsd:annotation> 
+				<xsd:documentation><![CDATA[
+				Allow the client or node to initialize asynchronously
+				]]></xsd:documentation> 
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="taskExecutor" type="xsd:string">
+			<xsd:annotation> 
+				<xsd:documentation><![CDATA[
+				Task executor for asynchronously initialization
+				]]></xsd:documentation>
+                <xsd:appinfo>
+                    <tool:annotation kind="ref">
+                        <tool:expected-type type="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"/>
+                    </tool:annotation>
+                </xsd:appinfo>
+			</xsd:annotation>			
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+</xsd:schema>

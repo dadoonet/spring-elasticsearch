@@ -16,9 +16,32 @@
        xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.4.xsd">
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd">
 
-    <util:properties id="esproperties" location="classpath:esnode-transport.properties"/>
-    <elasticsearch:node id="testNodeSettings" properties="esproperties" />
+	<util:properties id="esproperties" location="classpath:esnode-transport.properties"/>
+	<elasticsearch:node id="esNode" properties="esproperties" />
+
+	<util:properties id="esclientproperties" location="classpath:models/transport-client-namespace/esclient-transport.properties"/>
+	<bean id="esClient"
+		  class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
+		<property name="esNodes">
+			<list>
+				<value>localhost:9300</value>
+			</list>
+		</property>
+		<property name="properties" ref="esclientproperties" />
+		<property name="classpathRoot" value="/models/plugins/client" />
+		<property name="mappings">
+			<list>
+				<value>twitter/tweet</value>
+			</list>
+		</property>
+		<property name="plugins">
+			<set>
+				<value>fr.pilato.spring.elasticsearch.Dummy1Plugin</value>
+				<value>fr.pilato.spring.elasticsearch.Dummy2Plugin</value>
+			</set>
+		</property>
+	</bean>
 
 </beans>

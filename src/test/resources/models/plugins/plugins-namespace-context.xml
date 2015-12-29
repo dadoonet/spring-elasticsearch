@@ -18,7 +18,12 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.4.xsd">
 
-    <util:properties id="esproperties" location="classpath:esnode-transport.properties"/>
-    <elasticsearch:node id="testNodeSettings" properties="esproperties" />
+	<util:properties id="esproperties" location="classpath:esnode-transport.properties"/>
+	<elasticsearch:node id="esNode" properties="esproperties" />
 
+	<util:properties id="esclientproperties" location="classpath:models/transport-client-namespace/esclient-transport.properties"/>
+	<elasticsearch:client id="testTransportClient" esNodes="localhost:9300,localhost:9301" properties="esclientproperties"
+						  autoscan="true" forceMapping="false" forceTemplate="false" mergeMapping="false" mergeSettings="false"
+						  classpathRoot="/models/transport-client-namespace/client"
+	                      plugins="fr.pilato.spring.elasticsearch.plugin.Dummy1Plugin,fr.pilato.spring.elasticsearch.plugin.Dummy2Plugin" />
 </beans>

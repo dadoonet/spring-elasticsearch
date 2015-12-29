@@ -42,7 +42,8 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
 
 		String node = XMLParserUtil.getElementStringValue(element, "node");
 		String esNodes = XMLParserUtil.getElementStringValue(element, "esNodes");
-		
+		String plugins = XMLParserUtil.getElementStringValue(element, "plugins");
+
 		String settingsFile = XMLParserUtil.getElementStringValue(element, "settingsFile");
         String properties = XMLParserUtil.getElementStringValue(element, "properties");
 
@@ -86,7 +87,7 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
             BeanDefinitionBuilder clientBuilder = startClientBuilder(ElasticsearchTransportClientFactoryBean.class,
                     settingsFile, properties, forceMapping, forceTemplate, mergeMapping, mergeSettings, autoscan,
                     classpathRoot, mappings, aliases, templates, async, taskExecutor);
-            client = ClientBeanDefinitionParser.buildTransportClientDef(clientBuilder, esNodes);
+            client = ClientBeanDefinitionParser.buildTransportClientDef(clientBuilder, esNodes, plugins);
         }
 
 		// Register NodeBeanDefinition
@@ -166,11 +167,14 @@ public class ClientBeanDefinitionParser implements BeanDefinitionParser {
 		return nodeFactory.getBeanDefinition();
 	}
 
-	public static BeanDefinition buildTransportClientDef(BeanDefinitionBuilder nodeFactory, String esNodes) {
+	public static BeanDefinition buildTransportClientDef(BeanDefinitionBuilder nodeFactory, String esNodes, String plugins) {
 		if (esNodes != null && esNodes.length() > 0) {
 			nodeFactory.addPropertyValue("esNodes", esNodes);	
-		} 
-		return nodeFactory.getBeanDefinition();
+		}
+        if (plugins != null && plugins.length() > 0) {
+            nodeFactory.addPropertyValue("plugins", plugins);
+        }
+        return nodeFactory.getBeanDefinition();
 	}
 
 }
