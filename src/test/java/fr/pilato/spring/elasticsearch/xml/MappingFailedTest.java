@@ -40,7 +40,7 @@ public class MappingFailedTest extends BaseTest {
 		try {
 			new ClassPathXmlApplicationContext("models/mapping-failed/mapping-failed-context.xml");
 		} catch (BeanCreationException e) {
-			assertEquals(MergeMappingException.class, e.getCause().getClass());
+			assertEquals(IllegalArgumentException.class, e.getCause().getClass());
 			throw e;
 		}
 	}
