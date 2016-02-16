@@ -19,11 +19,15 @@
 
 package fr.pilato.spring.elasticsearch.xml;
 
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.junit.Test;
 
 import java.lang.reflect.Proxy;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 
 public class AsyncClientTest extends AbstractXmlContextModel {
@@ -45,5 +49,10 @@ public class AsyncClientTest extends AbstractXmlContextModel {
 
         Client client = checkClient(true);
         client.admin().cluster().prepareState().execute().get();
+
+        // #92: prepareSearch() errors with async created TransportClient
+        client.prepareIndex("index", "type").setSource("foo", "bar").setRefresh(true).get();
+        SearchResponse response = client.prepareSearch("index").get();
+        assertThat(response.getHits().getTotalHits(), is(1L));
     }
 }
