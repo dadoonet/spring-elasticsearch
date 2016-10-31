@@ -51,7 +51,7 @@ public class AsyncClientTest extends AbstractXmlContextModel {
         client.admin().cluster().prepareState().execute().get();
 
         // #92: prepareSearch() errors with async created TransportClient
-        client.prepareIndex("index", "type").setSource("foo", "bar").setRefresh(true).get();
+        client.prepareIndex("index", "type").setSource("foo", "bar").get();
         SearchResponse response = client.prepareSearch("index").get();
         assertThat(response.getHits().getTotalHits(), is(1L));
     }

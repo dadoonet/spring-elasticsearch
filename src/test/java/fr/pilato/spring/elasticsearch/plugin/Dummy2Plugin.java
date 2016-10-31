@@ -22,13 +22,4 @@ package fr.pilato.spring.elasticsearch.plugin;
 import org.elasticsearch.plugins.Plugin;
 
 public class Dummy2Plugin extends Plugin {
-    @Override
-    public String name() {
-        return "dummy2";
-    }
-
-    @Override
-    public String description() {
-        return "Dummy Plugin 2";
-    }
 }

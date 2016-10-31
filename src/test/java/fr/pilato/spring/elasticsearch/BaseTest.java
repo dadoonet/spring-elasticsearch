@@ -19,17 +19,17 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import org.elasticsearch.common.logging.ESLogger;
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.junit.After;
 import org.junit.Before;
 
-import java.io.File;
-import java.io.IOException;
-
 public class BaseTest {
 
-    protected ESLogger logger = ESLoggerFactory.getLogger(this.getClass().getName());
+    protected Logger logger = ESLoggerFactory.getLogger(this.getClass().getName());
     private static File testDir;
 
     private static void recursiveDelete(File file) {

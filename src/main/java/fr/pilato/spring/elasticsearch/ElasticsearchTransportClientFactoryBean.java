@@ -19,20 +19,21 @@
 
 package fr.pilato.spring.elasticsearch;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.util.ClassUtils;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * An {@link FactoryBean} used to create an ElasticSearch Transport {@link Client}.
@@ -139,12 +140,13 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
             settingsBuilder.put(this.properties);
         }
 
-		TransportClient.Builder clientBuilder = TransportClient.builder().settings(settingsBuilder.build());
+        List<Class<? extends Plugin>> pluginList = new ArrayList<>(plugins.length);
 		for (String plugin : plugins) {
 			logger.debug("Adding plugin [{}]", plugin);
-			clientBuilder.addPlugin((Class<? extends Plugin>) ClassUtils.resolveClassName(plugin, Thread.currentThread().getContextClassLoader()));
+			pluginList.add((Class<? extends Plugin>) ClassUtils.resolveClassName(plugin, Thread.currentThread().getContextClassLoader()));
 		}
-		TransportClient client = clientBuilder.build();
+		TransportClient client = new  PreBuiltTransportClient(settingsBuilder.build(),pluginList) {
+		};
 
 		for (int i = 0; i < esNodes.length; i++) {
 			client.addTransportAddress(toAddress(esNodes[i]));

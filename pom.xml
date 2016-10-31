@@ -6,7 +6,7 @@
 	<artifactId>spring-elasticsearch</artifactId>
 	<packaging>jar</packaging>
 	<name>spring-elasticsearch</name>
-	<version>2.2.0-SNAPSHOT</version>
+	<version>5.0.0-SNAPSHOT</version>
 	<url>https://github.com/dadoonet/spring-elasticsearch</url>
     <description>
         Spring factories for Elasticsearch
@@ -27,12 +27,12 @@
 	</licenses>
   	
 	<properties>
-		<spring.version>4.2.3.RELEASE</spring.version>
-		<elasticsearch.version>2.2.0</elasticsearch.version>
-		<beyonder.version>2.1.0</beyonder.version>
-		<slf4j.version>1.7.13</slf4j.version>
-		<log4j.version>2.4.1</log4j.version>
-		<commons.io.version>2.4</commons.io.version>
+		<spring.version>4.3.3.RELEASE</spring.version>
+		<elasticsearch.version>5.0.0</elasticsearch.version>
+		<beyonder.version>5.0.0-SNAPSHOT</beyonder.version>
+		<slf4j.version>1.7.21</slf4j.version>
+		<log4j.version>2.7</log4j.version>
+		<commons.io.version>2.5</commons.io.version>
 	</properties>
 
 	<developers>
