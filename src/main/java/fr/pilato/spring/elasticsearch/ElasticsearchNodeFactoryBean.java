@@ -19,11 +19,12 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;
@@ -32,8 +33,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
+import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 
 /**
  * A {@link FactoryBean} implementation used to create a {@link Node} element
@@ -104,27 +104,25 @@ public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBe
 		return true;
 	}
 
-	private Node initialize() {
-		final NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
-
+	private Node initialize() throws IOException {
+		final Settings.Builder settingsBuilder = Settings.builder();
+		
 		if (null != settings && null == properties) {
 			logger.warn("settings has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
-			nodeBuilder.getSettings().put(settings);
+			settingsBuilder.put(settings);
 		}
 
 		if (null != settingsFile && null == properties) {
-			Settings settings = Settings.builder()
-					.loadFromStream(settingsFile, ElasticsearchNodeFactoryBean.class.getResourceAsStream("/" + settingsFile))
-					.build();
-			nodeBuilder.getSettings().put(settings);
+			settingsBuilder
+				.loadFromStream(settingsFile, ElasticsearchNodeFactoryBean.class.getResourceAsStream("/" + settingsFile));
 		}
 
 		if (null != properties) {
-			nodeBuilder.getSettings().put(properties);
+			settingsBuilder.put(properties);
 		}
 
 		if (logger.isDebugEnabled()) logger.debug("Starting ElasticSearch node...");
-		node = nodeBuilder.node();
+		node = new Node(settingsBuilder.build());
 		logger.info("Node [" + node.settings().get("name") + "] for [" + node.settings().get("cluster.name") + "] cluster started...");
 		if (logger.isDebugEnabled()) logger.debug("  - home : " + node.settings().get("path.home"));
 		if (logger.isDebugEnabled()) logger.debug("  - data : " + node.settings().get("path.data"));

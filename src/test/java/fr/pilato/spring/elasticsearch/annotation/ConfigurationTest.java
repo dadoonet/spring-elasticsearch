@@ -30,6 +30,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:annotation-context.xml"
@@ -47,7 +49,7 @@ public class ConfigurationTest {
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown() throws IOException {
 		if (client != null) {
 			client.close();
 		}

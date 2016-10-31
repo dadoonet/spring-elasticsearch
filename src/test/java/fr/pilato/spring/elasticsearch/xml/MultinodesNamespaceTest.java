@@ -42,6 +42,6 @@ public class MultinodesNamespaceTest extends AbstractXmlContextModel {
 		assertThat(client, instanceOf(org.elasticsearch.client.transport.TransportClient.class));
 
         NodesInfoResponse nodeInfos = client.admin().cluster().prepareNodesInfo().get();
-        assertThat(nodeInfos.getNodes().length, is(2));
+        assertThat(nodeInfos.getNodes().size(), is(2));
 	}
 }
