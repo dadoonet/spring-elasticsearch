@@ -23,6 +23,7 @@ import org.elasticsearch.client.Client;
 import org.junit.Test;
 
 
+@Deprecated
 public class AsyncNodeTest extends AbstractXmlContextModel {
     private String[] xmlBeans = {"models/async-node/async-node-context.xml"};
 

@@ -29,6 +29,7 @@ import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
+@Deprecated
 public class NodeBeanDefinitionParser implements BeanDefinitionParser {
     protected static final Logger logger = LoggerFactory.getLogger(NodeBeanDefinitionParser.class);
 

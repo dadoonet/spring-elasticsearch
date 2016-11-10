@@ -128,6 +128,8 @@ You can set the nodes you want to connect to:
 
 ### Define a node and get a node client bean
 
+**Deprecated**: this will be removed for elasticsearch 5.0. Only Transport client will be supported.
+
 In your spring context file, just define a node like this:
 
 ```xml
@@ -160,6 +162,7 @@ Better, you should use `@Autowired` annotation.
 
 ```java
 // if you really need it and have started a node using the factory
+// Will be removed with 5.0
 @Autowired Node node;
 
 // Inject your client...
@@ -196,6 +199,7 @@ Note that you can also define properties as follow:
 Injecting properties in node and client is now easy:
 
 ```xml
+<!-- This elasticsearch:node will be removed in 5.0 -->
 <elasticsearch:node id="esNode" properties="esproperties" />
 <elasticsearch:client id="esClient" properties="esproperties" />
 ```
@@ -222,6 +226,7 @@ Node Client Properties
 You can define your running node from which you want to get a client:
 
 ```xml
+<!-- This elasticsearch:node will be removed in 5.0 -->
 <elasticsearch:node id="esNode" properties="esproperties" />
 <elasticsearch:client id="esClient" node="esNode" />
 ```
@@ -427,6 +432,7 @@ Note that you can use the old fashion method to define your beans instead of usi
         <entry key="cluster.name" value="newclustername"/>
     </util:map>
 
+    <!-- This will be removed in 5.0 -->
     <bean id="esNode"
         class="fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean">
     </bean>
@@ -446,6 +452,7 @@ Note that you can use the old fashion method to define your beans instead of usi
             When using ElasticsearchClientFactoryBean running node is
             automatically injected. But you can define it as well.
         -->
+        <!-- This elasticsearch:node will be removed in 5.0 -->
         <property name="node" ref="esNode" />
 
         <property name="properties" ref="esproperties" />
@@ -493,7 +500,7 @@ License
 
 This software is licensed under the Apache 2 license, quoted below.
 
-	Copyright 2011-2015 David Pilato
+	Copyright 2011-2016 David Pilato
 	
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not
 	use this file except in compliance with the License. You may obtain a copy of

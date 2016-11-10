@@ -35,7 +35,8 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:annotation-context.xml"
 		})
 public class ConfigurationTest {
-	
+
+	@Deprecated
 	@Autowired Node node;
 
 	@Autowired Client client;

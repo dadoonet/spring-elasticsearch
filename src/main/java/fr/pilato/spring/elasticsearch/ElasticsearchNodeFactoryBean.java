@@ -44,7 +44,9 @@ import java.util.concurrent.Future;
  * {@link Node#close()}
  * @see ElasticsearchAbstractFactoryBean
  * @author David Pilato
+ * @deprecated This feature is removed within elasticsearch 5.0
  */
+@Deprecated
 public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBean 
 	implements FactoryBean<Node>,
 		InitializingBean, DisposableBean {
@@ -123,12 +125,14 @@ public class ElasticsearchNodeFactoryBean extends ElasticsearchAbstractFactoryBe
 			nodeBuilder.getSettings().put(properties);
 		}
 
-		if (logger.isDebugEnabled()) logger.debug("Starting ElasticSearch node...");
+		if (logger.isDebugEnabled()) logger.debug("Starting Elasticsearch node...");
 		node = nodeBuilder.node();
 		logger.info("Node [" + node.settings().get("name") + "] for [" + node.settings().get("cluster.name") + "] cluster started...");
 		if (logger.isDebugEnabled()) logger.debug("  - home : " + node.settings().get("path.home"));
 		if (logger.isDebugEnabled()) logger.debug("  - data : " + node.settings().get("path.data"));
 		if (logger.isDebugEnabled()) logger.debug("  - logs : " + node.settings().get("path.logs"));
+
+		logger.warn("Embedded Node is deprecated in elasticsearch and will not be supported with 5.0.");
 
 		return node;
 	}

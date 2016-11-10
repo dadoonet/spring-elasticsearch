@@ -29,6 +29,7 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 
 
+@Deprecated
 public class AsyncNode4ClientsTest extends AbstractXmlContextModel {
     private String[] xmlBeans = {"models/async-node-4clients/async-node-4clients-context.xml"};
 

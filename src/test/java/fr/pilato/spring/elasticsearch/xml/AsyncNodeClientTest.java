@@ -29,6 +29,7 @@ import java.lang.reflect.Proxy;
 import java.util.concurrent.ExecutionException;
 
 
+@Deprecated
 public class AsyncNodeClientTest extends AbstractXmlContextModel {
     private String[] xmlBeans = {"models/async-node-client/async-node-client-context.xml"};
 

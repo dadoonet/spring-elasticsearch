@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 
+@Deprecated
 public class NodeNamespaceTest extends AbstractXmlContextModel {
     private String[] xmlBeans = {"models/node-namespace/node-namespace-context.xml"};
 
