@@ -19,6 +19,7 @@ Documentation
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
+|           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
 |           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
 |           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
 |           1.4.2         |     < 2.0     |    4.1.4     |  2015-03-03  |
@@ -45,7 +46,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>2.1.0</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -55,7 +56,7 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 <dependency>
   <groupId>org.elasticsearch</groupId>
   <artifactId>elasticsearch</artifactId>
-  <version>2.1.0</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -500,7 +501,7 @@ License
 
 This software is licensed under the Apache 2 license, quoted below.
 
-	Copyright 2011-2016 David Pilato
+	Copyright 2011-2017 David Pilato
 	
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not
 	use this file except in compliance with the License. You may obtain a copy of
