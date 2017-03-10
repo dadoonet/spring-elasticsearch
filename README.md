@@ -13,12 +13,14 @@ project classpath to automatically create indices, types and templates.
 Documentation
 -------------
 
+* For 5.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch/).
 * For 2.x elasticsearch versions, you are reading the latest documentation.
 * For 1.x elasticsearch versions, look at [es-1.5 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.5).
 * For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
+|           5.0.0         |  5.0 - 5.x    |    4.2.3     |              |
 |           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
 |           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
 |           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
