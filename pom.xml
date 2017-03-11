@@ -36,8 +36,9 @@
 		<log4j.version>2.7</log4j.version>
 		<commons.io.version>2.4</commons.io.version>
 
-        <skip.unit.tests>false</skip.unit.tests>
-        <skip.integration.tests>false</skip.integration.tests>
+        <skipTests>false</skipTests>
+        <skip.unit.tests>${skipTests}</skip.unit.tests>
+        <skip.integration.tests>${skipTests}</skip.integration.tests>
 	</properties>
 
 	<developers>
