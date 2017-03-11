@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class AliasesTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/aliases/aliases-context.xml"};
+    private final String[] xmlBeans = {"models/aliases/aliases-context.xml"};
 
     @Override
     String[] xmlBeans() {

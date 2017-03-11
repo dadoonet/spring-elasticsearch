@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class NoNamespaceTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/no-namespace/no-namespace-context.xml"};
+    private final String[] xmlBeans = {"models/no-namespace/no-namespace-context.xml"};
 
     @Override
     String[] xmlBeans() {
@@ -49,6 +49,6 @@ public class NoNamespaceTest extends AbstractXmlContextModel {
         TransportClient tClient = (TransportClient) client;
         List<TransportAddress> addresses = tClient.transportAddresses();
         assertThat(addresses, not(emptyCollectionOf(TransportAddress.class)));
-        assertThat(addresses.size(), is(2));
+        assertThat(addresses.size(), is(1));
 	}
 }

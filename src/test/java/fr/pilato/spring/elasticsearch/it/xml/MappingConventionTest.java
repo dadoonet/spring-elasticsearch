@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class MappingConventionTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/mapping-convention/mapping-convention-context.xml"};
+    private final String[] xmlBeans = {"models/mapping-convention/mapping-convention-context.xml"};
 
     @Override
     String[] xmlBeans() {

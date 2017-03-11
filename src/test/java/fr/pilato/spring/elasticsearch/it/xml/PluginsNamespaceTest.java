@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class PluginsNamespaceTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/plugins/plugins-namespace-context.xml"};
+    private final String[] xmlBeans = {"models/plugins/plugins-namespace-context.xml"};
 
     @Override
     String[] xmlBeans() {

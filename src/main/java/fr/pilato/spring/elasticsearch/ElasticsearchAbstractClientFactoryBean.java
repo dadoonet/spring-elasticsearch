@@ -158,26 +158,26 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	private static final Logger logger = LoggerFactory.getLogger(ElasticsearchAbstractClientFactoryBean.class);
 
-	protected Client client;
+	private Client client;
 	private Client proxyfiedClient;
 
-	protected boolean forceMapping;
+	private boolean forceMapping;
 	
-	protected boolean forceTemplate;
+	private boolean forceTemplate;
 	
-	protected boolean mergeMapping;
+	private boolean mergeMapping;
 	
-	protected boolean mergeSettings = true;
+	private boolean mergeSettings = true;
 	
-	protected boolean autoscan = true;
+	private boolean autoscan = true;
 	
-	protected String[] mappings;
+	private String[] mappings;
 
-	protected String[] aliases;
+	private String[] aliases;
 	
 	private String[] templates;
 	
-	protected String classpathRoot = "es";
+	private String classpathRoot = "es";
 	
 	/**
 	 * Implement this method to build a client

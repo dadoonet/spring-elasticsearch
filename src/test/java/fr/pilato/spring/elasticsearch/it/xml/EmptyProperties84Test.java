@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class EmptyProperties84Test extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/empty-properties-84/empty-properties-84-context.xml"};
+    private final String[] xmlBeans = {"models/empty-properties-84/empty-properties-84-context.xml"};
 
     @Override
     String[] xmlBeans() {

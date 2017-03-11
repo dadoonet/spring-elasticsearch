@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class TransportClientNamespaceTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/transport-client-namespace/transport-client-namespace-context.xml"};
+    private final String[] xmlBeans = {"models/transport-client-namespace/transport-client-namespace-context.xml"};
 
     @Override
     String[] xmlBeans() {
@@ -48,8 +48,8 @@ public class TransportClientNamespaceTest extends AbstractXmlContextModel {
         assertThat(client, instanceOf(org.elasticsearch.client.transport.TransportClient.class));
 
 		TransportClient tClient = (TransportClient) client;
-		List<TransportAddress> adresses = tClient.transportAddresses();
-        assertThat("Nodes urls must not be empty...", adresses, not(emptyCollectionOf(TransportAddress.class)));
+		List<TransportAddress> addresses = tClient.transportAddresses();
+        assertThat("Nodes urls must not be empty...", addresses, not(emptyCollectionOf(TransportAddress.class)));
 
 		// Testing if we are really connected to a cluster node
         assertThat("We should be connected at least to one node.", tClient.connectedNodes(), not(emptyCollectionOf(DiscoveryNode.class)));

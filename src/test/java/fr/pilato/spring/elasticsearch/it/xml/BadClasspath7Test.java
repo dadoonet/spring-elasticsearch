@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class BadClasspath7Test extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/bad-classpath-7/bad-classpath-7-context.xml"};
+    private final String[] xmlBeans = {"models/bad-classpath-7/bad-classpath-7-context.xml"};
 
     @Override
     String[] xmlBeans() {

@@ -28,11 +28,11 @@ import java.util.Properties;
  * An abstract {@link FactoryBean} used to create an ElasticSearch object.
  * @author David Pilato
  */
-public abstract class ElasticsearchAbstractFactoryBean {
+abstract class ElasticsearchAbstractFactoryBean {
 
-    protected Properties properties;
+    Properties properties;
 
-	protected boolean async = false;
+	boolean async = false;
 
 	ThreadPoolTaskExecutor taskExecutor;
 

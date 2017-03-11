@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class CustomAnalyzers12Test extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/custom-analyzers-12/custom-analyzers-12-context.xml"};
+    private final String[] xmlBeans = {"models/custom-analyzers-12/custom-analyzers-12-context.xml"};
 
     @Override
     String[] xmlBeans() {

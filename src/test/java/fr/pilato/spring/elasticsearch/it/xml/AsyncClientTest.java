@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.is;
 
 
 public class AsyncClientTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/async-client/async-client-context.xml"};
+    private final String[] xmlBeans = {"models/async-client/async-client-context.xml"};
 
     @Override
     String[] xmlBeans() {
@@ -43,7 +43,7 @@ public class AsyncClientTest extends AbstractXmlContextModel {
 
     @Test
     public void test_node_client() throws Exception {
-        Client client = checkClient(true);
+        Client client = checkClient(null, true);
         client.admin().cluster().prepareState().execute().get();
 
         // #92: prepareSearch() errors with async created TransportClient

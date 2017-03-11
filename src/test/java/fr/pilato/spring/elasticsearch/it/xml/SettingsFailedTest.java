@@ -22,7 +22,6 @@ package fr.pilato.spring.elasticsearch.it.xml;
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +34,6 @@ import static org.junit.Assert.assertEquals;
  *
  */
 public class SettingsFailedTest extends BaseTest {
-	static protected ConfigurableApplicationContext ctx;
 
 	@Test(expected=BeanCreationException.class)
 	public void test_merge_settings_failure() {

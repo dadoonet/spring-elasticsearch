@@ -38,9 +38,9 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assume.assumeNoException;
 
 public abstract class BaseTest {
-    protected Logger logger = ESLoggerFactory.getLogger(this.getClass().getName());
+    protected final Logger logger = ESLoggerFactory.getLogger(this.getClass().getName());
 
-    protected static TransportClient client;
+    private static TransportClient client;
 
     @BeforeClass
     public static void testElasticsearchIsRunning() {
@@ -71,7 +71,7 @@ public abstract class BaseTest {
         }
     }
 
-    public String indexName() {
+    protected String indexName() {
         return null;
     }
 }

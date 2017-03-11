@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class PluginsTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/plugins/plugins-context.xml"};
+    private final String[] xmlBeans = {"models/plugins/plugins-context.xml"};
 
     @Override
     String[] xmlBeans() {
@@ -46,7 +46,7 @@ public class PluginsTest extends AbstractXmlContextModel {
 
 
     public static class Dummy1Plugin extends Plugin {
-        private static AtomicBoolean pluginCalled = new AtomicBoolean(false);
+        private static final AtomicBoolean pluginCalled = new AtomicBoolean(false);
         public Dummy1Plugin() {
             pluginCalled.set(true);
         }
@@ -56,7 +56,7 @@ public class PluginsTest extends AbstractXmlContextModel {
     }
 
     public static class Dummy2Plugin extends Plugin {
-        private static AtomicBoolean pluginCalled = new AtomicBoolean(false);
+        private static final AtomicBoolean pluginCalled = new AtomicBoolean(false);
         public Dummy2Plugin() {
             pluginCalled.set(true);
         }

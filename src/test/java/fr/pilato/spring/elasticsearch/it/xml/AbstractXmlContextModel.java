@@ -25,7 +25,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.node.Node;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.aop.framework.Advised;
@@ -69,19 +68,15 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         }
     }
 
-    protected Client checkClient() {
+    Client checkClient() {
         return checkClient(null, null);
     }
 
-    protected Client checkClient(Boolean async) {
-        return checkClient(null, async);
-    }
-
-    protected Client checkClient(String name) {
+    Client checkClient(String name) {
         return checkClient(name, null);
     }
 
-    protected Client checkClient(String name, Boolean async) {
+    Client checkClient(String name, Boolean async) {
         Client client;
 
         if (name != null) {
@@ -104,34 +99,6 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         }
         assertThat(client, not(nullValue()));
         return client;
-    }
-
-    protected Node checkNode() {
-        return checkNode(null, false);
-    }
-
-    protected Node checkNode(boolean async) {
-        return checkNode(null, async);
-    }
-
-    protected Node checkNode(String name) {
-        return checkNode(name, false);
-    }
-
-    private Node checkNode(String name, boolean async) {
-        Node node;
-
-        if (name != null) {
-            node = ctx.getBean(name, Node.class);
-        } else {
-            node = ctx.getBean(Node.class);
-        }
-        if (async) {
-            assertThat(node, instanceOf(Advised.class));
-            assertThat(((Advised) node).getAdvisors()[0].getAdvice(), instanceOf(GenericInvocationHandler.class));
-        }
-        assertThat(node, not(nullValue()));
-        return node;
     }
 
     boolean isMappingExist(Client client, String index, String type) {

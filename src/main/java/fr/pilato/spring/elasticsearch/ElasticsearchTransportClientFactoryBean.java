@@ -66,15 +66,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 
 	private String[] plugins = { };
 
-	/**
-	 * Define ES nodes to communicate with.
-	 * @return An array of nodes hostname:port
-	 */
-	public String[] getEsNodes() {
-		return esNodes;
-	}
-
-	/**
+    /**
 	 * Define ES nodes to communicate with.
 	 * <br>use : hostname:port form
 	 * <p>Example :</p>
@@ -111,19 +103,11 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	 * </pre>
 	 * @param plugins An array of fully qualified plugin classes
 	 */
-	public void setPlugins(String[] plugins) throws ClassNotFoundException {
+	public void setPlugins(String[] plugins) {
 		this.plugins = plugins;
 	}
 
-	/**
-	 * Define optional plugins.
-	 * @return A set of plugins
-	 */
-	public String[] getPlugins() {
-		return plugins;
-	}
-
-	@Override
+    @Override
 	protected Client buildClient() throws Exception {
 		Settings.Builder settingsBuilder = Settings.builder();
 

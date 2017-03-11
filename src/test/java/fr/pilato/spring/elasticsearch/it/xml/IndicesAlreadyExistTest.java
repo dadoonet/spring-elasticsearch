@@ -23,7 +23,7 @@ import org.junit.Test;
 
 
 public class IndicesAlreadyExistTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/indices-already-exist-86/indices-already-exist-86.xml"};
+    private final String[] xmlBeans = {"models/indices-already-exist-86/indices-already-exist-86.xml"};
 
     @Override
     String[] xmlBeans() {

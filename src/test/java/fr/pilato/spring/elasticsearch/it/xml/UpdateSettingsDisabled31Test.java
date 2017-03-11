@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class UpdateSettingsDisabled31Test extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/update-settings-disabled-31/update-settings-disabled-31-context.xml"};
+    private final String[] xmlBeans = {"models/update-settings-disabled-31/update-settings-disabled-31-context.xml"};
 
     @Override
     String[] xmlBeans() {

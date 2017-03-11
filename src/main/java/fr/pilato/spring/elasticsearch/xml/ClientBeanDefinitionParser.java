@@ -27,7 +27,7 @@ import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-public class ClientBeanDefinitionParser implements BeanDefinitionParser {
+class ClientBeanDefinitionParser implements BeanDefinitionParser {
 
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		String id = XMLParserUtil.getElementStringValue(element, "id");

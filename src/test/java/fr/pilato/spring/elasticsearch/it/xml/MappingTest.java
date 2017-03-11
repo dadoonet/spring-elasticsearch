@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class MappingTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/mapping/mapping-context.xml"};
+    private final String[] xmlBeans = {"models/mapping/mapping-context.xml"};
 
     @Override
     String[] xmlBeans() {

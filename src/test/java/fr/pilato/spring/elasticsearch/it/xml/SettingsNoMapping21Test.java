@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class SettingsNoMapping21Test extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"/models/settings-no-mapping-21/settings-no-mapping-21-context.xml"};
+    private final String[] xmlBeans = {"/models/settings-no-mapping-21/settings-no-mapping-21-context.xml"};
 
     @Override
     String[] xmlBeans() {

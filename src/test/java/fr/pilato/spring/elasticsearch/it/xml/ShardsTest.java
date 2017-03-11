@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class ShardsTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/shards/shards-context.xml"};
+    private final String[] xmlBeans = {"models/shards/shards-context.xml"};
 
     @Override
     String[] xmlBeans() {

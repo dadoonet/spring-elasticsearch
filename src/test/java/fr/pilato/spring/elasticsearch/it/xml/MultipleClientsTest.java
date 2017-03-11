@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class MultipleClientsTest extends AbstractXmlContextModel {
-    private String[] xmlBeans = {"models/multiple-clients/multiple-clients-context.xml"};
+    private final String[] xmlBeans = {"models/multiple-clients/multiple-clients-context.xml"};
 
     @Override
     String[] xmlBeans() {
