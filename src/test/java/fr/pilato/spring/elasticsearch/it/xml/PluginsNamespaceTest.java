@@ -19,10 +19,12 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.elasticsearch.client.Client;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 
 public class PluginsNamespaceTest extends AbstractXmlContextModel {
@@ -35,7 +37,9 @@ public class PluginsNamespaceTest extends AbstractXmlContextModel {
 
 	@Test
 	public void test_plugin() throws IOException {
-		Client client = checkClient("testTransportClient");
+		checkClient("testTransportClient");
+        assertThat(PluginsTest.Dummy1Plugin.isPluginCalled(), is(true));
+        assertThat(PluginsTest.Dummy2Plugin.isPluginCalled(), is(true));
 
     }
 }

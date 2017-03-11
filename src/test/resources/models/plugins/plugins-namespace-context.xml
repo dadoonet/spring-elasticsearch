@@ -19,5 +19,5 @@
 	<elasticsearch:client id="testTransportClient" esNodes="localhost:9300,localhost:9301"
 						  autoscan="true" forceMapping="false" forceTemplate="false" mergeMapping="false" mergeSettings="false"
 						  classpathRoot="/models/transport-client-namespace/client"
-	                      plugins="fr.pilato.spring.elasticsearch.it.plugin.Dummy1Plugin,fr.pilato.spring.elasticsearch.it.plugin.Dummy2Plugin" />
+	                      plugins="fr.pilato.spring.elasticsearch.it.xml.PluginsTest.Dummy1Plugin,fr.pilato.spring.elasticsearch.it.xml.PluginsTest.Dummy2Plugin" />
 </beans>

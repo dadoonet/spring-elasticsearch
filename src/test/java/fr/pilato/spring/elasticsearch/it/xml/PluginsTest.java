@@ -40,22 +40,28 @@ public class PluginsTest extends AbstractXmlContextModel {
 	@Test
 	public void test_plugin() throws IOException {
 		checkClient("esClient");
-		assertThat(plugin1Called.get(), is(true));
-		assertThat(plugin2Called.get(), is(true));
+		assertThat(Dummy1Plugin.isPluginCalled(), is(true));
+		assertThat(Dummy2Plugin.isPluginCalled(), is(true));
     }
 
-    private static AtomicBoolean plugin1Called = new AtomicBoolean(false);
-    private static AtomicBoolean plugin2Called = new AtomicBoolean(false);
 
     public static class Dummy1Plugin extends Plugin {
+        private static AtomicBoolean pluginCalled = new AtomicBoolean(false);
         public Dummy1Plugin() {
-            plugin1Called.set(true);
+            pluginCalled.set(true);
+        }
+        public static boolean isPluginCalled() {
+            return pluginCalled.get();
         }
     }
 
     public static class Dummy2Plugin extends Plugin {
+        private static AtomicBoolean pluginCalled = new AtomicBoolean(false);
         public Dummy2Plugin() {
-            plugin2Called.set(true);
+            pluginCalled.set(true);
+        }
+        public static boolean isPluginCalled() {
+            return pluginCalled.get();
         }
     }
 
