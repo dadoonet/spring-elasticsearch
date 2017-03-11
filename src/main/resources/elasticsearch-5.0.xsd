@@ -48,8 +48,7 @@
 					<xsd:documentation><![CDATA[
 					Elasticsearch esNodes urls bean name.
 					example: localhost:9300,localhost:9301
-					you must set this property to build a transport client or
-					You must set node property to build a client from a node.
+					you must set this property to build a transport client.
 				]]></xsd:documentation>
 				</xsd:annotation>
 			</xsd:attribute>
@@ -70,7 +69,7 @@
                             <entry key="cluster.name" value="newclustername"/>
                         </util:map>
 
-                        <elasticsearch:node id="esNode" properties="esProperties"  />
+                        <elasticsearch:client id="esClient" properties="esProperties"  />
 				]]></xsd:documentation>
                     <xsd:appinfo>
                         <tool:annotation kind="ref">
@@ -164,7 +163,7 @@
 		<xsd:attribute name="async" type="xsd:boolean">
 			<xsd:annotation> 
 				<xsd:documentation><![CDATA[
-				Allow the client or node to initialize asynchronously
+				Allow the client to initialize asynchronously
 				]]></xsd:documentation> 
 			</xsd:annotation>
 		</xsd:attribute>

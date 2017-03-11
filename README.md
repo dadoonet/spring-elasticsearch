@@ -7,7 +7,7 @@ Actually, since version 1.4.1, this project has been split in two parts:
 
 * [Elasticsearch Beyonder](https://github.com/dadoonet/elasticsearch-beyonder/) which find resources in
 project classpath to automatically create indices, types and templates.
-* This project which is building Client and Node beans using [Spring framework](http://projects.spring.io/spring-framework/).
+* This project which is building Client beans using [Spring framework](http://projects.spring.io/spring-framework/).
 
 
 Documentation
@@ -131,7 +131,7 @@ You can set the nodes you want to connect to:
 
 ### Injecting client in your java project
 
-Now, you can use the client (either the node) in your java classes.
+Now, you can use the client in your java classes.
 
 ```java
 import org.elasticsearch.client.Client;
@@ -173,7 +173,7 @@ Note that you can also define properties as follow:
 <elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
     properties="esproperties"/>
 
-Injecting properties in node and client is now easy:
+Injecting properties in client is now easy:
 
 ```xml
 <elasticsearch:client id="esClient" properties="esproperties" />

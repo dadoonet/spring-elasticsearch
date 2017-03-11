@@ -31,7 +31,7 @@ public class IndicesAlreadyExistTest extends AbstractXmlContextModel {
     }
 
 	@Test
-	public void test_simple_node() {
+	public void test_client() {
         // We don't test really something.
         // We just expect that there won't be any exception while starting the test
         // If someone wants to check anything, he has to read the logs for this test

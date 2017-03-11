@@ -53,8 +53,8 @@ abstract class ElasticsearchAbstractFactoryBean {
      * <p>Example:</p>
      * <pre>
      * {@code
-     *   <util:properties id="esproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esnode-transport.properties"/>
-     *   <elasticsearch:node id="esNode" properties="esproperties" />
+     *   <util:properties id="esproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
+     *   <elasticsearch:client id="esClient" properties="esproperties" />
      * }
      * </pre>
      * @param properties the properties

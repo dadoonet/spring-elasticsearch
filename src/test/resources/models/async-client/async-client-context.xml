@@ -21,7 +21,7 @@
     <task:executor pool-size="4" id="taskExecutor"/>
 
 
-	<elasticsearch:client id="testNodeClient" async="true" taskExecutor="taskExecutor"
+	<elasticsearch:client id="testClient" async="true" taskExecutor="taskExecutor"
                           autoscan="true" forceMapping="false" forceTemplate="false"
                           mergeMapping="false" mergeSettings="false"
                           classpathRoot="/models/async-client/client"/>

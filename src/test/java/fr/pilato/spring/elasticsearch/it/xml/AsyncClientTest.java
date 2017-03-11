@@ -42,7 +42,7 @@ public class AsyncClientTest extends AbstractXmlContextModel {
     }
 
     @Test
-    public void test_node_client() throws Exception {
+    public void test_client() throws Exception {
         Client client = checkClient(null, true);
         client.admin().cluster().prepareState().execute().get();
 
