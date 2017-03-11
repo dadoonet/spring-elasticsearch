@@ -32,7 +32,7 @@
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<elasticsearch.version>5.2.2</elasticsearch.version>
 		<beyonder.version>2.2.0</beyonder.version>
-		<slf4j.version>1.7.13</slf4j.version>
+		<slf4j.version>1.7.24</slf4j.version>
 		<log4j.version>2.7</log4j.version>
 		<commons.io.version>2.5</commons.io.version>
 
