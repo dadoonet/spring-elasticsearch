@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An {@link FactoryBean} used to create an ElasticSearch Transport {@link Client}.
+ * An {@link FactoryBean} used to create an Elasticsearch Transport {@link Client}.
  * <br>
  * You need to define the nodes you want to communicate with.<br>
  * Don't forget to create an es.properties file if you want to set specific values

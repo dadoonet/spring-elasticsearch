@@ -55,7 +55,7 @@ import static fr.pilato.elasticsearch.tools.template.TemplateElasticsearchUpdate
 import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.createMapping;
 
 /**
- * An abstract {@link FactoryBean} used to create an ElasticSearch
+ * An abstract {@link FactoryBean} used to create an Elasticsearch
  * {@link Client}.
  * <p>
  * The lifecycle of the underlying {@link Client} instance is tied to the
@@ -310,7 +310,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		logger.info("Starting ElasticSearch client");
+		logger.info("Starting Elasticsearch client");
 		
 		if (async) {
 			Assert.notNull(taskExecutor, "taskExecutor can not be null");
@@ -384,12 +384,12 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	@Override
 	public void destroy() throws Exception {
 		try {
-			logger.info("Closing ElasticSearch client");
+			logger.info("Closing Elasticsearch client");
 			if (client != null) {
 				client.close();
 			}
 		} catch (final Exception e) {
-			logger.error("Error closing ElasticSearch client: ", e);
+			logger.error("Error closing Elasticsearch client: ", e);
 		}
 	}
 
@@ -558,7 +558,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 */
 	private void checkClient() throws Exception {
 		if (client == null) {
-			throw new Exception("ElasticSearch client doesn't exist. Your factory is not properly initialized.");
+			throw new Exception("Elasticsearch client doesn't exist. Your factory is not properly initialized.");
 		}
 	}
 }

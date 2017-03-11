@@ -25,7 +25,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.Properties;
 
 /**
- * An abstract {@link FactoryBean} used to create an ElasticSearch object.
+ * An abstract {@link FactoryBean} used to create an Elasticsearch object.
  * @author David Pilato
  */
 abstract class ElasticsearchAbstractFactoryBean {
