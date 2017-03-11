@@ -313,7 +313,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 		logger.info("Starting ElasticSearch client");
 		
 		if (async) {
-			Assert.notNull(taskExecutor);
+			Assert.notNull(taskExecutor, "taskExecutor can not be null");
 			Future<Client> future = taskExecutor.submit(new Callable<Client>() {
 				@Override
 				public Client call() throws Exception {
