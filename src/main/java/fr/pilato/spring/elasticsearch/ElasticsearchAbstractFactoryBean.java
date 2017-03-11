@@ -19,12 +19,9 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -33,50 +30,11 @@ import java.util.Properties;
  */
 public abstract class ElasticsearchAbstractFactoryBean {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    protected String settingsFile = null;
-	
-	protected Map<String, String> settings;
-
     protected Properties properties;
 
 	protected boolean async = false;
 
-	protected ThreadPoolTaskExecutor taskExecutor;
-
-	/**
-	 * Elasticsearch Settings file classpath URL (default : es.properties)
-	 * <p>Example :</p>
- 	 * <pre>
-	 * {@code
-	 * <property name="settingsFile" value="es.properties" />
-	 * }
-	 * </pre>
-	 * @param settingsFile the settingsFile to set
-	 * @see #setSettings(Map) to define settings in spring xml file
-     * @deprecated by {@link #setProperties(java.util.Properties)}
-	 */
-    @Deprecated
-	public void setSettingsFile(String settingsFile) {
-        logger.warn("settingsFile has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15." +
-                "\n You should now write something like: <util:properties id=\"esproperties\" location=\"classpath:" + settingsFile + "\"/>");
-		this.settingsFile = settingsFile;
-	}
-
-	/**
-	 * Embedded Elasticsearch settings
-	 * <p>Example :</p>
-	 * 
-	 * @param settings
-	 * @see #setSettingsFile(String) to define settings in file
-     * @deprecated by {@link #setProperties(java.util.Properties)}
-	 */
-    @Deprecated
-	public void setSettings(final Map<String, String> settings) {
-        logger.warn("settings has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
-		this.settings = settings;
-	}
+	ThreadPoolTaskExecutor taskExecutor;
 
     /**
      * Elasticsearch properties
@@ -107,8 +65,6 @@ public abstract class ElasticsearchAbstractFactoryBean {
 
 	/**
 	 * Enable async initialization
-	 *
-	 * @param async
 	 */
 	public void setAsync(boolean async) {
 		this.async = async;
@@ -116,8 +72,6 @@ public abstract class ElasticsearchAbstractFactoryBean {
 
 	/**
 	 * Executor for async init mode
-	 *
-	 * @param taskExecutor
 	 */
 	public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
 		this.taskExecutor = taskExecutor;

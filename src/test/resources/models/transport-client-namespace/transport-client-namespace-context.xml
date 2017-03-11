@@ -12,14 +12,11 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd">
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
-    <util:properties id="esclientproperties" location="classpath:models/transport-client-namespace/esclient-transport.properties"/>
-    <elasticsearch:client id="testTransportClient" esNodes="localhost:9300,localhost:9301" properties="esclientproperties"
+    <elasticsearch:client id="testTransportClient" esNodes="localhost:9300,localhost:9301"
             autoscan="true" forceMapping="false" forceTemplate="false" mergeMapping="false" mergeSettings="false"
             classpathRoot="/models/transport-client-namespace/client"/>
 

@@ -131,7 +131,7 @@
 				<xsd:annotation>
 					<xsd:documentation><![CDATA[
 					Elasticsearch fully qualified plugins.
-					example: fr.pilato.spring.elasticsearch.plugin.Dummy1Plugin,fr.pilato.spring.elasticsearch.plugin.Dummy2Plugin
+					example: fr.pilato.spring.elasticsearch.it.plugin.Dummy1Plugin,fr.pilato.spring.elasticsearch.it.plugin.Dummy2Plugin
 				]]></xsd:documentation>
 				</xsd:annotation>
 			</xsd:attribute>

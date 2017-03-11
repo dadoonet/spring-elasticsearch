@@ -24,6 +24,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -31,8 +32,8 @@ import org.springframework.util.ClassUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An {@link FactoryBean} used to create an ElasticSearch Transport {@link Client}.
@@ -59,7 +60,7 @@ import java.util.Collections;
  */
 public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstractClientFactoryBean {
 
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private String[] esNodes =  { "localhost:9300" };
 
@@ -126,29 +127,20 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	protected Client buildClient() throws Exception {
 		Settings.Builder settingsBuilder = Settings.builder();
 
-        if (null != this.settings && null == properties) {
-            settingsBuilder.put(this.settings);
-        }
-
-        if (null != this.settingsFile && null == properties) {
-            logger.warn("settings has been deprecated in favor of properties. See issue #15: https://github.com/dadoonet/spring-elasticsearch/issues/15.");
-			settingsBuilder.loadFromStream(settingsFile, ElasticsearchTransportClientFactoryBean.class.getResourceAsStream("/" + settingsFile));
-        }
-
         if (null != this.properties) {
             settingsBuilder.put(this.properties);
         }
 
-		TransportClient.Builder clientBuilder = TransportClient.builder().settings(settingsBuilder.build());
+        List<Class<? extends Plugin>> pluginClasses = new ArrayList<>(plugins.length);
 		for (String plugin : plugins) {
 			logger.debug("Adding plugin [{}]", plugin);
-			clientBuilder.addPlugin((Class<? extends Plugin>) ClassUtils.resolveClassName(plugin, Thread.currentThread().getContextClassLoader()));
+            pluginClasses.add((Class<? extends Plugin>) ClassUtils.resolveClassName(plugin, Thread.currentThread().getContextClassLoader()));
 		}
-		TransportClient client = clientBuilder.build();
+        PreBuiltTransportClient client = new PreBuiltTransportClient(settingsBuilder.build(), pluginClasses);
 
-		for (int i = 0; i < esNodes.length; i++) {
-			client.addTransportAddress(toAddress(esNodes[i]));
-		}
+        for (String esNode : esNodes) {
+            client.addTransportAddress(toAddress(esNode));
+        }
 
 		return client;
 	}
@@ -156,7 +148,6 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	/**
 	 * Helper to define an hostname and port with a String like hostname:port
 	 * @param address Node address hostname:port (or hostname)
-	 * @return
 	 */
 	private InetSocketTransportAddress toAddress(String address) throws UnknownHostException {
 		if (address == null) return null;

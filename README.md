@@ -74,17 +74,17 @@ If you want to do so, add to your `pom.xml`:
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-1.2-api</artifactId>
-    <version>2.4.1</version>
+    <version>2.7</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.4.1</version>
+    <version>2.7</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
-    <version>2.4.1</version>
+    <version>2.7</version>
 </dependency>
 ```
 
@@ -112,7 +112,7 @@ In your spring context file, just define a client like this:
 <elasticsearch:client id="esClient" />
 ```
     
-By default, you will get an [Elasticsearch Transport Client](http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html)
+By default, you will get an [Elasticsearch Transport Client](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/transport-client.html)
 connected to an Elasticsearch node already running at `localhost:9300` using `elasticsearch` as cluster name.
 
 You can set the nodes you want to connect to:
@@ -129,28 +129,6 @@ You can set the nodes you want to connect to:
 > Note also that you must define the transport client port (9300-9399) and not the REST port (9200-9299).
 > Transport client does not use REST API.
 
-### Define a node and get a node client bean
-
-**Deprecated**: this will be removed for elasticsearch 5.0. Only Transport client will be supported.
-
-In your spring context file, just define a node like this:
-
-```xml
-<elasticsearch:node id="esNode" />
-```
-
-By default, it will build an [Elasticsearch Node](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/modules-node.html)
-running at `localhost:9300`.
-
-Then, you can ask the node to give you a client.
-
-```xml
-<elasticsearch:client node="esNode" id="esClient" />
-```
-  
-You will get an [Elasticsearch Node Client](http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html).
-
-
 ### Injecting client in your java project
 
 Now, you can use the client (either the node) in your java classes.
@@ -164,10 +142,6 @@ Client client = ctx.getBean("esClient", Client.class);
 Better, you should use `@Autowired` annotation.
 
 ```java
-// if you really need it and have started a node using the factory
-// Will be removed with 5.0
-@Autowired Node node;
-
 // Inject your client...
 @Autowired Client client;
 ```
@@ -202,8 +176,6 @@ Note that you can also define properties as follow:
 Injecting properties in node and client is now easy:
 
 ```xml
-<!-- This elasticsearch:node will be removed in 5.0 -->
-<elasticsearch:node id="esNode" properties="esproperties" />
 <elasticsearch:client id="esClient" properties="esproperties" />
 ```
 
@@ -221,25 +193,6 @@ You can also add plugins to the transport client in case it needs it:
 ```xml
 <elasticsearch:client id="esClient" plugins="org.elasticsearch.plugin.deletebyquery.DeleteByQueryPlugin" />
 ```
-
-
-Node Client Properties
-----------------------
-
-You can define your running node from which you want to get a client:
-
-```xml
-<!-- This elasticsearch:node will be removed in 5.0 -->
-<elasticsearch:node id="esNode" properties="esproperties" />
-<elasticsearch:client id="esClient" node="esNode" />
-```
-
-
-Common Client properties
-------------------------
-
-For both TransportClient and NodeClient, you can define many properties to manage automatic creation
-of index, mappings, templates and aliases.
 
 ### Managing indexes and types
 
@@ -283,7 +236,7 @@ For example, create the following file `src/main/resources/es/twitter/tweet.json
 {
   "tweet" : {
     "properties" : {
-      "message" : {"type" : "string", "store" : "yes"}
+      "message" : {"type" : "text", "store" : "yes"}
     }
   }
 }
@@ -344,7 +297,7 @@ To configure your template you have to define a file named `es/_template/twitter
         "tweet" : {
             "properties" : {
                 "message" : {
-                    "type" : "string",
+                    "type" : "text",
                     "store" : "yes"
                 }
             }
@@ -406,16 +359,16 @@ Just set  `forceTemplate` property to `true`.
 <elasticsearch:client id="esClient" forceTemplate="true" />
 ```
 
-### Asyncronous initialization
+### Asynchronous initialization
 
-Node and client beans initialization are by default synchronously. They can be initialized asynchronously with the attributes `async` and `taskExecutor`.
+Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
 
 ```xml
 <task:executor pool-size="4" id="taskExecutor"/>
 <elasticsearch:client id="esClient" async="true" taskExecutor="taskExecutor"/>
 ```
-Aynchronous initialization does not block Spring startup but it continues on background on another thread.
-Any methods call to these beans before elasticsearch is initialized will be blocker. `taskExecutor` references a standard Spring's task executor.
+Asynchronous initialization does not block Spring startup but it continues on background on another thread.
+Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
 
 
 Old fashion bean definition
@@ -435,11 +388,6 @@ Note that you can use the old fashion method to define your beans instead of usi
         <entry key="cluster.name" value="newclustername"/>
     </util:map>
 
-    <!-- This will be removed in 5.0 -->
-    <bean id="esNode"
-        class="fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean">
-    </bean>
-
     <bean id="esClient" class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
         <!-- If ElasticsearchTransportClientFactoryBean -->
         <!--
@@ -450,13 +398,6 @@ Note that you can use the old fashion method to define your beans instead of usi
             </list>
         </property>
         -->
-
-        <!--
-            When using ElasticsearchClientFactoryBean running node is
-            automatically injected. But you can define it as well.
-        -->
-        <!-- This elasticsearch:node will be removed in 5.0 -->
-        <property name="node" ref="esNode" />
 
         <property name="properties" ref="esproperties" />
 

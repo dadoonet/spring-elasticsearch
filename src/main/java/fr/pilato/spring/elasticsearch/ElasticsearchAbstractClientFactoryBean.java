@@ -40,7 +40,11 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -147,7 +151,6 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * You can disable convention and use configuration by setting autoscan to false.
  * 
  * @see ElasticsearchTransportClientFactoryBean to get a *simple* client.
- * @see ElasticsearchClientFactoryBean to get a client from a cluster node.
  * @author David Pilato
  */
 public abstract class ElasticsearchAbstractClientFactoryBean extends ElasticsearchAbstractFactoryBean 
@@ -156,7 +159,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	private static final Logger logger = LoggerFactory.getLogger(ElasticsearchAbstractClientFactoryBean.class);
 
 	protected Client client;
-	protected Client proxyfiedClient;
+	private Client proxyfiedClient;
 
 	protected boolean forceMapping;
 	
@@ -172,7 +175,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	protected String[] aliases;
 	
-	protected String[] templates;
+	private String[] templates;
 	
 	protected String classpathRoot = "es";
 	
@@ -185,7 +188,6 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	/**
 	 * Set to true if you want to force reinit indexes/mapping
-	 * @param forceMapping
 	 */
 	public void setForceMapping(boolean forceMapping) {
 		this.forceMapping = forceMapping;
@@ -193,8 +195,6 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Set to true if you want to force recreate templates
-	 * 
-	 * @param forceTemplate
 	 */
 	public void setForceTemplate(boolean forceTemplate) {
 		this.forceTemplate = forceTemplate;
@@ -202,7 +202,6 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	/**
 	 * Set to true if you want to try to merge mappings
-	 * @param mergeMapping
 	 */
 	public void setMergeMapping(boolean mergeMapping) {
 		this.mergeMapping = mergeMapping;
@@ -210,7 +209,6 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Set to true if you want to try to merge index settings
-	 * @param mergeSettings
 	 */
 	public void setMergeSettings(boolean mergeSettings) {
 		this.mergeSettings = mergeSettings;
@@ -218,7 +216,6 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	
 	/**
 	 * Set to false if you want to use configuration instead of convention.
-	 * @param autoscan
 	 */
 	public void setAutoscan(boolean autoscan) {
 		this.autoscan = autoscan;
@@ -416,15 +413,12 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	 * <p>
 	 * Note that you can force to recreate template using
 	 * {@link #setForceTemplate(boolean)}
-	 * 
-	 * @throws Exception
 	 */
 	private void initTemplates() throws Exception {
 		if (templates != null && templates.length > 0) {
-			for (int i = 0; i < templates.length; i++) {
-				String template = templates[i];
+			for (String template : templates) {
 				Assert.hasText(template, "Can not read template in ["
-						+ templates[i]
+						+ template
 						+ "]. Check that templates is not empty.");
 				createTemplate(client, classpathRoot, template, forceTemplate);
 			}
@@ -495,7 +489,6 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 	/**
 	 * Init mapping if needed.
 	 * <p>Note that you can force to reinit mapping using {@link #setForceMapping(boolean)}
-	 * @throws Exception 
 	 */
 	private void initMappings() throws Exception {
 		checkClient();
@@ -511,9 +504,7 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 				}
 
 				Collection<String> mappings = indices.get(index);
-				for (Iterator<String> iterator = mappings.iterator(); iterator
-						.hasNext();) {
-					String type = iterator.next();
+				for (String type : mappings) {
 					createMapping(client, classpathRoot, index, type, mergeMapping);
 				}
 			}
@@ -523,40 +514,38 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
     private static Map<String, Collection<String>> getIndexMappings(String[] mappings) throws Exception {
         Map<String, Collection<String>> indices = new HashMap<>();
 
-        for (int i = 0; i < mappings.length; i++) {
-            String indexmapping = mappings[i];
-            String[] indexmappingsplitted = indexmapping.split("/");
-            String index = indexmappingsplitted[0];
+		for (String indexmapping : mappings) {
+			String[] indexmappingsplitted = indexmapping.split("/");
+			String index = indexmappingsplitted[0];
 
-            if (index == null) throw new Exception("Can not read index in [" + indexmapping +
-            "]. Check that mappings contains only indexname/mappingname elements.");
+			if (index == null) throw new Exception("Can not read index in [" + indexmapping +
+					"]. Check that mappings contains only indexname/mappingname elements.");
 
-            // We add the mapping in the collection of its index
-            if (!indices.containsKey(index)) {
-                indices.put(index, new ArrayList<String>());
-            }
+			// We add the mapping in the collection of its index
+			if (!indices.containsKey(index)) {
+				indices.put(index, new ArrayList<String>());
+			}
 
-            if (indexmappingsplitted.length > 1) {
-                indices.get(index).add(indexmappingsplitted[1]);
-            }
-        }
+			if (indexmappingsplitted.length > 1) {
+				indices.get(index).add(indexmappingsplitted[1]);
+			}
+		}
         return indices;
     }
 
     /**
 	 * Init aliases if needed.
-	 * @throws Exception 
 	 */
 	private void initAliases() throws Exception {
 		if (aliases != null && aliases.length > 0) {
-			for (int i = 0; i < aliases.length; i++) {
-				String[] aliasessplitted = aliases[i].split(":");
+			for (String aliase : aliases) {
+				String[] aliasessplitted = aliase.split(":");
 				String alias = aliasessplitted[0];
 				String index = aliasessplitted[1];
-				
-				if (index == null) throw new Exception("Can not read index in [" + aliases[i] + 
+
+				if (index == null) throw new Exception("Can not read index in [" + aliase +
 						"]. Check that aliases contains only aliasname:indexname elements.");
-				if (alias == null) throw new Exception("Can not read mapping in [" + aliases[i] + 
+				if (alias == null) throw new Exception("Can not read mapping in [" + aliase +
 						"]. Check that aliases contains only aliasname:indexname elements.");
 
 				createAlias(client, alias, index);
@@ -566,7 +555,6 @@ public abstract class ElasticsearchAbstractClientFactoryBean extends Elasticsear
 
 	/**
 	 * Check if client is still here !
-	 * @throws Exception
 	 */
 	private void checkClient() throws Exception {
 		if (client == null) {

@@ -19,8 +19,8 @@
    ">
 
    <context:annotation-config />
-   <context:component-scan base-package="fr.pilato.spring.elasticsearch.annotation" />
+   <context:component-scan base-package="fr.pilato.spring.elasticsearch.it.annotation" />
  
-   <bean class="fr.pilato.spring.elasticsearch.annotation.AppConfig"/>
+   <bean class="fr.pilato.spring.elasticsearch.it.annotation.AppConfig"/>
 
 </beans>

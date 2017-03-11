@@ -7,8 +7,8 @@
         "tweet" : {
             "properties" : {
                 "message" : {
-                    "type" : "string",
-                    "store" : "yes"
+                    "type" : "text",
+                    "store" : true
                 }
             }
         }

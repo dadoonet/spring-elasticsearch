@@ -12,27 +12,17 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.3.xsd">
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
-    <util:properties id="esproperties" location="classpath:esnode-transport.properties"/>
-    <elasticsearch:node id="esNode" properties="esproperties" />
-  
-    <bean id="esClient"
-        class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-        <property name="node" ref="esNode" />
-        <property name="classpathRoot" value="/models/update-settings-disabled-31/client1" />
-    </bean>
+    <elasticsearch:client id="esClient"
+                          classpathRoot="/models/update-settings-disabled-31/client1"
+    />
 
-    <bean id="esClient2"
-        class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-        <property name="node" ref="esNode" />
-        <property name="classpathRoot" value="/models/update-settings-disabled-31/client2" />
-        <property name="mergeSettings" value="false" />
-    </bean>	
-
+    <elasticsearch:client id="esClient2"
+                          classpathRoot="/models/update-settings-disabled-31/client2"
+                          mergeSettings="false"
+    />
 
 </beans>

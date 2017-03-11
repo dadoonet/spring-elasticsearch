@@ -1,7 +1,7 @@
 {
     "tweet" : {
         "properties" : {
-            "message" : {"type" : "string", "store" : "yes"}
+            "message" : {"type" : "text", "store" : true}
         }
     }
 }

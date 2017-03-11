@@ -12,29 +12,14 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+       xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
-    <bean id="esNode"
-        class="fr.pilato.spring.elasticsearch.ElasticsearchNodeFactoryBean">
-    </bean>
-    
-    <bean id="esClient"
-        class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-        <property name="node" ref="esNode" />
-		<property name="mappings">
-			<list>
-				<value>twitter/tweet</value>
-				<value>rss/feed</value>
-				<value>rss/config</value>
-			</list>
-		</property>
-		<property name="aliases">
-			<list>
-				<value>alltheworld:twitter</value>
-				<value>alltheworld:rss</value>
-			</list>
-		</property>
-        <property name="forceMapping" value="true" />
-    </bean>
-    
+	<elasticsearch:client id="esClient"
+						  aliases="alltheworld:twitter,alltheworld:rss"
+                          mappings="twitter/tweet,rss/feed,rss/config"
+                          forceMapping="true"
+    />
+
 </beans>

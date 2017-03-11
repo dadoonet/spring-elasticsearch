@@ -12,28 +12,16 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd">
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
-    <util:properties id="esproperties" location="classpath:esnode-transport.properties"/>
-    <elasticsearch:node id="esNode" properties="esproperties" />
-  
-    <bean id="esClient"
-        class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
-        <property name="node" ref="esNode" />
-        <property name="classpathRoot" value="/models/custom-analyzers-12/client" />
-		<property name="mappings">
-			<list>
-				<value>twitter/tweet</value>
-			</list>
-		</property>
-        <property name="mergeSettings" value="true" />
-        <property name="mergeMapping" value="true" />
-        <property name="forceMapping" value="true" />
-    </bean>	
-
+    <elasticsearch:client id="esClient"
+                          classpathRoot="/models/custom-analyzers-12/client"
+                          mappings="twitter/tweet"
+                          mergeSettings="true"
+                          mergeMapping="true"
+                          forceMapping="true"
+    />
 
 </beans>

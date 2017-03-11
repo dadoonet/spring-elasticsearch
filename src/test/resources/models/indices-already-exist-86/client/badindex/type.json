@@ -1,7 +1,7 @@
 {
     "type" : {
         "properties" : {
-            "foo" : {"type" : "string"}
+            "foo" : {"type" : "text"}
         }
     }
 }

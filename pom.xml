@@ -27,12 +27,17 @@
 	</licenses>
   	
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring.version>4.2.3.RELEASE</spring.version>
-		<elasticsearch.version>2.2.0</elasticsearch.version>
+		<elasticsearch.version>5.2.2</elasticsearch.version>
 		<beyonder.version>2.2.0</beyonder.version>
 		<slf4j.version>1.7.13</slf4j.version>
-		<log4j.version>2.4.1</log4j.version>
+		<log4j.version>2.7</log4j.version>
 		<commons.io.version>2.4</commons.io.version>
+
+        <skip.unit.tests>false</skip.unit.tests>
+        <skip.integration.tests>false</skip.integration.tests>
 	</properties>
 
 	<developers>
@@ -121,8 +126,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>transport</artifactId>
 			<version>${elasticsearch.version}</version>
 		</dependency>
 		<dependency>
@@ -219,6 +224,78 @@
                 </configuration>
 
             </plugin>
+			<plugin>
+				<groupId>com.github.alexcojocaru</groupId>
+				<artifactId>elasticsearch-maven-plugin</artifactId>
+				<version>5.7</version>
+				<configuration>
+					<version>${elasticsearch.version}</version>
+					<skip>${skip.integration.tests}</skip>
+					<clusterName>elasticsearch</clusterName>
+				</configuration>
+				<executions>
+					<!--
+                        The elasticsearch maven plugin goals are by default bound to the
+                        pre-integration-test and post-integration-test phases
+                    -->
+					<execution>
+						<id>start-elasticsearch</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>runforked</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop-elasticsearch</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<!-- Skips unit tests if the value of skip.unit.tests property is true -->
+					<skipTests>${skip.unit.tests}</skipTests>
+					<!-- Excludes integration tests when unit tests are run -->
+					<excludes>
+						<exclude>**/it/**/*Test.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.19.1</version>
+				<executions>
+					<!--
+                        Invokes both the integration-test and the verify goals of the
+                        Failsafe Maven plugin
+                    -->
+					<execution>
+						<id>integration-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<!--
+                                Skips integration tests if the value of skip.integration.tests
+                                property is true
+                            -->
+							<skipTests>${skip.integration.tests}</skipTests>
+							<!-- Excludes integration tests when unit tests are run -->
+							<includes>
+								<include>**/it/**/*Test.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<testResources>
 			<testResource>

@@ -15,15 +15,13 @@
        xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-0.3.xsd
+        http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <task:executor pool-size="4" id="taskExecutor"/>
 
 
-	<elasticsearch:node id="testNode"/>
-
-	<elasticsearch:client id="testNodeClient" node="testNode" async="true" taskExecutor="taskExecutor"
+	<elasticsearch:client id="testNodeClient" async="true" taskExecutor="taskExecutor"
                           autoscan="true" forceMapping="false" forceTemplate="false"
                           mergeMapping="false" mergeSettings="false"
                           classpathRoot="/models/async-client/client"/>

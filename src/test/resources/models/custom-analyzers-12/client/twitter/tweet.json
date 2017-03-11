@@ -1,8 +1,8 @@
 {
     "tweet" : {
         "properties" : {
-            "message" : {"type" : "string", "store" : "yes", "analyzer": "francais"},
-            "author" : {"type" : "string", "store" : "no", "analyzer": "custom_uax_url_email"}
+            "message" : {"type" : "text", "store" : true, "analyzer": "francais"},
+            "author" : {"type" : "text", "store" : false, "analyzer": "custom_uax_url_email"}
         }
     }
 }
