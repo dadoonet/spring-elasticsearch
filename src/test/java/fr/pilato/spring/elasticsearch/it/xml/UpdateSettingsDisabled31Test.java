@@ -19,15 +19,10 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
-import org.elasticsearch.client.Client;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
-
-public class UpdateSettingsDisabled31Test extends AbstractXmlContextModel {
+public class UpdateSettingsDisabled31Test extends UpdateSettings31Test {
     private final String[] xmlBeans = {"models/update-settings-disabled-31/update-settings-disabled-31-context.xml"};
 
     @Override
@@ -35,19 +30,8 @@ public class UpdateSettingsDisabled31Test extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Override
-    public String indexName() {
-        return "twitter";
-    }
-
     @Test
 	public void test_settings_are_not_updated() {
-        Client client = checkClient("esClient");
-        checkClient("esClient2");
-
-        // We test how many shards and replica we have
-        ClusterStateResponse response = client.admin().cluster().prepareState().execute().actionGet();
-        assertThat(response.getState().getMetaData().getIndices().get("twitter").getNumberOfShards(), is(1));
-        assertThat(response.getState().getMetaData().getIndices().get("twitter").getNumberOfReplicas(), is(0));
+        testShardsAndReplicas(1, 0);
     }
 }

@@ -19,12 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.client.Client;
 import org.junit.Test;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 
 public class MultipleClientsTest extends AbstractXmlContextModel {
@@ -46,20 +42,14 @@ public class MultipleClientsTest extends AbstractXmlContextModel {
         Client client2 = checkClient("esClient2");
 
         // We test how many shards and replica we have
-        ClusterStateResponse response = client.admin().cluster().prepareState().execute().actionGet();
-        assertThat(response.getState().getMetaData().getIndices().get("twitter").getNumberOfShards(), is(5));
-
         // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
         // See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
-        assertThat(response.getState().getMetaData().getIndices().get("twitter").getNumberOfReplicas(), is(1));
+        assertShardsAndReplicas(client, "twitter", 5, 1);
 
         // Let's do the same thing with the second client
         // We test how many shards and replica we have
-        response = client2.admin().cluster().prepareState().execute().actionGet();
-        assertThat(response.getState().getMetaData().getIndices().get("twitter").getNumberOfShards(), is(5));
-
         // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
         // See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
-        assertThat(response.getState().getMetaData().getIndices().get("twitter").getNumberOfReplicas(), is(1));
+        assertShardsAndReplicas(client2, "twitter", 5, 1);
     }
 }

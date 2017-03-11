@@ -19,18 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.Test;
-
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.emptyCollectionOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 
 public class EmptyProperties84Test extends AbstractXmlContextModel {
@@ -43,12 +32,6 @@ public class EmptyProperties84Test extends AbstractXmlContextModel {
 
 	@Test
 	public void test_transport_client() {
-		Client client = checkClient();
-        assertThat(client, instanceOf(TransportClient.class));
-
-        TransportClient tClient = (TransportClient) client;
-        List<TransportAddress> addresses = tClient.transportAddresses();
-        assertThat(addresses, not(emptyCollectionOf(TransportAddress.class)));
-        assertThat(addresses.size(), is(1));
+        assertTransportClient(checkClient());
 	}
 }

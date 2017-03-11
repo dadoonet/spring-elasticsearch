@@ -21,10 +21,14 @@ package fr.pilato.spring.elasticsearch.it.xml;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.aop.framework.Advised;
@@ -32,8 +36,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.lang.reflect.Proxy;
+import java.util.List;
 
+import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -110,5 +117,20 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         MappingMetaData mdd = imd.mapping(type);
 
         return mdd != null;
+    }
+
+    void assertShardsAndReplicas(Client client, String indexName, int expectedShards, int expectedReplicas) {
+        ClusterStateResponse response = client.admin().cluster().prepareState().execute().actionGet();
+        assertThat(response.getState().getMetaData().getIndices().get(indexName).getNumberOfShards(), is(expectedShards));
+        assertThat(response.getState().getMetaData().getIndices().get(indexName).getNumberOfReplicas(), is(expectedReplicas));
+    }
+
+    void assertTransportClient(Client client) {
+        assertThat(client, CoreMatchers.instanceOf(TransportClient.class));
+
+        TransportClient tClient = (TransportClient) client;
+        List<TransportAddress> addresses = tClient.transportAddresses();
+        assertThat(addresses, not(emptyCollectionOf(TransportAddress.class)));
+        assertThat(addresses.size(), is(1));
     }
 }

@@ -19,9 +19,10 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.elasticsearch.client.Client;
+import org.junit.Test;
 
-abstract public class UpdateSettings31Test extends AbstractXmlContextModel {
+
+public class UpdateSettingsEnabled31Test extends UpdateSettings31Test {
     private final String[] xmlBeans = {"models/update-settings-31/update-settings-31-context.xml"};
 
     @Override
@@ -29,16 +30,8 @@ abstract public class UpdateSettings31Test extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Override
-    public String indexName() {
-        return "twitter";
-    }
-
-	void testShardsAndReplicas(int expectedShards, int expectedReplicas) {
-        Client client = checkClient("esClient");
-        checkClient("esClient2");
-
-        // We test how many shards and replica we have
-        assertShardsAndReplicas(client, "twitter", expectedShards, expectedReplicas);
+    @Test
+	public void test_update_settings() {
+        testShardsAndReplicas(1, 1);
     }
 }

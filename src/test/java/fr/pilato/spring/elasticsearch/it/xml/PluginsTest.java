@@ -50,7 +50,7 @@ public class PluginsTest extends AbstractXmlContextModel {
         public Dummy1Plugin() {
             pluginCalled.set(true);
         }
-        public static boolean isPluginCalled() {
+        static boolean isPluginCalled() {
             return pluginCalled.get();
         }
     }
@@ -60,7 +60,7 @@ public class PluginsTest extends AbstractXmlContextModel {
         public Dummy2Plugin() {
             pluginCalled.set(true);
         }
-        public static boolean isPluginCalled() {
+        static boolean isPluginCalled() {
             return pluginCalled.get();
         }
     }
