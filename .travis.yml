@@ -5,7 +5,7 @@ jdk:
 install: true
 before_script:
   - sudo sysctl -w vm.max_map_count=262144
-  - sudo ulimit -n 65536
+  - ulimit -n 65536
 script:
 # We fetch as much as dependencies we can but we don't print the output so it's more digest
 # Sadly this is the only way to make maven download everything and not pollute the logs...
