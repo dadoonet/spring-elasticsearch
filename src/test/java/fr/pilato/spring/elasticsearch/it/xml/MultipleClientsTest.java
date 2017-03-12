@@ -20,7 +20,6 @@
 package fr.pilato.spring.elasticsearch.it.xml;
 
 import org.elasticsearch.client.Client;
-import org.junit.Test;
 
 
 public class MultipleClientsTest extends AbstractXmlContextModel {
@@ -31,21 +30,9 @@ public class MultipleClientsTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Override
-    public String indexName() {
-        return "twitter";
-    }
-
-    @Test
-	public void test_multiple_clients() {
-		Client client = checkClient("esClient");
+    protected void checkUseCaseSpecific(Client client) {
         Client client2 = checkClient("esClient2");
-
         // We test how many shards and replica we have
-        // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
-        // See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
-        assertShardsAndReplicas(client, "twitter", 5, 1);
-
         // Let's do the same thing with the second client
         // We test how many shards and replica we have
         // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json

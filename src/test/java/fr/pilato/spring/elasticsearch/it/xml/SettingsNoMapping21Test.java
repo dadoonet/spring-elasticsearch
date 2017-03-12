@@ -21,7 +21,6 @@ package fr.pilato.spring.elasticsearch.it.xml;
 
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.client.Client;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -36,15 +35,8 @@ public class SettingsNoMapping21Test extends AbstractXmlContextModel {
     }
 
     @Override
-    public String indexName() {
-        return "twitter";
-    }
-
-    @Test
-	public void test_settings_without_mapping() {
-		Client client = checkClient();
-
-		// We should have an existing index here
+    protected void checkUseCaseSpecific(Client client) {
+        // We should have an existing index here
         IndicesExistsResponse ier = client.admin().indices().prepareExists("twitter").execute().actionGet();
         assertThat(ier.isExists(), is(true));
     }

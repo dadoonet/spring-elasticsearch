@@ -21,9 +21,6 @@ package fr.pilato.spring.elasticsearch.it.xml;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -37,15 +34,8 @@ public class MappingTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Override
-    public String indexName() {
-        return "twitter";
-    }
-
-    @Test
-	public void test_merge_mapping() throws IOException {
-		Client client = checkClient("esClient");
-		checkClient("esClient2");
+    protected void checkUseCaseSpecific(Client client) {
+        checkClient("esClient2");
 
         MappingMetaData response = client.admin().indices().prepareGetMappings().get().getMappings().get("twitter").get("tweet");
         String mapping = new String(response.source().uncompressed());

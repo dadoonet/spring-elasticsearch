@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.junit.Test;
+import org.elasticsearch.client.Client;
 
 
 public class NoNamespaceTest extends AbstractXmlContextModel {
@@ -30,8 +30,7 @@ public class NoNamespaceTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Test
-	public void test_transport_client() {
-        assertTransportClient(checkClient());
-	}
+    protected void checkUseCaseSpecific(Client client) {
+        assertTransportClient(client, 1);
+    }
 }

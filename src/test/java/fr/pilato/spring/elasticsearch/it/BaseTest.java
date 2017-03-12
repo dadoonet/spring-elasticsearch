@@ -69,9 +69,17 @@ public abstract class BaseTest {
             } catch (ExecutionException | InterruptedException | IndexNotFoundException ignore) {
             }
         }
+        try {
+            client.admin().indices().delete(new DeleteIndexRequest("twitter")).get();
+        } catch (ExecutionException | InterruptedException | IndexNotFoundException ignore) {
+        }
     }
 
+    /**
+     * Overwrite if twitter is not the index name. Can be null if no index should be created
+     * @return Index name. Could be null
+     */
     protected String indexName() {
-        return null;
+        return "twitter";
     }
 }

@@ -1,10 +1,10 @@
 package fr.pilato.spring.elasticsearch.proxy;
 
-import java.util.concurrent.Future;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.util.ReflectionUtils;
+
+import java.util.concurrent.Future;
 
 public class GenericInvocationHandler<T> implements MethodInterceptor {
 

@@ -19,9 +19,6 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.junit.Test;
-
-
 public class UpdateSettingsEnabled31Test extends UpdateSettings31Test {
     private final String[] xmlBeans = {"models/update-settings-31/update-settings-31-context.xml"};
 
@@ -30,8 +27,8 @@ public class UpdateSettingsEnabled31Test extends UpdateSettings31Test {
         return xmlBeans;
     }
 
-    @Test
-	public void test_update_settings() {
-        testShardsAndReplicas(1, 1);
+    @Override
+    protected int expectedShards() {
+        return 1;
     }
 }

@@ -35,6 +35,11 @@ import static org.junit.Assert.assertEquals;
  */
 public class SettingsFailedTest extends BaseTest {
 
+	@Override
+	public String indexName() {
+		return null;
+	}
+
 	@Test(expected=BeanCreationException.class)
 	public void test_merge_settings_failure() {
 		try {

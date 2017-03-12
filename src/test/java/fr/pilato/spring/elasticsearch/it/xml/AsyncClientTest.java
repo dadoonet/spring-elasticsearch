@@ -24,6 +24,8 @@ import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.junit.Test;
 
+import java.util.concurrent.ExecutionException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -36,13 +38,8 @@ public class AsyncClientTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Override
-    public String indexName() {
-        return "twitter";
-    }
-
     @Test
-    public void test_client() throws Exception {
+    public void testFactoriesCreated() throws ExecutionException, InterruptedException {
         Client client = checkClient(null, true);
         client.admin().cluster().prepareState().execute().get();
 

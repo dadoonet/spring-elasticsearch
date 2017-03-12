@@ -30,15 +30,8 @@ abstract public class UpdateSettings31Test extends AbstractXmlContextModel {
     }
 
     @Override
-    public String indexName() {
-        return "twitter";
-    }
-
-	void testShardsAndReplicas(int expectedShards, int expectedReplicas) {
-        Client client = checkClient("esClient");
+    protected void checkUseCaseSpecific(Client client) {
+        super.checkUseCaseSpecific(client);
         checkClient("esClient2");
-
-        // We test how many shards and replica we have
-        assertShardsAndReplicas(client, "twitter", expectedShards, expectedReplicas);
     }
 }

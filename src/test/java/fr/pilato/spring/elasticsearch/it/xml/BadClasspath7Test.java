@@ -20,7 +20,6 @@
 package fr.pilato.spring.elasticsearch.it.xml;
 
 import org.elasticsearch.client.Client;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -36,12 +35,11 @@ public class BadClasspath7Test extends AbstractXmlContextModel {
 
     @Override
     public String indexName() {
-        return "twitter";
+        return null;
     }
 
-    @Test
-	public void test_wrong_classpath() {
-        Client client = checkClient("esClient");
+    @Override
+    protected void checkUseCaseSpecific(Client client) {
         assertThat("tweet type should not exist in twitter index", isMappingExist(client, "twitter", "tweet"), is(false));
-	}
+    }
 }

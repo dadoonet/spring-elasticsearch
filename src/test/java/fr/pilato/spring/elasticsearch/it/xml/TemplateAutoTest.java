@@ -21,7 +21,6 @@ package fr.pilato.spring.elasticsearch.it.xml;
 
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
 import org.elasticsearch.client.Client;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,14 +29,17 @@ public class TemplateAutoTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/template-auto/template-auto-context.xml"};
 
     @Override
+    protected String indexName() {
+        return null;
+    }
+
+    @Override
     String[] xmlBeans() {
         return xmlBeans;
     }
 
-	@Test
-	public void test_template() {
-		Client client = checkClient();
-
+    @Override
+    protected void checkUseCaseSpecific(Client client) {
         GetIndexTemplatesResponse response = client.admin().indices().prepareGetTemplates().get();
         assertThat(response.getIndexTemplates().size(), is(1));
     }

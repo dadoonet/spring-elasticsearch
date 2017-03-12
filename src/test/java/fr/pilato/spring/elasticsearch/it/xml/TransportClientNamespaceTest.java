@@ -23,11 +23,9 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.junit.Test;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -42,19 +40,18 @@ public class TransportClientNamespaceTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-	@Test
-	public void test_transport_client_namespace() {
-		Client client = checkClient("testTransportClient");
-        assertThat(client, instanceOf(org.elasticsearch.client.transport.TransportClient.class));
+    @Override
+    protected void checkUseCaseSpecific(Client client) {
+        assertTransportClient(client, 2);
 
-		TransportClient tClient = (TransportClient) client;
-		List<TransportAddress> addresses = tClient.transportAddresses();
+        TransportClient tClient = (TransportClient) client;
+        List<TransportAddress> addresses = tClient.transportAddresses();
         assertThat("Nodes urls must not be empty...", addresses, not(emptyCollectionOf(TransportAddress.class)));
 
-		// Testing if we are really connected to a cluster node
+        // Testing if we are really connected to a cluster node
         assertThat("We should be connected at least to one node.", tClient.connectedNodes(), not(emptyCollectionOf(DiscoveryNode.class)));
 
-		DiscoveryNode node = tClient.connectedNodes().get(0);
+        DiscoveryNode node = tClient.connectedNodes().get(0);
         assertThat("We should be connected to the master node.", node.isMasterNode(), is(true));
-	}
+    }
 }

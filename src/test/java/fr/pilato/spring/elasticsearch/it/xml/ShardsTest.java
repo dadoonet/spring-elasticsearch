@@ -19,14 +19,6 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
-import org.elasticsearch.client.Client;
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-
 public class ShardsTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/shards/shards-context.xml"};
 
@@ -36,17 +28,12 @@ public class ShardsTest extends AbstractXmlContextModel {
     }
 
     @Override
-    public String indexName() {
-        return "twitter";
+    protected int expectedShards() {
+        return 3;
     }
 
-    @Test
-	public void test_number_of_shards() {
-        Client client = checkClient();
-
-        // We test how many shards and replica we have
-        ClusterStateResponse response = client.admin().cluster().prepareState().execute().actionGet();
-        assertThat(response.getState().getMetaData().getIndices().get("twitter").getNumberOfShards(), is(3));
-        assertThat(response.getState().getMetaData().getIndices().get("twitter").getNumberOfReplicas(), is(2));
+    @Override
+    protected int expectedReplicas() {
+        return 2;
     }
 }

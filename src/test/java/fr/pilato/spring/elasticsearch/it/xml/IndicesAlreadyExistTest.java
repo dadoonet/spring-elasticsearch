@@ -19,9 +19,6 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
-import org.junit.Test;
-
-
 public class IndicesAlreadyExistTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/indices-already-exist-86/indices-already-exist-86.xml"};
 
@@ -30,12 +27,9 @@ public class IndicesAlreadyExistTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-	@Test
-	public void test_client() {
-        // We don't test really something.
-        // We just expect that there won't be any exception while starting the test
-        // If someone wants to check anything, he has to read the logs for this test
-        // and check that "we have to check some indices status as they already exist..."
-        // appears...
-	}
+    // We don't test really something.
+    // We just expect that there won't be any exception while starting the test
+    // If someone wants to check anything, he has to read the logs for this test
+    // and check that "we have to check some indices status as they already exist..."
+    // appears...
 }

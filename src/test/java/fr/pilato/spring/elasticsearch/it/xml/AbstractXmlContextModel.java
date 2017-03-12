@@ -22,21 +22,24 @@ package fr.pilato.spring.elasticsearch.it.xml;
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.instanceOf;
@@ -73,10 +76,6 @@ public abstract class AbstractXmlContextModel extends BaseTest {
             logger.info("  --> Closing Spring Context");
             ctx.close();
         }
-    }
-
-    Client checkClient() {
-        return checkClient(null, null);
     }
 
     Client checkClient(String name) {
@@ -119,18 +118,65 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         return mdd != null;
     }
 
+    @Test
+    public void testFactoriesCreated() throws ExecutionException, InterruptedException {
+        Client client = checkClient(beanName());
+        checkUseCaseSpecific(client);
+
+        // If an index is expected, let's check it actually exists
+        if (indexName() != null) {
+            // We test how many shards and replica we have
+            assertShardsAndReplicas(client, indexName(), expectedShards(), expectedReplicas());
+
+            client.admin().cluster().prepareState().execute().get();
+
+            // #92: prepareSearch() errors with async created TransportClient
+            client.prepareIndex("twitter", "tweet").setSource("foo", "bar").setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
+            SearchResponse response = client.prepareSearch("twitter").get();
+            assertThat(response.getHits().getTotalHits(), is(1L));
+        }
+    }
+
+    /**
+     * Overwrite it to implement use case specific tests
+     * @param client Client representing bean named esClient
+     */
+    protected void checkUseCaseSpecific(Client client) {
+    }
+
+    /**
+     * Overwrite it if the number of expected shards is not 5
+     * @return Number of expected primaries
+     */
+    protected int expectedShards() {
+        return 5;
+    }
+
+    /**
+     * Overwrite it if the number of expected replicas is not 1
+     * @return Number of expected replicas
+     */
+    protected int expectedReplicas() {
+        return 1;
+    }
+
+
+    protected String beanName() {
+        return "esClient";
+    }
+
     void assertShardsAndReplicas(Client client, String indexName, int expectedShards, int expectedReplicas) {
         ClusterStateResponse response = client.admin().cluster().prepareState().execute().actionGet();
         assertThat(response.getState().getMetaData().getIndices().get(indexName).getNumberOfShards(), is(expectedShards));
         assertThat(response.getState().getMetaData().getIndices().get(indexName).getNumberOfReplicas(), is(expectedReplicas));
     }
 
-    void assertTransportClient(Client client) {
-        assertThat(client, CoreMatchers.instanceOf(TransportClient.class));
+    void assertTransportClient(Client client, int expectedAdresses) {
+        assertThat(client, instanceOf(TransportClient.class));
 
         TransportClient tClient = (TransportClient) client;
         List<TransportAddress> addresses = tClient.transportAddresses();
         assertThat(addresses, not(emptyCollectionOf(TransportAddress.class)));
-        assertThat(addresses.size(), is(1));
+        assertThat(addresses.size(), is(expectedAdresses));
     }
 }

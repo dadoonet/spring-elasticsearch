@@ -21,7 +21,6 @@ package fr.pilato.spring.elasticsearch.it.xml;
 
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesResponse;
 import org.elasticsearch.client.Client;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -34,11 +33,10 @@ public class AliasesTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Test
-    public void test_alias() {
-        Client client = checkClient();
-
+    protected void checkUseCaseSpecific(Client client) {
         GetAliasesResponse response = client.admin().indices().prepareGetAliases().get();
         assertThat(response.getAliases().size(), is(2));
+
+        assertShardsAndReplicas(client, "rss", 5, 1);
     }
 }

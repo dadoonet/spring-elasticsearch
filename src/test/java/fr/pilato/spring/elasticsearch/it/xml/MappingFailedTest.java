@@ -33,7 +33,12 @@ import static org.junit.Assert.assertEquals;
  *
  */
 public class MappingFailedTest extends BaseTest {
-	
+
+	@Override
+	public String indexName() {
+		return null;
+	}
+
 	@Test(expected=BeanCreationException.class)
 	public void test_transport_client() {
 		try {

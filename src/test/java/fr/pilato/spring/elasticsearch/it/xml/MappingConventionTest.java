@@ -20,7 +20,6 @@
 package fr.pilato.spring.elasticsearch.it.xml;
 
 import org.elasticsearch.client.Client;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -34,14 +33,7 @@ public class MappingConventionTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Override
-    public String indexName() {
-        return "twitter";
-    }
-
-    @Test
-	public void test_transport_client() {
-		Client client = checkClient("esClient");
+    protected void checkUseCaseSpecific(Client client) {
         assertThat("tweet type should exist in twitter index", isMappingExist(client, "twitter", "tweet"), is(true));
-	}
+    }
 }

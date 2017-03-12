@@ -21,7 +21,6 @@ package fr.pilato.spring.elasticsearch.it.xml;
 
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.client.Client;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,15 +34,7 @@ public class CustomAnalyzers12Test extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Override
-    public String indexName() {
-        return "twitter";
-    }
-
-    @Test
-	public void test_custom_analyzer() {
-        Client client = checkClient("esClient");
-
+    protected void checkUseCaseSpecific(Client client) {
         GetSettingsResponse response = client.admin().indices().prepareGetSettings().get();
         assertThat(response.getSetting("twitter", "index.analysis.analyzer.francais.type"), is("custom"));
     }

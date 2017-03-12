@@ -19,10 +19,9 @@
 
 package fr.pilato.spring.elasticsearch.it.xml;
 
+import org.elasticsearch.client.Client;
 import org.elasticsearch.plugins.Plugin;
-import org.junit.Test;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.Matchers.is;
@@ -37,13 +36,11 @@ public class PluginsTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-	@Test
-	public void test_plugin() throws IOException {
-		checkClient("esClient");
-		assertThat(Dummy1Plugin.isPluginCalled(), is(true));
-		assertThat(Dummy2Plugin.isPluginCalled(), is(true));
+    @Override
+    protected void checkUseCaseSpecific(Client client) {
+        assertThat(PluginsTest.Dummy1Plugin.isPluginCalled(), is(true));
+        assertThat(PluginsTest.Dummy2Plugin.isPluginCalled(), is(true));
     }
-
 
     public static class Dummy1Plugin extends Plugin {
         private static final AtomicBoolean pluginCalled = new AtomicBoolean(false);
