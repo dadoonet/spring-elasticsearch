@@ -20,7 +20,7 @@ Documentation
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|           5.0.0         |  5.0 - 5.x    |    4.2.3     |              |
+|   5.0.0-SNAPSHOT        |  5.0 - 5.x    |    4.2.3     |              |
 |           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
 |           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
 |           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
@@ -56,11 +56,22 @@ If you want to set a specific version of elasticsearch, add it to your `pom.xml`
 
 ```xml
 <dependency>
-  <groupId>org.elasticsearch</groupId>
-  <artifactId>elasticsearch</artifactId>
-  <version>2.2.0</version>
+    <groupId>org.elasticsearch.client</groupId>
+    <artifactId>transport</artifactId>
+    <version>5.2.2</version>
 </dependency>
 ```
+
+If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](https://oss.sonatype.org/content/repositories/snapshots/fr/pilato/spring/spring-elasticsearch/):
+
+```xml
+<dependency>
+  <groupId>fr.pilato.spring</groupId>
+  <artifactId>spring-elasticsearch</artifactId>
+  <version>5.0.0-SNAPSHOT</version>
+</dependency>
+```
+
 
 ### Logger
 
