@@ -15,7 +15,7 @@ Documentation
 
 * For 5.x elasticsearch versions, you are reading the latest documentation.
 * For 2.x elasticsearch versions, look at [es-2.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-2.x).
-* For 1.x elasticsearch versions, look at [es-1.5 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.5).
+* For 1.x elasticsearch versions, look at [es-1.4 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.4).
 * For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
