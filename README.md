@@ -72,6 +72,23 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 </dependency>
 ```
 
+Don't forget to add if needed the following repository in your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>oss-snapshots</id>
+        <name>Sonatype OSS Snapshots</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
 
 ### Logger
 
