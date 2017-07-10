@@ -20,7 +20,7 @@ Documentation
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|   5.0.0-SNAPSHOT        |  5.0 - 5.x    |    4.2.3     |              |
+|     5.0-SNAPSHOT        |  5.0 - 5.x    |    4.2.3     |  2017-??-??  |
 |           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
 |           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
 |           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
@@ -68,7 +68,7 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>5.0.0-SNAPSHOT</version>
+  <version>5.0-SNAPSHOT</version>
 </dependency>
 ```
 
