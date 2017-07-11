@@ -24,7 +24,8 @@
         <java.compiler.version>1.8</java.compiler.version>
 
 		<spring.version>4.3.7.RELEASE</spring.version>
-		<elasticsearch.version>5.2.2</elasticsearch.version>
+		<elasticsearch.version>5.5.0</elasticsearch.version>
+		<elasticsearch.rest.version>${elasticsearch.version}</elasticsearch.rest.version>
 		<beyonder.version>5.0</beyonder.version>
 		<slf4j.version>1.7.24</slf4j.version>
 		<log4j.version>2.7</log4j.version>
@@ -134,6 +135,11 @@
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>transport</artifactId>
 			<version>${elasticsearch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>rest</artifactId>
+			<version>${elasticsearch.rest.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.pilato.elasticsearch</groupId>
