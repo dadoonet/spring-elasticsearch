@@ -40,7 +40,7 @@ public class TemplateTest extends AbstractXmlContextModel {
 
     @Override
     protected void checkUseCaseSpecific(Client client) {
-        GetIndexTemplatesResponse response = client.admin().indices().prepareGetTemplates().get();
+        GetIndexTemplatesResponse response = client.admin().indices().prepareGetTemplates("twitter_template").get();
         assertThat(response.getIndexTemplates().size(), is(1));
     }
 }
