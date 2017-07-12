@@ -24,7 +24,8 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 public class ElasticsearchNamespaceHandler extends NamespaceHandlerSupport {
 
 	public void init() {
-		registerBeanDefinitionParser("client", new ClientBeanDefinitionParser());
+		registerBeanDefinitionParser("rest-client", new RestClientBeanDefinitionParser());
+		registerBeanDefinitionParser("client", new TransportClientBeanDefinitionParser());
 	}
 
 }

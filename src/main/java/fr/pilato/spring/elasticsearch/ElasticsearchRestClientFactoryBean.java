@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.createAlias;
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.updateSettings;
 import static fr.pilato.elasticsearch.tools.template.TemplateElasticsearchUpdater.createTemplate;
@@ -550,10 +551,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * Init aliases if needed.
      */
     private void initAliases() throws Exception {
-
-        // TODO Adapt?
-
-        /*
 		if (aliases != null && aliases.length > 0) {
 			for (String aliase : aliases) {
 				String[] aliasessplitted = aliase.split(":");
@@ -568,7 +565,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 				createAlias(client, alias, index);
 			}
 		}
-		*/
     }
 
     /**
