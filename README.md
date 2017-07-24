@@ -22,7 +22,7 @@ From 5.0, this project provides 2 implementations of an elasticsearch Client:
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|     5.0-SNAPSHOT        |  5.0 - 5.x    |    4.2.3     |  2017-??-??  |
+|     5.0-SNAPSHOT        |  5.0 - 5.x    |    4.3.10    |  2017-07-??  |
 |           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
 |           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
 |           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |

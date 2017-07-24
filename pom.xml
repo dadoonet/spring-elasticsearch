@@ -23,7 +23,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.compiler.version>1.8</java.compiler.version>
 
-		<spring.version>4.3.7.RELEASE</spring.version>
+		<spring.version>4.3.10.RELEASE</spring.version>
 		<elasticsearch.version>5.5.0</elasticsearch.version>
 		<elasticsearch.rest.version>${elasticsearch.version}</elasticsearch.rest.version>
 		<beyonder.version>5.1</beyonder.version>
