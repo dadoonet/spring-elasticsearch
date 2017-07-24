@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation;
+package fr.pilato.spring.elasticsearch.it.annotation.transport;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import org.elasticsearch.client.Client;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-		"classpath:annotation-context.xml"
+		"classpath:annotation-transport-context.xml"
 		})
 public class ConfigurationTest extends BaseTest {
 

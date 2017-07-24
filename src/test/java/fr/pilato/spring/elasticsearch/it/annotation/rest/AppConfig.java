@@ -17,10 +17,10 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation;
+package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
-import org.elasticsearch.client.Client;
+import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import org.elasticsearch.client.RestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,9 +28,9 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
 	@Bean
-	public Client esClient() throws Exception {
-		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
-		factory.setEsNodes(new String[]{"127.0.0.1:9300"});
+	public RestClient esClient() throws Exception {
+		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+		factory.setEsNodes(new String[]{"127.0.0.1:9200"});
 		factory.afterPropertiesSet();
 		return factory.getObject();
     }
