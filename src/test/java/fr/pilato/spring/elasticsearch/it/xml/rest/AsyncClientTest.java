@@ -20,11 +20,10 @@
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
 import org.elasticsearch.client.RestClient;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
-
-import static org.junit.Assert.fail;
 
 
 public class AsyncClientTest extends AbstractXmlContextModel {
@@ -35,11 +34,11 @@ public class AsyncClientTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Test
+    @Test @Ignore("Does not work in the REST context. See https://github.com/dadoonet/spring-elasticsearch/pull/115#issuecomment-314740586")
     public void testFactoriesCreated() throws ExecutionException, InterruptedException {
         RestClient client = checkClient(null, true);
-        fail("Implement it");
 /*
+        TODO when fixed, also implement the following code but by using the REST Layer
         client.admin().cluster().prepareState().execute().get();
 
         // #92: prepareSearch() errors with async created TransportClient
