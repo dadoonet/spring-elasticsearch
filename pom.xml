@@ -1,41 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.pilato.spring</groupId>
-	<artifactId>spring-elasticsearch</artifactId>
-	<packaging>jar</packaging>
-	<name>spring-elasticsearch</name>
-	<version>5.0-SNAPSHOT</version>
-	<url>https://github.com/dadoonet/spring-elasticsearch</url>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fr.pilato.spring</groupId>
+    <artifactId>spring-elasticsearch</artifactId>
+    <packaging>jar</packaging>
+    <name>spring-elasticsearch</name>
+    <version>5.0-SNAPSHOT</version>
+    <url>https://github.com/dadoonet/spring-elasticsearch</url>
     <description>Spring factories for Elasticsearch</description>
 
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-  	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.compiler.version>1.8</java.compiler.version>
 
-		<spring.version>4.3.10.RELEASE</spring.version>
-		<elasticsearch.version>5.5.0</elasticsearch.version>
-		<elasticsearch.rest.version>${elasticsearch.version}</elasticsearch.rest.version>
-		<beyonder.version>5.1</beyonder.version>
-		<slf4j.version>1.7.25</slf4j.version>
-		<log4j.version>2.8.2</log4j.version>
-		<commons.io.version>2.5</commons.io.version>
+        <spring.version>4.3.10.RELEASE</spring.version>
+        <elasticsearch.version>5.5.0</elasticsearch.version>
+        <elasticsearch.rest.version>${elasticsearch.version}</elasticsearch.rest.version>
+        <beyonder.version>5.1</beyonder.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <log4j.version>2.8.2</log4j.version>
+        <commons.io.version>2.5</commons.io.version>
         <jackson.version>2.8.9</jackson.version>
 
         <skipTests>false</skipTests>
         <skip.unit.tests>${skipTests}</skip.unit.tests>
         <skip.integration.tests>${skipTests}</skip.integration.tests>
-	</properties>
+    </properties>
 
     <distributionManagement>
         <snapshotRepository>
@@ -49,128 +50,128 @@
     </distributionManagement>
 
     <developers>
-		<developer>
-			<id>dadoonet</id>
-			<name>David Pilato</name>
-			<email>david@pilato.fr</email>
-			<url>http://david.pilato.fr/</url>
-			<timezone>+1</timezone>
-		</developer>
-		<developer>
-			<id>nhuray</id>
-			<name>Nicolas Huray</name>
-			<url>https://github.com/nhuray/</url>
-			<timezone>+1</timezone>
-		</developer>
+        <developer>
+            <id>dadoonet</id>
+            <name>David Pilato</name>
+            <email>david@pilato.fr</email>
+            <url>http://david.pilato.fr/</url>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>nhuray</id>
+            <name>Nicolas Huray</name>
+            <url>https://github.com/nhuray/</url>
+            <timezone>+1</timezone>
+        </developer>
         <developer>
             <id>nlabrot</id>
             <name>Nicolas Labrot</name>
             <url>https://github.com/nithril‎/</url>
             <timezone>Europe/Paris</timezone>
         </developer>
-	</developers>
+    </developers>
 
-	<scm>
-		<url>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</url>
-		<connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
-		<developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
-  </scm>
-	
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/dadoonet/spring-elasticsearch/issues/</url>
-	</issueManagement>
+    <scm>
+        <url>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</url>
+        <connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
+        <developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
+    </scm>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>1.3</version>
-			<scope>test</scope>
-		</dependency>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/dadoonet/spring-elasticsearch/issues/</url>
+    </issueManagement>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
         <!-- Logging dependencies -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
 
-		<!-- LOG4J2 implementation is optional -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-1.2-api</artifactId>
-			<version>${log4j.version}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j.version}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-			<optional>true</optional>
-		</dependency>
+        <!-- LOG4J2 implementation is optional -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>${log4j.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+            <optional>true</optional>
+        </dependency>
 
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>transport</artifactId>
-			<version>${elasticsearch.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>rest</artifactId>
-			<version>${elasticsearch.rest.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>fr.pilato.elasticsearch</groupId>
-			<artifactId>elasticsearch-beyonder</artifactId>
-			<version>${beyonder.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${commons.io.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>rest</artifactId>
+            <version>${elasticsearch.rest.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.pilato.elasticsearch</groupId>
+            <artifactId>elasticsearch-beyonder</artifactId>
+            <version>${beyonder.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<version>3.1</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -186,8 +187,8 @@
 
     </dependencies>
 
-	<build>
-		<plugins>
+    <build>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-help-plugin</artifactId>
@@ -245,11 +246,11 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
-				<version>1.9.5</version>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.9.5</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-changes-plugin</artifactId>
@@ -261,16 +262,18 @@
                     <toAddresses>
                         <toAddress implementation="java.lang.String">discuss+community-plugins@elastic.co</toAddress>
                     </toAddresses>
-					<issueManagementSystems>
-						<issueManagementSystem>GitHub</issueManagementSystem>
-					</issueManagementSystems>
-					<issueTypes>
-						<add>new,doc</add>
-						<fix>bug</fix>
-						<update>update</update>
-					</issueTypes>
+                    <issueManagementSystems>
+                        <issueManagementSystem>GitHub</issueManagementSystem>
+                    </issueManagementSystems>
+                    <issueTypes>
+                        <add>new,doc</add>
+                        <fix>bug</fix>
+                        <update>update</update>
+                    </issueTypes>
                     <onlyCurrentVersion>true</onlyCurrentVersion>
-                    <urlDownload>https://repo1.maven.org/maven2/fr/pilato/spring/spring-elasticsearch/${project.version}/</urlDownload>
+                    <urlDownload>
+                        https://repo1.maven.org/maven2/fr/pilato/spring/spring-elasticsearch/${project.version}/
+                    </urlDownload>
                 </configuration>
             </plugin>
             <plugin>
@@ -281,86 +284,86 @@
                     <pushChanges>false</pushChanges>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>com.github.alexcojocaru</groupId>
-				<artifactId>elasticsearch-maven-plugin</artifactId>
-				<version>5.7</version>
-				<configuration>
-					<version>${elasticsearch.version}</version>
-					<skip>${skip.integration.tests}</skip>
-					<clusterName>elasticsearch</clusterName>
-				</configuration>
-				<executions>
-					<!--
+            <plugin>
+                <groupId>com.github.alexcojocaru</groupId>
+                <artifactId>elasticsearch-maven-plugin</artifactId>
+                <version>5.7</version>
+                <configuration>
+                    <version>${elasticsearch.version}</version>
+                    <skip>${skip.integration.tests}</skip>
+                    <clusterName>elasticsearch</clusterName>
+                </configuration>
+                <executions>
+                    <!--
                         The elasticsearch maven plugin goals are by default bound to the
                         pre-integration-test and post-integration-test phases
                     -->
-					<execution>
-						<id>start-elasticsearch</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>runforked</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>stop-elasticsearch</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20</version>
-				<configuration>
-					<!-- Skips unit tests if the value of skip.unit.tests property is true -->
-					<skipTests>${skip.unit.tests}</skipTests>
-					<!-- Excludes integration tests when unit tests are run -->
-					<excludes>
-						<exclude>**/it/**/*Test.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.20</version>
-				<executions>
-					<!--
+                    <execution>
+                        <id>start-elasticsearch</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>runforked</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-elasticsearch</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20</version>
+                <configuration>
+                    <!-- Skips unit tests if the value of skip.unit.tests property is true -->
+                    <skipTests>${skip.unit.tests}</skipTests>
+                    <!-- Excludes integration tests when unit tests are run -->
+                    <excludes>
+                        <exclude>**/it/**/*Test.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.20</version>
+                <executions>
+                    <!--
                         Invokes both the integration-test and the verify goals of the
                         Failsafe Maven plugin
                     -->
-					<execution>
-						<id>integration-tests</id>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-						<configuration>
-							<!--
+                    <execution>
+                        <id>integration-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <!--
                                 Skips integration tests if the value of skip.integration.tests
                                 property is true
                             -->
-							<skipTests>${skip.integration.tests}</skipTests>
-							<!-- Excludes integration tests when unit tests are run -->
-							<includes>
-								<include>**/it/**/*Test.java</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>true</filtering>
-			</testResource>
-		</testResources>
-	</build>
+                            <skipTests>${skip.integration.tests}</skipTests>
+                            <!-- Excludes integration tests when unit tests are run -->
+                            <includes>
+                                <include>**/it/**/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+    </build>
 
     <profiles>
         <profile>
