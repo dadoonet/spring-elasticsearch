@@ -19,12 +19,18 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.elasticsearch.client.RestClient;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 
 public class AsyncClientTest extends AbstractXmlContextModel {
@@ -36,16 +42,16 @@ public class AsyncClientTest extends AbstractXmlContextModel {
     }
 
     @Test
-    public void testFactoriesCreated() throws ExecutionException, InterruptedException {
+    public void testFactoriesCreated() throws ExecutionException, InterruptedException, IOException {
         RestClient client = checkClient(null, true);
-        fail("Implement it");
-/*
-        client.admin().cluster().prepareState().execute().get();
+
+        // Just check that everything runs fine
+        runRestQuery(client, "/");
 
         // #92: prepareSearch() errors with async created TransportClient
-        client.prepareIndex("twitter", "tweet").setSource("foo", "bar").setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
-        SearchResponse response = client.prepareSearch("twitter").get();
-        assertThat(response.getHits().getTotalHits(), is(1L));
-*/
+        client.performRequest("POST", "/twitter/tweet", Collections.singletonMap("refresh", "true"),
+                new StringEntity("{\"foo\":\"bar\"}", ContentType.APPLICATION_JSON));
+        Map<String, Object> hits = runRestQuery(client, "/twitter/_search", "hits");
+        assertThat(hits.get("total"), is(1));
     }
 }
