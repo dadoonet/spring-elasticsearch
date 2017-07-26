@@ -34,7 +34,8 @@ public class AsyncClientTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    @Test @Ignore("Does not work in the REST context. See https://github.com/dadoonet/spring-elasticsearch/pull/115#issuecomment-314740586")
+    @Test
+    //@Ignore("Does not work in the REST context. See https://github.com/dadoonet/spring-elasticsearch/pull/115#issuecomment-314740586")
     public void testFactoriesCreated() throws ExecutionException, InterruptedException {
         RestClient client = checkClient(null, true);
 /*

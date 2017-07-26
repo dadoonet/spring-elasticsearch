@@ -24,7 +24,6 @@ import fr.pilato.elasticsearch.tools.template.TemplateFinder;
 import fr.pilato.elasticsearch.tools.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.apache.http.HttpHost;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.collect.Tuple;
 import org.slf4j.Logger;
@@ -333,7 +332,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
             ProxyFactory proxyFactory = new ProxyFactory();
             proxyFactory.setProxyTargetClass(true);
-            proxyFactory.setTargetClass(Client.class);
+            proxyFactory.setTargetClass(RestClient.class);
             proxyFactory.addAdvice(new GenericInvocationHandler(future));
             proxyfiedClient = (RestClient) proxyFactory.getProxy();
         } else {
