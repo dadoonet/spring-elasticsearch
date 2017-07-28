@@ -62,7 +62,7 @@ If you want to set a specific version of the Rest client, add it to your `pom.xm
 </dependency>
 ```
 
-If you want to set a specific version of the transport client (deprecated), add it to your `pom.xml` file:
+If you want to use a transport client (deprecated), you must add it to your `pom.xml` file:
 
 ```xml
 <dependency>
@@ -180,7 +180,8 @@ Better, you should use `@Autowired` annotation.
 
 ### Getting a transport client bean (deprecated)
 
-From 5.0, the Transport Client implementation is deprecated.
+From 5.0, the Transport Client implementation is deprecated. It is now marked as `optional` so
+you need to explicitly add it to your project as described in [Maven dependency chapter](#maven-dependency).
 
 #### Define a client Transport bean
 
@@ -442,8 +443,83 @@ Client bean initialization is by default synchronously. It can be initialized as
 Asynchronous initialization does not block Spring startup but it continues on background on another thread.
 Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
 
+## Using Java Annotations
 
-## Old fashion transport bean definition
+Let's say you want to use Spring Java Annotations, here is a typical application you can build.
+
+`pom.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fr.pilato.tests</groupId>
+    <artifactId>spring-elasticsearch-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>fr.pilato.spring</groupId>
+            <artifactId>spring-elasticsearch</artifactId>
+            <version>5.0</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+`App.java`:
+
+```java
+package fr.pilato.tests;
+
+import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+public class RestApp {
+
+    @Configuration
+    public class AppConfig {
+        @Bean
+        public RestClient esClient() throws Exception {
+            ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+            factory.setEsNodes(new String[]{"127.0.0.1:9200"});
+            factory.afterPropertiesSet();
+            return factory.getObject();
+        }
+    }
+
+    @Autowired
+    private RestClient client;
+
+    public static void main(String[] args) throws IOException {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.scan("fr.pilato.tests");
+        context.refresh();
+
+        RestApp p = context.getBean(RestApp.class);
+        p.run();
+
+        context.close();
+    }
+
+    private void run() throws IOException {
+        client.performRequest("GET", "/");
+    }
+}
+```
+
+## Old fashion bean definition
 
 Note that you can use the old fashion method to define your beans instead of using `<elasticsearch:...>` namespace:
 
