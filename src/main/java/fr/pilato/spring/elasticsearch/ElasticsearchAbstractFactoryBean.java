@@ -45,7 +45,7 @@ abstract class ElasticsearchAbstractFactoryBean {
      *     <entry key="cluster.name" value="newclustername"/>
      *   </util:map>
      *
-     * <bean id="esClient" class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
+     * <bean id="esClient" class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
      *   <property name="properties" ref="esproperties" />
      * </bean>
 	 * }

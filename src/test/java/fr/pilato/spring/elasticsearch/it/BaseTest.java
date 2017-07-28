@@ -1,11 +1,11 @@
 /*
- * Licensed to Elasticsearch under one or more contributor
- * license agreements. See the NOTICE file distributed with
- * this work for additional information regarding copyright
- * ownership. Elasticsearch licenses this file to you under
- * the Apache License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to David Pilato (the "Author") under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. Author licenses this
+ * file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,42 +19,35 @@
 
 package fr.pilato.spring.elasticsearch.it;
 
+import org.apache.http.HttpHost;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.client.ResponseException;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.logging.ESLoggerFactory;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutionException;
+import java.io.IOException;
 
 import static org.junit.Assume.assumeNoException;
 
 public abstract class BaseTest {
     protected final Logger logger = ESLoggerFactory.getLogger(this.getClass().getName());
 
-    private static TransportClient client;
+    private static RestClient client;
 
     @BeforeClass
     public static void testElasticsearchIsRunning() {
         try {
-            client = new PreBuiltTransportClient(Settings.builder().put("client.transport.ignore_cluster_name", true).build())
-                    .addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress("127.0.0.1", 9300)));
-            client.admin().cluster().prepareHealth().setTimeout(TimeValue.timeValueMillis(200)).get();
+            client = RestClient.builder(new HttpHost("127.0.0.1", 9200)).build();
         } catch (Exception e) {
             assumeNoException(e);
         }
     }
 
     @AfterClass
-    public static void stopClient() {
+    public static void stopClient() throws IOException {
         if (client != null) {
             client.close();
             client = null;
@@ -62,16 +55,22 @@ public abstract class BaseTest {
     }
 
     @Before
-    public void cleanIndex() {
+    public void cleanIndex() throws IOException {
         if (indexName() != null) {
             try {
-                client.admin().indices().delete(new DeleteIndexRequest(indexName())).get();
-            } catch (ExecutionException | InterruptedException | IndexNotFoundException ignore) {
+                client.performRequest("DELETE", indexName());
+            } catch (ResponseException e) {
+                if (e.getResponse().getStatusLine().getStatusCode() != 404) {
+                    throw e;
+                }
             }
         }
         try {
-            client.admin().indices().delete(new DeleteIndexRequest("twitter")).get();
-        } catch (ExecutionException | InterruptedException | IndexNotFoundException ignore) {
+            client.performRequest("DELETE", "twitter");
+        } catch (ResponseException e) {
+            if (e.getResponse().getStatusLine().getStatusCode() != 404) {
+                throw e;
+            }
         }
     }
 

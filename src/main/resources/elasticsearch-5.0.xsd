@@ -17,10 +17,10 @@
 
 	<xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool.xsd"/>
 
-	<xsd:element name="client">
+    <xsd:element name="client">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
-			Configures a org.elasticsearch.client.Client in the application context.
+			Configures a org.elasticsearch.client.Client in the application context. (Deprecated)
 		]]></xsd:documentation>
             <xsd:appinfo>
                 <tool:annotation>
@@ -48,7 +48,6 @@
 					<xsd:documentation><![CDATA[
 					Elasticsearch esNodes urls bean name.
 					example: localhost:9300,localhost:9301
-					you must set this property to build a transport client.
 				]]></xsd:documentation>
 				</xsd:annotation>
 			</xsd:attribute>
@@ -159,7 +158,140 @@
         </xsd:complexType>
 	</xsd:element>
 
-	<xsd:attributeGroup name="asyncAttribute">
+    <xsd:element name="rest-client">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[
+			Configures a org.elasticsearch.client.RestClient in the application context.
+		]]></xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.elasticsearch.client.RestClient"/>
+                </tool:annotation>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					The bean id registered in the application context.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="name" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					The bean name
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="esNodes" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Elasticsearch esNodes urls bean name.
+					example: localhost:9200,localhost:9201
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="properties" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Elasticsearch properties.
+					example:
+                        <util:map id="esProperties">
+                            <entry key="cluster.name" value="newclustername"/>
+                        </util:map>
+
+                        <elasticsearch:client id="esClient" properties="esProperties"  />
+				]]></xsd:documentation>
+                    <xsd:appinfo>
+                        <tool:annotation kind="ref">
+                            <tool:expected-type type="java.util.Properties"/>
+                        </tool:annotation>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="forceMapping" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to true if you want to force reinit indexes/mapping.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="forceTemplate" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to true if you want to force recreate templates.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="mergeMapping" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to true if you want to try to merge mappings.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="mergeSettings" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to true if you want to try to merge index settings.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="autoscan" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Set to false if you want to use configuration instead of convention.
+					It means that we won't scan the classpathRoot to find existing mapping
+					and setting definition.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="classpathRoot" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					Classpath root for index and mapping files (default : /es)
+                    Example:
+                        "/es"
+                    That means that the factory will look in es folder to find index and mappings settings.
+                    So if you want to define a mapping for the tweet mapping in the twitter index, you
+                    should put a tweet.json file under /es/twitter/ folder.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="mappings" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of index/type (comma separated)
+                    Example:
+                        "twitter/tweet,twitter/user,facebook/post"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="aliases" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of alias:index (comma separated)
+					Example:
+					    "twitter:twitter2012,twitter:twitter2013"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="templates" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of templates (comma separated)
+                    Example:
+                        "twitter_template,facebook_template"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attributeGroup ref="asyncAttribute"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:attributeGroup name="asyncAttribute">
 		<xsd:attribute name="async" type="xsd:boolean">
 			<xsd:annotation> 
 				<xsd:documentation><![CDATA[
