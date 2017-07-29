@@ -8,9 +8,10 @@ Actually, since version 1.4.1, this project has been split in two parts:
 project classpath to automatically create indices, types and templates.
 * This project which is building Client beans using [Spring framework](http://projects.spring.io/spring-framework/).
 
-From 5.0, this project provides 2 implementations of an elasticsearch Client:
+From 5.0, this project provides 3 implementations of an elasticsearch Client:
 
 * The REST client
+* The High Level REST client which depends on the REST Client
 * The Transport client (deprecated)
 
 From 6.0, this project supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for official security.
@@ -62,6 +63,16 @@ If you want to set a specific version of the Rest client, add it to your `pom.xm
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-client</artifactId>
+    <version>6.1.3</version>
+</dependency>
+```
+
+If you want to use a High Level Rest client, you must add it to your `pom.xml` file:
+
+```xml
+<dependency>
+    <groupId>org.elasticsearch.client</groupId>
+    <artifactId>elasticsearch-rest-high-level-client</artifactId>
     <version>6.1.3</version>
 </dependency>
 ```
@@ -124,6 +135,20 @@ Don't forget to add if needed the following repository in your `pom.xml`:
 </repositories>
 ```
 
+If you depend on an elasticsearch SNAPSHOT version, you need to add the following repository to your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>elastic-snapshots</id>
+        <name>Elastic Snapshots</name>
+        <url>http://snapshots.elastic.co/maven/</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+```
+
 ### Logger
 
 We are using [slf4j](http://www.slf4j.org/) for logging but you have to provide the logging implementation
@@ -176,7 +201,7 @@ In your spring context file, just define a client like this:
 <elasticsearch:rest-client id="esClient" />
 ```
 
-By default, you will get an [Elasticsearch Low Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-low.html)
+You will get an [Elasticsearch Low Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-low.html)
 connected to an Elasticsearch node already running at `localhost:9200`.
 
 You can set the nodes you want to connect to:
@@ -212,6 +237,40 @@ You need to define the `xpack.security.user` property as follows:
 </util:properties>
 
 <elasticsearch:rest-client id="esClient" properties="esProperties" />
+```
+
+### Getting a High Level rest client bean
+
+Once you have a [Rest Client bean](#getting-a-rest-client-bean), you can reference it to get a High Level rest client one.
+
+#### Define a high level rest client bean
+
+In your spring context file, just define a client like this:
+
+```xml
+<elasticsearch:rest-high-level-client id="esHighLevelClient" client="esClient"/>
+```
+
+You will get an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
+which provides more advanced features. But note that as this time of writing, a lot of elasticsearch core
+dependencies will be added to your project.
+
+
+#### Injecting the rest client in your java project
+
+You can use the rest client in your java classes.
+
+```java
+import org.elasticsearch.client.RestHighLevelClient;
+
+RestHighLevelClient esHighLevelClient = ctx.getBean("esHighLevelClient", RestHighLevelClient.class);
+```
+
+Better, you should use `@Autowired` annotation.
+
+```java
+// Inject your client...
+@Autowired RestHighLevelClient esHighLevelClient;
 ```
 
 ### Getting a transport client bean (deprecated)
@@ -497,6 +556,8 @@ Any methods call to these beans before elasticsearch is initialized will be bloc
 
 Let's say you want to use Spring Java Annotations, here is a typical application you can build.
 
+### Low level Rest client
+
 `pom.xml`:
 
 ```xml
@@ -523,7 +584,7 @@ Let's say you want to use Spring Java Annotations, here is a typical application
 `App.java`:
 
 ```java
-package fr.pilato.tests;
+package fr.pilato.tests.low;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
 import org.elasticsearch.client.RestClient;
@@ -561,7 +622,7 @@ public class RestApp {
 
     public static void main(String[] args) throws IOException {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.scan("fr.pilato.tests");
+        context.scan("fr.pilato.tests.low");
         context.refresh();
 
         RestApp p = context.getBean(RestApp.class);
@@ -572,6 +633,94 @@ public class RestApp {
 
     private void run() throws IOException {
         client.performRequest("GET", "/");
+    }
+}
+```
+
+### High level Rest client
+
+`pom.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fr.pilato.tests</groupId>
+    <artifactId>spring-elasticsearch-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>fr.pilato.spring</groupId>
+            <artifactId>spring-elasticsearch</artifactId>
+            <version>5.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>5.6.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+`App.java`:
+
+```java
+package fr.pilato.tests.high;
+
+import fr.pilato.spring.elasticsearch.ElasticsearchHighLevelRestClientFactoryBean;
+import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+public class HighLevelRestApp {
+
+    @Autowired
+    private RestHighLevelClient client;
+
+    public static void main(String[] args) throws IOException {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.scan("fr.pilato.tests.high");
+        context.refresh();
+
+        HighLevelRestApp p = context.getBean(HighLevelRestApp.class);
+        p.run();
+
+        context.close();
+    }
+
+    private void run() throws IOException {
+        client.info();
+    }
+
+    @Configuration
+    public class AppConfig {
+        @Bean
+        public RestClient esClient() throws Exception {
+            ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+            factory.setEsNodes(new String[]{"127.0.0.1:9200"});
+            factory.afterPropertiesSet();
+            return factory.getObject();
+        }
+        @Bean
+        public RestHighLevelClient esHighLevelClient() throws Exception {
+            ElasticsearchHighLevelRestClientFactoryBean factory = new ElasticsearchHighLevelRestClientFactoryBean();
+            factory.setClient(esClient());
+            factory.afterPropertiesSet();
+            return factory.getObject();
+        }
     }
 }
 ```
@@ -624,6 +773,12 @@ Note that you can use the old fashion method to define your beans instead of usi
             </list>
         </property>
     </bean>
+
+    <!-- The High Level Rest Client -->
+	<bean id="esHighLevelClient"
+		  class="fr.pilato.spring.elasticsearch.ElasticsearchHighLevelRestClientFactoryBean" >
+		<property name="client" ref="esClient" />
+	</bean>
 
     <!-- The deprecated Transport Client -->
     <bean id="esTransportClient" class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >

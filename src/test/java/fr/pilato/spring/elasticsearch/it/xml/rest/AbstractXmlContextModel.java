@@ -23,11 +23,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.http.entity.ContentType;
+import org.elasticsearch.client.http.entity.StringEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,6 +111,18 @@ public abstract class AbstractXmlContextModel extends BaseTest {
                     // We expect that
                 }
             }
+        }
+        assertThat(client, not(nullValue()));
+        return client;
+    }
+
+    RestHighLevelClient getHighLevelRestClient(String name) {
+        RestHighLevelClient client;
+
+        if (name != null) {
+            client = ctx.getBean(name, RestHighLevelClient.class);
+        } else {
+            client = ctx.getBean(RestHighLevelClient.class);
         }
         assertThat(client, not(nullValue()));
         return client;

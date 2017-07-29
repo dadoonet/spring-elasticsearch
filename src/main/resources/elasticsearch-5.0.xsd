@@ -291,6 +291,44 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="rest-high-level-client">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[
+			Configures a org.elasticsearch.client.RestHighLevelClient in the application context.
+		]]></xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.elasticsearch.client.RestHighLevelClient"/>
+                </tool:annotation>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					The bean id registered in the application context.
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="name" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					The bean name
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="client" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					the Rest Client id
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attributeGroup ref="asyncAttribute"/>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:attributeGroup name="asyncAttribute">
 		<xsd:attribute name="async" type="xsd:boolean">
 			<xsd:annotation> 

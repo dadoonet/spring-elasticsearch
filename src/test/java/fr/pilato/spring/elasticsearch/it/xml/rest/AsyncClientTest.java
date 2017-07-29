@@ -19,9 +19,9 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.http.entity.ContentType;
+import org.elasticsearch.client.http.entity.StringEntity;
 import org.junit.Test;
 
 import java.io.IOException;
