@@ -627,6 +627,18 @@ If you need to skip the tests, run:
 mvn release:perform -Prelease -Darguments="-DskipTests"
 ```
 
+To announce the release, run:
+
+```sh
+cd target/checkout
+# Run the following command if you want to check the announcement email
+mvn changes:announcement-generate
+cat target/announcement/announcement.vm
+
+# Announce the release (change your smtp username and password)
+mvn changes:announcement-mail -Dchanges.username='YourSmtpUserName' -Dchanges.password='YourSmtpUserPassword'
+```
+
 # License
 
 This software is licensed under the Apache 2 license, quoted below.
