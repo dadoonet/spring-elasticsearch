@@ -64,6 +64,7 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * Don't forget to create an es.properties file if you want to set specific values
  * for this client, e.g.: cluster.name
  * <br>Example :
+ * </p>
  * <pre>
  * {@code
  *  <bean id="esClient"
@@ -77,7 +78,6 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  *  </bean>
  * }
  * </pre>
- * </p>
  * <p>
  * You can define properties for this bean that will help to auto create indexes
  * and types.
@@ -197,6 +197,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     /**
      * Set to true if you want to force reinit indexes/mapping
+     * @param forceMapping true if you want to force reinit indexes/mapping
      */
     public void setForceMapping(boolean forceMapping) {
         this.forceMapping = forceMapping;
@@ -204,6 +205,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     /**
      * Set to true if you want to force recreate templates
+     * @param forceTemplate true if you want to force recreate templates
      */
     public void setForceTemplate(boolean forceTemplate) {
         this.forceTemplate = forceTemplate;
@@ -211,6 +213,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     /**
      * Set to true if you want to try to merge mappings
+     * @param mergeMapping true if you want to try to merge mappings
      */
     public void setMergeMapping(boolean mergeMapping) {
         this.mergeMapping = mergeMapping;
@@ -218,6 +221,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     /**
      * Set to true if you want to try to merge index settings
+     * @param mergeSettings true if you want to try to merge index settings
      */
     public void setMergeSettings(boolean mergeSettings) {
         this.mergeSettings = mergeSettings;
@@ -225,6 +229,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     /**
      * Set to false if you want to use configuration instead of convention.
+     * @param autoscan false if you want to use configuration instead of convention.
      */
     public void setAutoscan(boolean autoscan) {
         this.autoscan = autoscan;

@@ -65,6 +65,7 @@ abstract class ElasticsearchAbstractFactoryBean {
 
 	/**
 	 * Enable async initialization
+	 * @param async true if you want async initialization
 	 */
 	public void setAsync(boolean async) {
 		this.async = async;
@@ -72,6 +73,7 @@ abstract class ElasticsearchAbstractFactoryBean {
 
 	/**
 	 * Executor for async init mode
+     * @param taskExecutor Executor for async init mode
 	 */
 	public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
 		this.taskExecutor = taskExecutor;
