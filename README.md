@@ -22,7 +22,7 @@ From 5.0, this project provides 2 implementations of an elasticsearch Client:
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|     5.0-SNAPSHOT        |  5.0 - 5.x    |    4.3.10    |  2017-07-??  |
+|            5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
 |           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
 |           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
 |           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
@@ -48,7 +48,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>2.2.0</version>
+  <version>5.0</version>
 </dependency>
 ```
 
@@ -57,8 +57,8 @@ If you want to set a specific version of the Rest client, add it to your `pom.xm
 ```xml
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
-    <artifactId>rest</artifactId>
-    <version>5.5.0</version>
+    <artifactId>elasticsearch-rest-client</artifactId>
+    <version>5.6.7</version>
 </dependency>
 ```
 
@@ -68,7 +68,7 @@ If you want to use a transport client (deprecated), you must add it to your `pom
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>transport</artifactId>
-    <version>5.5.0</version>
+    <version>5.6.7</version>
 </dependency>
 ```
 
@@ -78,7 +78,7 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>5.0-SNAPSHOT</version>
+  <version>5.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -90,12 +90,8 @@ Don't forget to add if needed the following repository in your `pom.xml`:
         <id>oss-snapshots</id>
         <name>Sonatype OSS Snapshots</name>
         <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        <releases>
-            <enabled>false</enabled>
-        </releases>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
     </repository>
 </repositories>
 ```
