@@ -15,13 +15,15 @@ From 5.0, this project provides 2 implementations of an elasticsearch Client:
 
 ## Documentation
 
-* For 5.x elasticsearch versions, you are reading the latest documentation.
+* For 6.x elasticsearch versions, you are reading the latest documentation.
+* For 5.x elasticsearch versions, look at [es-5.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-5.x).
 * For 2.x elasticsearch versions, look at [es-2.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-2.x).
 * For 1.x elasticsearch versions, look at [es-1.4 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.4).
 * For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
+|       6.0-SNAPSHOT      |  6.0 - 6.x    |    4.3.10    |              |
 |            5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
 |           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
 |           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
