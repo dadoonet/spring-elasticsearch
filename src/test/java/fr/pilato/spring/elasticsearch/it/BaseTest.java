@@ -41,6 +41,7 @@ public abstract class BaseTest {
     public static void testElasticsearchIsRunning() {
         try {
             client = RestClient.builder(new HttpHost("127.0.0.1", 9200)).build();
+            client.performRequest("GET", "/");
         } catch (Exception e) {
             assumeNoException(e);
         }
