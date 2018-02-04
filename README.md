@@ -611,6 +611,21 @@ Special thanks to
 - [Nicolas Labrot](https://github.com/nithril‎) for his contribution about
 [async](https://github.com/dadoonet/spring-elasticsearch/pull/30)
 
+# Release guide
+
+To release the project you need to run the release plugin with the `release` profile as you need to sign the artifacts:
+
+```sh
+mvn release:prepare
+git push --tags
+mvn release:perform -Prelease
+```
+
+If you need to skip the tests, run:
+
+```sh
+mvn release:perform -Prelease -Darguments="-DskipTests"
+```
 
 # License
 
