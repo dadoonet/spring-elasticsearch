@@ -74,7 +74,7 @@
         <url>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</url>
         <connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
         <developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>es-5.x</tag>
   </scm>
 
     <issueManagement>
