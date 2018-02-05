@@ -1,5 +1,5 @@
 {
-    "template" : "twee*",
+    "index_patterns" : "twee*",
     "settings" : {
         "number_of_shards" : 1
     },
