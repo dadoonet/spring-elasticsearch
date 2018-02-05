@@ -20,13 +20,11 @@
 package fr.pilato.spring.elasticsearch.it.xml.transport;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeFalse;
 
 /**
  * We try to merge non merging mapping.
@@ -35,12 +33,6 @@ import static org.junit.Assume.assumeFalse;
  *
  */
 public class MappingFailedTest extends BaseTest {
-
-	// TODO Remove skipXPack Tests
-	@BeforeClass
-	static public void skipXPack() {
-		assumeFalse("We skip the test for now", securityInstalled);
-	}
 
 	@Override
 	public String indexName() {

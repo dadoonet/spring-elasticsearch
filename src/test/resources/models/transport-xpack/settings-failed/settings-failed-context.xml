@@ -25,6 +25,7 @@
                           classpathRoot="/models/root/settings-failed/client1"
                           mappings="twitter/tweet"
                           forceMapping="false"
+                          properties="esProperties"
     />
 
     <elasticsearch:client id="esClient2"

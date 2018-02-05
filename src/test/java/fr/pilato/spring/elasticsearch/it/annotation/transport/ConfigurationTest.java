@@ -22,7 +22,6 @@ package fr.pilato.spring.elasticsearch.it.annotation.transport;
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import org.elasticsearch.client.Client;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeFalse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -40,11 +38,6 @@ public class ConfigurationTest extends BaseTest {
 
 	@Autowired
 	private Client client;
-
-	@BeforeClass
-	static public void skipXPack() {
-		assumeFalse("We skip the test for now", securityInstalled);
-	}
 
 	@Test
 	public void testClient() {

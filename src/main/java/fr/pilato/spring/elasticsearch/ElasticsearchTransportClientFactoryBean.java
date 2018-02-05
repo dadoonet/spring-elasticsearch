@@ -35,6 +35,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;
@@ -652,10 +653,10 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
         // We need to check if we have a user security property
         String securedUser = properties != null ? properties.getProperty(XPACK_USER, null) : null;
         if (securedUser != null) {
-            client = new PreBuiltTransportClient(settingsBuilder.build(), pluginClasses);
-            // TODO When back online, import XPack
-            // client = new PreBuiltXPackTransportClient(settingsBuilder.build(), pluginClasses);
+            logger.debug("Building a Secured XPack Transport Client");
+            client = new PreBuiltXPackTransportClient(settingsBuilder.build(), pluginClasses);
         } else {
+            logger.debug("Building a Transport Client");
             client = new PreBuiltTransportClient(settingsBuilder.build(), pluginClasses);
         }
 

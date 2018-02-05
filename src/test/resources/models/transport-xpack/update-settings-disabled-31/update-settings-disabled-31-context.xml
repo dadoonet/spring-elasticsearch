@@ -23,6 +23,7 @@
 
     <elasticsearch:client id="esClient"
                           classpathRoot="/models/root/update-settings-disabled-31/client1"
+                          properties="esProperties"
     />
 
     <elasticsearch:client id="esClient2"

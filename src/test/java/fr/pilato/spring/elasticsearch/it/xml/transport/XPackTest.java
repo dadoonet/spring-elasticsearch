@@ -19,9 +19,6 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.transport;
 
-import org.junit.Ignore;
-
-@Ignore("Ignored because we need to get the XPack plugin first, and I'm flying ATM :)")
 public class XPackTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/xpack/xpack-context.xml"};
 
