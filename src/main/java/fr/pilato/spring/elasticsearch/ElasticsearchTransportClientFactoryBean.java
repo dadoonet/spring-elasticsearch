@@ -32,7 +32,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.cluster.health.ClusterIndexHealth;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
@@ -638,7 +638,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 		Settings.Builder settingsBuilder = Settings.builder();
 
         if (null != this.properties) {
-            settingsBuilder.put(this.properties);
+            properties.forEach((key, value) -> settingsBuilder.put((String) key, (String) value));
         }
 
         List<Class<? extends Plugin>> pluginClasses = new ArrayList<>(plugins.length);
@@ -659,7 +659,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 	 * Helper to define an hostname and port with a String like hostname:port
 	 * @param address Node address hostname:port (or hostname)
 	 */
-	private InetSocketTransportAddress toAddress(String address) throws UnknownHostException {
+	private TransportAddress toAddress(String address) throws UnknownHostException {
 		if (address == null) return null;
 
 		String[] splitted = address.split(":");
@@ -668,7 +668,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 			port = Integer.parseInt(splitted[1]);
 		}
 
-		return new InetSocketTransportAddress(InetAddress.getByName(splitted[0]), port);
+		return new TransportAddress(InetAddress.getByName(splitted[0]), port);
 	}
 
 }

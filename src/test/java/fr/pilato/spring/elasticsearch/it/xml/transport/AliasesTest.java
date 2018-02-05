@@ -34,7 +34,10 @@ public class AliasesTest extends AbstractXmlContextModel {
     }
 
     protected void checkUseCaseSpecific(Client client) {
-        GetAliasesResponse response = client.admin().indices().prepareGetAliases("alltheworld").get();
+        GetAliasesResponse response = client.admin().indices()
+                .prepareGetAliases("alltheworld")
+                .addIndices("twitter", "rss")
+                .get();
         assertThat(response.getAliases().size(), is(2));
 
         assertShardsAndReplicas(client, "rss", 5, 1);
