@@ -1,7 +1,0 @@
-{
-    "tweet" : {
-        "properties" : {
-            "message" : {"type" : "text", "store" : true, "analyzer" : "francais" }
-        }
-    }
-}

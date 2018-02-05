@@ -42,7 +42,11 @@ public class MappingFailedTest extends BaseTest {
 	@Test(expected=BeanCreationException.class)
 	public void test_transport_client() {
 		try {
-			new ClassPathXmlApplicationContext("models/transport/mapping-failed/mapping-failed-context.xml");
+			if (securityInstalled) {
+				new ClassPathXmlApplicationContext("models/transport-xpack/mapping-failed/mapping-failed-context.xml");
+			} else {
+				new ClassPathXmlApplicationContext("models/transport/mapping-failed/mapping-failed-context.xml");
+			}
 		} catch (BeanCreationException e) {
 			assertEquals(IllegalArgumentException.class, e.getCause().getClass());
 			throw e;

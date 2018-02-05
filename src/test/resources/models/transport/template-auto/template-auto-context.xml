@@ -17,7 +17,7 @@
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
 	<elasticsearch:client id="esClient"
-						  classpathRoot="/models/transport/template-auto/client"
+						  classpathRoot="/models/root/template-auto/client"
 						  forceTemplate="true"
 	/>
 

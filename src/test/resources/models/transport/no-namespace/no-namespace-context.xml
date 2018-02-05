@@ -16,7 +16,7 @@
 
 	<bean id="esClient"
 		class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
-		<property name="classpathRoot" value="models/transport/no-namespace/client" />
+		<property name="classpathRoot" value="models/root/no-namespace/client" />
 		<property name="esNodes">
 			<list>
 				<value>localhost:9300</value>

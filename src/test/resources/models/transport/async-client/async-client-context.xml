@@ -24,6 +24,6 @@
 	<elasticsearch:client id="testClient" async="true" taskExecutor="taskExecutor"
                           autoscan="true" forceMapping="false" forceTemplate="false"
                           mergeMapping="false" mergeSettings="false"
-                          classpathRoot="/models/transport/async-client/client"/>
+                          classpathRoot="/models/root/async-client/client"/>
 
 </beans>

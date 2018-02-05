@@ -18,6 +18,6 @@
 
 	<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
 						  forceMapping="true"
-						  classpathRoot="/models/transport/settings-13/client"/>
+						  classpathRoot="/models/root/settings-13/client"/>
 
 </beans>

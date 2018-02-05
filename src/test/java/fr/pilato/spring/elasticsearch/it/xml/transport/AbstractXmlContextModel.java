@@ -60,6 +60,16 @@ public abstract class AbstractXmlContextModel extends BaseTest {
     @Before
     public void startContext() {
         String[] xmlBeans = xmlBeans();
+
+        // Let's hack the context depending if the test cluster is running securely or not
+        if (securityInstalled) {
+            String[] securedXmlBeans = new String[xmlBeans.length];
+            for (int i = 0; i < xmlBeans.length; i++) {
+                securedXmlBeans[i] = xmlBeans[i].replace("models/transport/", "models/transport-xpack/");
+            }
+            xmlBeans = securedXmlBeans;
+        }
+
         if (xmlBeans.length == 0) {
             fail("Can not start a factory without any context!");
         }

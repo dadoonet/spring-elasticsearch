@@ -35,6 +35,7 @@
         <skipTests>false</skipTests>
         <skip.unit.tests>${skipTests}</skip.unit.tests>
         <skip.integration.tests>${skipTests}</skip.integration.tests>
+        <tests.cluster.credentials>elastic:changeme</tests.cluster.credentials>
     </properties>
 
     <distributionManagement>
@@ -75,12 +76,23 @@
         <connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
         <developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/dadoonet/spring-elasticsearch/issues/</url>
     </issueManagement>
+
+    <repositories>
+        <!-- This repository is used to test with x-pack -->
+        <repository>
+            <id>elastic-download-service</id>
+            <name>Elastic Download Service</name>
+            <url>https://artifacts.elastic.co/maven/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -133,9 +145,17 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- add the transport client jar as an optional dependency -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>transport</artifactId>
+            <version>${elasticsearch.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <!-- add the x-pack jar as an optional dependency -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>x-pack-transport</artifactId>
             <version>${elasticsearch.version}</version>
             <optional>true</optional>
         </dependency>
@@ -369,6 +389,23 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>x-pack</id>
+            <build>
+                <plugins>
+                    <!-- We disable the elasticsearch-maven-plugin as it can not run with x-pack yet -->
+                    <!-- https://github.com/alexcojocaru/elasticsearch-maven-plugin/issues/42 -->
+                    <plugin>
+                        <groupId>com.github.alexcojocaru</groupId>
+                        <artifactId>elasticsearch-maven-plugin</artifactId>
+                        <version>6.4</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>release</id>
             <build>

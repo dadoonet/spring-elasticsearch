@@ -13,6 +13,8 @@ From 5.0, this project provides 2 implementations of an elasticsearch Client:
 * The REST client
 * The Transport client (deprecated)
 
+From 6.0, this project supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for official security.
+
 ## Documentation
 
 * For 6.x elasticsearch versions, you are reading the latest documentation.
@@ -50,7 +52,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>5.0</version>
+  <version>6.0</version>
 </dependency>
 ```
 
@@ -60,7 +62,7 @@ If you want to set a specific version of the Rest client, add it to your `pom.xm
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-client</artifactId>
-    <version>5.6.7</version>
+    <version>6.1.3</version>
 </dependency>
 ```
 
@@ -70,8 +72,32 @@ If you want to use a transport client (deprecated), you must add it to your `pom
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>transport</artifactId>
-    <version>5.6.7</version>
+    <version>6.1.3</version>
 </dependency>
+```
+
+If you want to use a transport client secured with X-Pack (deprecated), you must add it to your `pom.xml` file:
+
+```xml
+<dependency>
+    <groupId>org.elasticsearch.client</groupId>
+    <artifactId>x-pack-transport</artifactId>
+    <version>6.1.3</version>
+</dependency>
+```
+
+Note that you'd probably to add also the elastic maven repository:
+
+```xml
+<repositories>
+    <repository>
+        <id>elastic-download-service</id>
+        <name>Elastic Download Service</name>
+        <url>https://artifacts.elastic.co/maven/</url>
+        <releases><enabled>true</enabled></releases>
+        <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+</repositories>
 ```
 
 If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](https://oss.sonatype.org/content/repositories/snapshots/fr/pilato/spring/spring-elasticsearch/):
@@ -80,7 +106,7 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>5.1-SNAPSHOT</version>
+  <version>6.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -176,6 +202,18 @@ Better, you should use `@Autowired` annotation.
 @Autowired RestClient client;
 ```
 
+#### Connecting to a secured X-Pack cluster
+
+You need to define the `xpack.security.user` property as follows:
+
+```
+<util:properties id="esProperties">
+    <prop key="xpack.security.user">elastic:changeme</prop>
+</util:properties>
+
+<elasticsearch:rest-client id="esClient" properties="esProperties" />
+```
+
 ### Getting a transport client bean (deprecated)
 
 From 5.0, the Transport Client implementation is deprecated. It is now marked as `optional` so
@@ -260,6 +298,20 @@ You can also add plugins to the transport client in case it needs it:
 ```xml
 <elasticsearch:client id="esClient" plugins="org.elasticsearch.plugin.deletebyquery.DeleteByQueryPlugin" />
 ```
+
+#### Connecting to a secured X-Pack cluster
+
+You need to define the `xpack.security.user` property as follows:
+
+```
+<util:properties id="esProperties">
+    <prop key="xpack.security.user">elastic:changeme</prop>
+</util:properties>
+
+<elasticsearch:client id="esClient" properties="esProperties" />
+```
+
+Note that it needs that you imported to your project the `x-pack-transport` jar.
 
 ## Automatically create indices
 
@@ -492,6 +544,13 @@ public class RestApp {
         public RestClient esClient() throws Exception {
             ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
             factory.setEsNodes(new String[]{"127.0.0.1:9200"});
+
+            // Begin: If you are running with x-pack
+            Properties props = new Properties();
+            props.setProperty("xpack.security.user", "elastic:changeme");
+		    factory.setProperties(props);
+            // End: If you are running with x-pack
+
             factory.afterPropertiesSet();
             return factory.getObject();
         }
@@ -612,6 +671,28 @@ Special thanks to
 [templates](https://github.com/dadoonet/spring-elasticsearch/pull/4)
 - [Nicolas Labrot](https://github.com/nithril‎) for his contribution about
 [async](https://github.com/dadoonet/spring-elasticsearch/pull/30)
+
+# Running tests
+
+If you want to run tests (integration tests) from your IDE, you need to start first an elasticsearch instance.
+
+If you are not using x-pack, then just run the tests from your IDE. Tests are expecting a node running at `localhost:9200`.
+
+If you are using x-pack, tests are expecting a user named `elastic` with `changeme` as the password.
+You can set this user by running `bin/x-pack/setup-passwords interactive`.
+
+To run the tests using Maven (on the CLI), just run:
+
+```sh
+mvn clean install
+```
+
+Note that when the tests are launched with maven, they are not running with x-pack yet.
+To run tests against x-pack, you need to start elasticsearch with x-pack manually and run the tests with:
+
+```sh
+mvn clean install -Px-pack
+```
 
 # Release guide
 

@@ -43,9 +43,13 @@ public class MappingFailedTest extends BaseTest {
 	}
 
 	@Test(expected=BeanCreationException.class)
-	public void test_transport_client() {
+	public void test_rest_client() {
 		try {
-			new ClassPathXmlApplicationContext("models/rest/mapping-failed/mapping-failed-context.xml");
+			if (securityInstalled) {
+				new ClassPathXmlApplicationContext("models/rest-xpack/mapping-failed/mapping-failed-context.xml");
+			} else {
+				new ClassPathXmlApplicationContext("models/rest/mapping-failed/mapping-failed-context.xml");
+			}
 		} catch (BeanCreationException e) {
             Throwable cause = e.getCause();
             assertEquals(ResponseException.class, cause.getClass());

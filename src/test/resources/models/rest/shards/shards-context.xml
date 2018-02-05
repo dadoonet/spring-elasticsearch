@@ -17,7 +17,7 @@
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
     <elasticsearch:rest-client id="esClient"
-                          classpathRoot="/models/rest/shards/client"
+                          classpathRoot="/models/root/shards/client"
                           mappings="twitter/tweet"
                           forceMapping="false"
     />
