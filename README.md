@@ -544,6 +544,13 @@ public class RestApp {
         public RestClient esClient() throws Exception {
             ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
             factory.setEsNodes(new String[]{"127.0.0.1:9200"});
+
+            // Begin: If you are running with x-pack
+            Properties props = new Properties();
+            props.setProperty("xpack.security.user", "elastic:changeme");
+		    factory.setProperties(props);
+            // End: If you are running with x-pack
+
             factory.afterPropertiesSet();
             return factory.getObject();
         }
