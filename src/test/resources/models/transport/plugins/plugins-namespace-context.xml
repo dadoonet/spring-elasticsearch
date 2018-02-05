@@ -18,6 +18,6 @@
 
 	<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
 						  autoscan="true" forceMapping="false" forceTemplate="false" mergeMapping="false" mergeSettings="false"
-						  classpathRoot="/models/transport/transport-client-namespace/client"
+						  classpathRoot="/models/root/transport-client-namespace/client"
 	                      plugins="fr.pilato.spring.elasticsearch.it.xml.transport.PluginsTest.Dummy1Plugin,fr.pilato.spring.elasticsearch.it.xml.transport.PluginsTest.Dummy2Plugin" />
 </beans>

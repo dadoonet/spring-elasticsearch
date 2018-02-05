@@ -17,7 +17,7 @@
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
     <elasticsearch:rest-client id="esClient"
-                          classpathRoot="/models/rest/settings-no-mapping-21/client"
+                          classpathRoot="/models/root/settings-no-mapping-21/client"
     />
 
 </beans>

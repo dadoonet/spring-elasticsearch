@@ -25,7 +25,12 @@ import fr.pilato.elasticsearch.tools.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;
@@ -352,46 +357,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             computeTemplates();
         }
 
-        // TODO ADAPT
-
-        // We extract indexes and mappings to manage from mappings definition
-/*
-		if (mappings != null && mappings.length > 0) {
-            ClusterHealthRequestBuilder healthRequestBuilder = client.admin().cluster().prepareHealth().setWaitForYellowStatus();
-            ClusterStateRequestBuilder clusterStateRequestBuilder = client.admin().cluster().prepareState();
-            Map<String, Collection<String>> indices = getIndexMappings(mappings);
-            for (String index : indices.keySet()) {
-                clusterStateRequestBuilder.setIndices(index);
-            }
-            ClusterStateResponse clusterStateResponse = clusterStateRequestBuilder.get();
-
-            boolean checkIndicesStatus = false;
-            for (String index : indices.keySet()) {
-                if (clusterStateResponse.getState().getMetaData().indices().containsKey(index)) {
-                    healthRequestBuilder.setIndices(index);
-                    checkIndicesStatus = true;
-                }
-            }
-
-            if (checkIndicesStatus) {
-                logger.debug("we have to check some indices status as they already exist...");
-                ClusterHealthResponse healths = healthRequestBuilder.get();
-                if (healths.isTimedOut()) {
-                    logger.warn("we got a timeout when checking indices status...");
-                    if (healths.getIndices() != null) {
-                        for (ClusterIndexHealth health : healths.getIndices().values()) {
-                            if (health.getStatus() == ClusterHealthStatus.RED) {
-                                logger.warn("index [{}] is in RED state", health.getIndex());
-                            } else {
-                                logger.debug("index [{}] is in [{}] state", health.getIndex(), health.getStatus().name());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-*/
-
         initTemplates();
         initMappings();
         initAliases();
@@ -613,7 +578,27 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             hosts.add(new HttpHost(addressPort.v1(), addressPort.v2(), "http"));
         }
 
-        return RestClient.builder(hosts.toArray(new HttpHost[]{})).build();
+        RestClientBuilder rcb = RestClient.builder(hosts.toArray(new HttpHost[]{}));
+
+        // We need to check if we have a user security property
+        String securedUser = properties != null ? properties.getProperty(XPACK_USER, null) : null;
+        if (securedUser != null) {
+            // We split the username and the password
+            String[] split = securedUser.split(":");
+            if (split.length < 2) {
+                throw new IllegalArgumentException(XPACK_USER + " must have the form username:password");
+            }
+            String username = split[0];
+            String password = split[1];
+
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(AuthScope.ANY,
+                    new UsernamePasswordCredentials(username, password));
+
+            rcb.setHttpClientConfigCallback(hcb -> hcb.setDefaultCredentialsProvider(credentialsProvider));
+        }
+
+        return rcb.build();
 	}
 
 	/**

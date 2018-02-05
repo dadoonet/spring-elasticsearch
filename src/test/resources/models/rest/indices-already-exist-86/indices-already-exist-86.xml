@@ -16,7 +16,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 	
-	<elasticsearch:rest-client id="esClient" classpathRoot="/models/rest/indices-already-exist-86/client"/>
-	<elasticsearch:rest-client id="esClient2" classpathRoot="/models/rest/indices-already-exist-86/client"/>
+	<elasticsearch:rest-client id="esClient" classpathRoot="/models/root/indices-already-exist-86/client"/>
+	<elasticsearch:rest-client id="esClient2" classpathRoot="/models/root/indices-already-exist-86/client"/>
 
 </beans>

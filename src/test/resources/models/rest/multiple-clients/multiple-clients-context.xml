@@ -17,13 +17,13 @@
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
     <elasticsearch:rest-client id="esClient"
-                          classpathRoot="/models/rest/multiple-clients/client1"
+                          classpathRoot="/models/root/multiple-clients/client1"
                           mappings="twitter/tweet"
                           forceMapping="false"
     />
 
     <elasticsearch:rest-client id="esClient2"
-                          classpathRoot="/models/rest/multiple-clients/client2"
+                          classpathRoot="/models/root/multiple-clients/client2"
                           mappings="twitter/tweet"
                           mergeSettings="true"
     />

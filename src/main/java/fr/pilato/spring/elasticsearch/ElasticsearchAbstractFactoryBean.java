@@ -28,13 +28,15 @@ import java.util.Properties;
  * An abstract {@link FactoryBean} used to create an Elasticsearch object.
  * @author David Pilato
  */
-abstract class ElasticsearchAbstractFactoryBean {
+public abstract class ElasticsearchAbstractFactoryBean {
 
     Properties properties;
 
 	boolean async = false;
 
 	ThreadPoolTaskExecutor taskExecutor;
+
+	public final static String XPACK_USER = "xpack.security.user";
 
     /**
      * Elasticsearch properties

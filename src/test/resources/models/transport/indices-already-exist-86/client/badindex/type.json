@@ -1,7 +1,0 @@
-{
-    "type" : {
-        "properties" : {
-            "foo" : {"type" : "text"}
-        }
-    }
-}

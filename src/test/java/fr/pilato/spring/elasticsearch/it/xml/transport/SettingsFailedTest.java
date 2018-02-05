@@ -20,11 +20,13 @@
 package fr.pilato.spring.elasticsearch.it.xml.transport;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 
 /**
@@ -35,6 +37,12 @@ import static org.junit.Assert.assertEquals;
  */
 public class SettingsFailedTest extends BaseTest {
 
+	// TODO Remove skipXPack Tests
+	@BeforeClass
+	static public void skipXPack() {
+		assumeFalse("We skip the test for now", securityInstalled);
+	}
+
 	@Override
 	public String indexName() {
 		return null;
@@ -43,7 +51,11 @@ public class SettingsFailedTest extends BaseTest {
 	@Test(expected=BeanCreationException.class)
 	public void test_merge_settings_failure() {
 		try {
-			new ClassPathXmlApplicationContext("models/transport/settings-failed/settings-failed-context.xml");
+			if (securityInstalled) {
+				new ClassPathXmlApplicationContext("models/transport-xpack/settings-failed/settings-failed-context.xml");
+			} else {
+				new ClassPathXmlApplicationContext("models/transport/settings-failed/settings-failed-context.xml");
+			}
 		} catch (BeanCreationException e) {
 			assertEquals(IllegalArgumentException.class, e.getCause().getClass());
 			throw e;

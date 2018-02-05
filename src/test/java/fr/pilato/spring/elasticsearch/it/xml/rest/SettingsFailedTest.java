@@ -46,7 +46,11 @@ public class SettingsFailedTest extends BaseTest {
 	@Test(expected=BeanCreationException.class)
 	public void test_merge_settings_failure() {
 		try {
-			new ClassPathXmlApplicationContext("models/rest/settings-failed/settings-failed-context.xml");
+			if (securityInstalled) {
+				new ClassPathXmlApplicationContext("models/rest-xpack/settings-failed/settings-failed-context.xml");
+			} else {
+				new ClassPathXmlApplicationContext("models/rest/settings-failed/settings-failed-context.xml");
+			}
 		} catch (BeanCreationException e) {
 			Throwable cause = e.getCause();
 			assertEquals(ResponseException.class, cause.getClass());

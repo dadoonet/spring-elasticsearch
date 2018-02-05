@@ -17,11 +17,11 @@
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
 
     <elasticsearch:rest-client id="esClient"
-                          classpathRoot="/models/rest/update-settings-disabled-31/client1"
+                          classpathRoot="/models/root/update-settings-disabled-31/client1"
     />
 
     <elasticsearch:rest-client id="esClient2"
-                          classpathRoot="/models/rest/update-settings-disabled-31/client2"
+                          classpathRoot="/models/root/update-settings-disabled-31/client2"
                           mergeSettings="false"
     />
 

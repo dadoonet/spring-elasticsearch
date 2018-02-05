@@ -24,13 +24,23 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Properties;
+
+import static fr.pilato.spring.elasticsearch.ElasticsearchAbstractFactoryBean.XPACK_USER;
+import static fr.pilato.spring.elasticsearch.it.BaseTest.testCredentials;
+
 @Configuration
 public class AppConfig {
 
 	@Bean
 	public RestClient esClient() throws Exception {
+		// Let's add a default user in case we are running with XPack
+		Properties props = new Properties();
+		props.setProperty(XPACK_USER, testCredentials);
+
 		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
 		factory.setEsNodes(new String[]{"127.0.0.1:9200"});
+		factory.setProperties(props);
 		factory.afterPropertiesSet();
 		return factory.getObject();
     }

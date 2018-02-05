@@ -35,6 +35,7 @@
         <skipTests>false</skipTests>
         <skip.unit.tests>${skipTests}</skip.unit.tests>
         <skip.integration.tests>${skipTests}</skip.integration.tests>
+        <tests.cluster.credentials>elastic:changeme</tests.cluster.credentials>
     </properties>
 
     <distributionManagement>
@@ -133,12 +134,31 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- add the transport client jar as an optional dependency -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>transport</artifactId>
             <version>${elasticsearch.version}</version>
             <optional>true</optional>
         </dependency>
+        <!-- add the x-pack jar as an optional dependency -->
+        <!-- TODO: Add XPack Transport (deprecated)
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>x-pack-transport</artifactId>
+            <version>${elasticsearch.version}</version>
+            <optional>true</optional>
+        </dependency>
+        -->
+        <!-- add the x-pack jar as a test dependency -->
+        <!--
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>x-pack-transport</artifactId>
+            <version>${elasticsearch.version}</version>
+            <scope>test</scope>
+        </dependency>
+        -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-client</artifactId>

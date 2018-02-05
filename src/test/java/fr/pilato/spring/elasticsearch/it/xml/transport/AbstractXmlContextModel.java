@@ -32,6 +32,7 @@ import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -48,9 +49,16 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
 public abstract class AbstractXmlContextModel extends BaseTest {
     private ConfigurableApplicationContext ctx;
+
+    // TODO Remove skipXPack Tests
+    @BeforeClass
+    static public void skipXPack() {
+        assumeFalse("We skip the test for now", securityInstalled);
+    }
 
     /**
      * @return list of xml files needed to be loaded for this test
@@ -60,6 +68,16 @@ public abstract class AbstractXmlContextModel extends BaseTest {
     @Before
     public void startContext() {
         String[] xmlBeans = xmlBeans();
+
+        // Let's hack the context depending if the test cluster is running securely or not
+        if (securityInstalled) {
+            String[] securedXmlBeans = new String[xmlBeans.length];
+            for (int i = 0; i < xmlBeans.length; i++) {
+                securedXmlBeans[i] = xmlBeans[i].replace("models/transport/", "models/transport-xpack/");
+            }
+            xmlBeans = securedXmlBeans;
+        }
+
         if (xmlBeans.length == 0) {
             fail("Can not start a factory without any context!");
         }

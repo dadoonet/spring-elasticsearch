@@ -20,11 +20,13 @@
 package fr.pilato.spring.elasticsearch.it.xml.transport;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 /**
  * We try to merge non merging mapping.
@@ -34,6 +36,12 @@ import static org.junit.Assert.assertEquals;
  */
 public class MappingFailedTest extends BaseTest {
 
+	// TODO Remove skipXPack Tests
+	@BeforeClass
+	static public void skipXPack() {
+		assumeFalse("We skip the test for now", securityInstalled);
+	}
+
 	@Override
 	public String indexName() {
 		return null;
@@ -42,7 +50,11 @@ public class MappingFailedTest extends BaseTest {
 	@Test(expected=BeanCreationException.class)
 	public void test_transport_client() {
 		try {
-			new ClassPathXmlApplicationContext("models/transport/mapping-failed/mapping-failed-context.xml");
+			if (securityInstalled) {
+				new ClassPathXmlApplicationContext("models/transport-xpack/mapping-failed/mapping-failed-context.xml");
+			} else {
+				new ClassPathXmlApplicationContext("models/transport/mapping-failed/mapping-failed-context.xml");
+			}
 		} catch (BeanCreationException e) {
 			assertEquals(IllegalArgumentException.class, e.getCause().getClass());
 			throw e;

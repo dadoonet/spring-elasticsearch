@@ -646,7 +646,18 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 			logger.debug("Adding plugin [{}]", plugin);
             pluginClasses.add((Class<? extends Plugin>) ClassUtils.resolveClassName(plugin, Thread.currentThread().getContextClassLoader()));
 		}
-        PreBuiltTransportClient client = new PreBuiltTransportClient(settingsBuilder.build(), pluginClasses);
+
+        TransportClient client;
+
+        // We need to check if we have a user security property
+        String securedUser = properties != null ? properties.getProperty(XPACK_USER, null) : null;
+        if (securedUser != null) {
+            client = new PreBuiltTransportClient(settingsBuilder.build(), pluginClasses);
+            // TODO When back online, import XPack
+            // client = new PreBuiltXPackTransportClient(settingsBuilder.build(), pluginClasses);
+        } else {
+            client = new PreBuiltTransportClient(settingsBuilder.build(), pluginClasses);
+        }
 
         for (String esNode : esNodes) {
             client.addTransportAddress(toAddress(esNode));
