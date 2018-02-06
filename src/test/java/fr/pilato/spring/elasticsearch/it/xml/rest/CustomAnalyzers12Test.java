@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -36,8 +36,9 @@ public class CustomAnalyzers12Test extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    protected void checkUseCaseSpecific(RestClient client) throws IOException {
-        Map<String, Object> result = runRestQuery(client, "/twitter/_settings", "twitter", "settings", "index", "analysis", "analyzer", "francais");
+    @Override
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+        Map<String, Object> result = runRestQuery(client.getLowLevelClient(), "/twitter/_settings", "twitter", "settings", "index", "analysis", "analyzer", "francais");
         assertThat(result, hasEntry("type", "custom"));
     }
 }
