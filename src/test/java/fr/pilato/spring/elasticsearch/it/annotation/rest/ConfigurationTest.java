@@ -21,36 +21,36 @@ package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {
 		"classpath:annotation-rest-context.xml"
 		})
-public class ConfigurationTest extends BaseTest {
+class ConfigurationTest extends BaseTest {
 
 	@Autowired
 	private RestHighLevelClient client;
 
 	@Test
-	public void testClient() throws IOException {
+	void testClient() throws IOException {
 		assertNotNull(client);
 
 		// We call the High Level Rest client to make sure it works properly
 		client.info();
     }
 
-	@After
-	public void tearDown() throws IOException {
+	@AfterEach
+	void tearDown() throws IOException {
 		if (client != null) {
 			client.close();
 		}

@@ -21,13 +21,14 @@ package fr.pilato.spring.elasticsearch.it.xml.rest;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import org.elasticsearch.client.ResponseException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -43,20 +44,22 @@ public class SettingsFailedTest extends BaseTest {
 		return null;
 	}
 
-	@Test(expected=BeanCreationException.class)
-	public void test_merge_settings_failure() {
-		try {
-			if (securityInstalled) {
-				new ClassPathXmlApplicationContext("models/rest-xpack/settings-failed/settings-failed-context.xml");
-			} else {
-				new ClassPathXmlApplicationContext("models/rest/settings-failed/settings-failed-context.xml");
-			}
-		} catch (BeanCreationException e) {
-			Throwable cause = e.getCause();
-			assertEquals(ResponseException.class, cause.getClass());
-			ResponseException responseException = (ResponseException) cause;
-			assertThat(responseException.getResponse().getStatusLine().getStatusCode(), is(400));
-			throw e;
-		}
+	@Test
+	void test_merge_settings_failure() {
+        assertThrows(BeanCreationException.class, () -> {
+            try {
+                if (securityInstalled) {
+                    new ClassPathXmlApplicationContext("models/rest-xpack/settings-failed/settings-failed-context.xml");
+                } else {
+                    new ClassPathXmlApplicationContext("models/rest/settings-failed/settings-failed-context.xml");
+                }
+            } catch (BeanCreationException e) {
+                Throwable cause = e.getCause();
+                assertEquals(ResponseException.class, cause.getClass());
+                ResponseException responseException = (ResponseException) cause;
+                assertThat(responseException.getResponse().getStatusLine().getStatusCode(), is(400));
+                throw e;
+            }
+        });
 	}
 }

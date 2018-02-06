@@ -27,11 +27,11 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -40,12 +40,12 @@ import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractXmlContextModel extends BaseTest {
     private ConfigurableApplicationContext ctx;
@@ -55,8 +55,8 @@ public abstract class AbstractXmlContextModel extends BaseTest {
      */
     abstract String[] xmlBeans();
 
-    @Before
-    public void startContext() {
+    @BeforeEach
+    void startContext() {
         String[] xmlBeans = xmlBeans();
 
         // Let's hack the context depending if the test cluster is running securely or not
@@ -78,8 +78,8 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         ctx = new ClassPathXmlApplicationContext(xmlBeans);
     }
 
-    @After
-    public void stopContext() {
+    @AfterEach
+    void stopContext() {
         if (ctx != null) {
             logger.info("  --> Closing Spring Context");
             ctx.close();
@@ -163,7 +163,7 @@ public abstract class AbstractXmlContextModel extends BaseTest {
     }
 
 
-    protected String beanName() {
+    private String beanName() {
         return "esClient";
     }
 
@@ -184,7 +184,7 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         return result;
     }
 
-    protected static Map<String, Object> extractFromPath(Map<String, Object> json, String... path) {
+    private static Map<String, Object> extractFromPath(Map<String, Object> json, String... path) {
         Map<String, Object> currentObject = json;
         for (String fieldName : path) {
             Object jObject = currentObject.get(fieldName);

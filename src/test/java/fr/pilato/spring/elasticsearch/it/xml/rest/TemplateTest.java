@@ -24,8 +24,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertThat;
 
 public class TemplateTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/rest/template/template-context.xml"};

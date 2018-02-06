@@ -22,9 +22,8 @@ package fr.pilato.spring.elasticsearch.it.xml.transport;
 import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.client.Client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 
 public class CustomAnalyzers12Test extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/custom-analyzers-12/custom-analyzers-12-context.xml"};

@@ -22,9 +22,8 @@ package fr.pilato.spring.elasticsearch.it.xml.transport;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-
 
 public class MappingTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/mapping/mapping-context.xml"};

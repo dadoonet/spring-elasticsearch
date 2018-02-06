@@ -20,11 +20,12 @@
 package fr.pilato.spring.elasticsearch.it.xml.transport;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * We try to merge non merging mapping.
@@ -39,17 +40,19 @@ public class MappingFailedTest extends BaseTest {
 		return null;
 	}
 
-	@Test(expected=BeanCreationException.class)
-	public void test_transport_client() {
-		try {
-			if (securityInstalled) {
-				new ClassPathXmlApplicationContext("models/transport-xpack/mapping-failed/mapping-failed-context.xml");
-			} else {
-				new ClassPathXmlApplicationContext("models/transport/mapping-failed/mapping-failed-context.xml");
-			}
-		} catch (BeanCreationException e) {
-			assertEquals(IllegalArgumentException.class, e.getCause().getClass());
-			throw e;
-		}
+	@Test
+    void test_transport_client() {
+        assertThrows(BeanCreationException.class, () -> {
+            try {
+                if (securityInstalled) {
+                    new ClassPathXmlApplicationContext("models/transport-xpack/mapping-failed/mapping-failed-context.xml");
+                } else {
+                    new ClassPathXmlApplicationContext("models/transport/mapping-failed/mapping-failed-context.xml");
+                }
+            } catch (BeanCreationException e) {
+                assertEquals(IllegalArgumentException.class, e.getCause().getClass());
+                throw e;
+            }
+		});
 	}
 }

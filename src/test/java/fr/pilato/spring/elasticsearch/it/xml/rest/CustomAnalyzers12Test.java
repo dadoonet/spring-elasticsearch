@@ -24,8 +24,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
 
 
 public class CustomAnalyzers12Test extends AbstractXmlContextModel {

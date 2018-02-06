@@ -22,8 +22,8 @@ package fr.pilato.spring.elasticsearch.it.xml.transport;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
 import org.elasticsearch.client.Client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public class TemplateTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/template/template-context.xml"};

@@ -30,9 +30,9 @@ import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -41,13 +41,13 @@ import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractXmlContextModel extends BaseTest {
     private ConfigurableApplicationContext ctx;
@@ -57,7 +57,7 @@ public abstract class AbstractXmlContextModel extends BaseTest {
      */
     abstract String[] xmlBeans();
 
-    @Before
+    @BeforeEach
     public void startContext() {
         String[] xmlBeans = xmlBeans();
 
@@ -80,7 +80,7 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         ctx = new ClassPathXmlApplicationContext(xmlBeans);
     }
 
-    @After
+    @AfterEach
     public void stopContext() {
         if (ctx != null) {
             logger.info("  --> Closing Spring Context");

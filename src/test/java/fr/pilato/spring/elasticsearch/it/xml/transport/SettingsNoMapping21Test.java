@@ -22,9 +22,8 @@ package fr.pilato.spring.elasticsearch.it.xml.transport;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.client.Client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 
 public class SettingsNoMapping21Test extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/settings-no-mapping-21/settings-no-mapping-21-context.xml"};
