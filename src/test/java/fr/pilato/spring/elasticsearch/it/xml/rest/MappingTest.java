@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -36,10 +36,10 @@ public class MappingTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    protected void checkUseCaseSpecific(RestClient client) throws IOException {
-        RestClient client2 = checkClient("esClient2");
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+        RestHighLevelClient client2 = checkClient("esClient2");
 
-        Map<String, Object> response = runRestQuery(client2, "/twitter/_mapping/tweet", "twitter", "mappings", "tweet", "properties");
+        Map<String, Object> response = runRestQuery(client2.getLowLevelClient(), "/twitter/_mapping/tweet", "twitter", "mappings", "tweet", "properties");
         // This one comes from the first mapping
         assertThat(response, hasKey("message"));
         // This one comes from the second mapping

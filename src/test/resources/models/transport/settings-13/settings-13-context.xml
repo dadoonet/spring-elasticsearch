@@ -14,7 +14,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-6.0.xsd">
 
 	<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
 						  forceMapping="true"

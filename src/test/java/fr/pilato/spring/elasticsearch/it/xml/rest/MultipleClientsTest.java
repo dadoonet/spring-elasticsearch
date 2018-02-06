@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 
@@ -32,13 +32,13 @@ public class MultipleClientsTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    protected void checkUseCaseSpecific(RestClient client) throws IOException {
-        RestClient client2 = checkClient("esClient2");
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+        RestHighLevelClient client2 = checkClient("esClient2");
         // We test how many shards and replica we have
         // Let's do the same thing with the second client
         // We test how many shards and replica we have
         // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
         // See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
-        assertShardsAndReplicas(client2, "twitter", 5, 1);
+        assertShardsAndReplicas(client2.getLowLevelClient(), "twitter", 5, 1);
     }
 }

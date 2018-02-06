@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.util.Map;
 
@@ -34,10 +34,11 @@ public class AliasesTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
-    protected void checkUseCaseSpecific(RestClient client) throws Exception {
-        Map<String, Object> response = runRestQuery(client, "/_alias/alltheworld");
+    @Override
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
+        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_alias/alltheworld");
         assertThat(response, hasKey("rss"));
         assertThat(response, hasKey("twitter"));
-        assertShardsAndReplicas(client, "rss", 5, 1);
+        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 5, 1);
     }
 }

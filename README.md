@@ -13,7 +13,8 @@ From 5.0, this project provides 2 implementations of an elasticsearch Client:
 * The REST client
 * The Transport client (deprecated)
 
-From 6.0, this project supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for official security.
+From 6.0, the REST client implementation has been replaced by a High Level REST client.
+It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for official security.
 
 ## Documentation
 
@@ -56,12 +57,12 @@ Import spring-elasticsearch in you project `pom.xml` file:
 </dependency>
 ```
 
-If you want to set a specific version of the Rest client, add it to your `pom.xml` file:
+If you want to set a specific version of the High Level Rest client, add it to your `pom.xml` file:
 
 ```xml
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
-    <artifactId>elasticsearch-rest-client</artifactId>
+    <artifactId>elasticsearch-rest-high-level-client</artifactId>
     <version>6.1.3</version>
 </dependency>
 ```
@@ -124,6 +125,20 @@ Don't forget to add if needed the following repository in your `pom.xml`:
 </repositories>
 ```
 
+If you depend on an elasticsearch SNAPSHOT version, you need to add the following repository to your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>elastic-snapshots</id>
+        <name>Elastic Snapshots</name>
+        <url>http://snapshots.elastic.co/maven/</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+```
+
 ### Logger
 
 We are using [slf4j](http://www.slf4j.org/) for logging but you have to provide the logging implementation
@@ -160,7 +175,7 @@ In your spring context file, just add namespaces like this:
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd">
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-6.0.xsd">
 </beans>
 ```
 
@@ -176,7 +191,7 @@ In your spring context file, just define a client like this:
 <elasticsearch:rest-client id="esClient" />
 ```
 
-By default, you will get an [Elasticsearch Low Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-low.html)
+By default, you will get an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
 connected to an Elasticsearch node already running at `localhost:9200`.
 
 You can set the nodes you want to connect to:
@@ -190,16 +205,16 @@ You can set the nodes you want to connect to:
 You can use the rest client in your java classes.
 
 ```java
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
-RestClient client = ctx.getBean("esClient", RestClient.class);
+RestHighLevelClient client = ctx.getBean("esClient", RestHighLevelClient.class);
 ```
 
 Better, you should use `@Autowired` annotation.
 
 ```java
 // Inject your client...
-@Autowired RestClient client;
+@Autowired RestHighLevelClient client;
 ```
 
 #### Connecting to a secured X-Pack cluster
@@ -312,6 +327,17 @@ You need to define the `xpack.security.user` property as follows:
 ```
 
 Note that it needs that you imported to your project the `x-pack-transport` jar.
+
+#### Asynchronous initialization
+
+Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
+
+```xml
+<task:executor pool-size="4" id="taskExecutor"/>
+<elasticsearch:client id="esClient" async="true" taskExecutor="taskExecutor"/>
+```
+Asynchronous initialization does not block Spring startup but it continues on background on another thread.
+Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
 
 ## Automatically create indices
 
@@ -482,17 +508,6 @@ Just set  `forceTemplate` property to `true`.
 <elasticsearch:rest-client id="esClient" forceTemplate="true" />
 ```
 
-### Asynchronous initialization
-
-Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
-
-```xml
-<task:executor pool-size="4" id="taskExecutor"/>
-<elasticsearch:rest-client id="esClient" async="true" taskExecutor="taskExecutor"/>
-```
-Asynchronous initialization does not block Spring startup but it continues on background on another thread.
-Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
-
 ## Using Java Annotations
 
 Let's say you want to use Spring Java Annotations, here is a typical application you can build.
@@ -514,7 +529,7 @@ Let's say you want to use Spring Java Annotations, here is a typical application
         <dependency>
             <groupId>fr.pilato.spring</groupId>
             <artifactId>spring-elasticsearch</artifactId>
-            <version>5.0</version>
+            <version>6.0</version>
         </dependency>
     </dependencies>
 </project>
@@ -526,7 +541,7 @@ Let's say you want to use Spring Java Annotations, here is a typical application
 package fr.pilato.tests;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -541,7 +556,7 @@ public class RestApp {
     @Configuration
     public class AppConfig {
         @Bean
-        public RestClient esClient() throws Exception {
+        public RestHighLevelClient esClient() throws Exception {
             ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
             factory.setEsNodes(new String[]{"127.0.0.1:9200"});
 
@@ -571,7 +586,10 @@ public class RestApp {
     }
 
     private void run() throws IOException {
-        client.performRequest("GET", "/");
+        // Run a High Level request
+        client.info();
+        // You still have access to the Low Level client
+        client.getLowLevel().performRequest("GET", "/");
     }
 }
 ```

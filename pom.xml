@@ -92,6 +92,22 @@
             <releases><enabled>true</enabled></releases>
             <snapshots><enabled>false</enabled></snapshots>
         </repository>
+
+        <repository>
+            <id>elastic-snapshots</id>
+            <name>Elastic Snapshots</name>
+            <url>http://snapshots.elastic.co/maven/</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+
+        <repository>
+            <id>oss-snapshots</id>
+            <name>Sonatype OSS Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -161,7 +177,7 @@
         </dependency>
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-client</artifactId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
             <version>${elasticsearch.rest.version}</version>
         </dependency>
         <dependency>
