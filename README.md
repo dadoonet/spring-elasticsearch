@@ -687,7 +687,7 @@ Special thanks to
 
 - [Nicolas Huray](https://github.com/nhuray) for his contribution about
 [templates](https://github.com/dadoonet/spring-elasticsearch/pull/4)
-- [Nicolas Labrot](https://github.com/nithril‎) for his contribution about
+- [Nicolas Labrot](https://github.com/nithril) for his contribution about
 [async](https://github.com/dadoonet/spring-elasticsearch/pull/30)
 
 # Running tests
