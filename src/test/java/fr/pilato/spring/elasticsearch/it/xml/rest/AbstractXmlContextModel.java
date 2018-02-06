@@ -23,12 +23,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Response;
-import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.instanceOf;
@@ -116,18 +115,6 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         return client;
     }
 
-    RestHighLevelClient getHighLevelRestClient(String name) {
-        RestHighLevelClient client;
-
-        if (name != null) {
-            client = ctx.getBean(name, RestHighLevelClient.class);
-        } else {
-            client = ctx.getBean(RestHighLevelClient.class);
-        }
-        assertThat(client, not(nullValue()));
-        return client;
-    }
-
     boolean isMappingExist(RestClient client, String index, String type) {
         try {
             return client.performRequest("HEAD", "/" + index + "/_mapping/" + type).getStatusLine().getStatusCode() != 404;
@@ -147,17 +134,8 @@ public abstract class AbstractXmlContextModel extends BaseTest {
             assertShardsAndReplicas(client.getLowLevelClient(), indexName(), expectedShards(), expectedReplicas());
 
             // #92: search errors with async created Client
-            Map<String, String> params = new HashMap<>();
-            params.put("refresh", "true");
-
-
-            client.getLowLevelClient().performRequest("PUT", "/twitter/tweet/1", params, new StringEntity("{\"foo\":\"bar\"}", ContentType.APPLICATION_JSON));
-            try {
-                client.getLowLevelClient().performRequest("GET", "/twitter/tweet/1");
-            } catch (ResponseException e) {
-                assertThat(e.getResponse().getStatusLine().getStatusCode(), not(404));
-                throw e;
-            }
+            client.index(new IndexRequest("twitter", "tweet", "1").source("{\"foo\":\"bar\"}", XContentType.JSON));
+            assertThat(client.get(new GetRequest("twitter", "tweet", "1")).isExists(), is(true));
         }
     }
 
