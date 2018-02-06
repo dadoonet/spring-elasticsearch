@@ -328,6 +328,17 @@ You need to define the `xpack.security.user` property as follows:
 
 Note that it needs that you imported to your project the `x-pack-transport` jar.
 
+#### Asynchronous initialization
+
+Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
+
+```xml
+<task:executor pool-size="4" id="taskExecutor"/>
+<elasticsearch:client id="esClient" async="true" taskExecutor="taskExecutor"/>
+```
+Asynchronous initialization does not block Spring startup but it continues on background on another thread.
+Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
+
 ## Automatically create indices
 
 The following examples are documented using the Rest Client implementation `elasticsearch:rest-client` but you can
@@ -496,17 +507,6 @@ Just set  `forceTemplate` property to `true`.
 ```xml
 <elasticsearch:rest-client id="esClient" forceTemplate="true" />
 ```
-
-### Asynchronous initialization
-
-Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
-
-```xml
-<task:executor pool-size="4" id="taskExecutor"/>
-<elasticsearch:rest-client id="esClient" async="true" taskExecutor="taskExecutor"/>
-```
-Asynchronous initialization does not block Spring startup but it continues on background on another thread.
-Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
 
 ## Using Java Annotations
 

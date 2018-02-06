@@ -22,7 +22,6 @@ package fr.pilato.spring.elasticsearch;
 import fr.pilato.elasticsearch.tools.index.IndexFinder;
 import fr.pilato.elasticsearch.tools.template.TemplateFinder;
 import fr.pilato.elasticsearch.tools.type.TypeFinder;
-import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -34,7 +33,6 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -48,7 +46,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.createAlias;
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.createIndex;
@@ -180,7 +177,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchRestClientFactoryBean.class);
 
     private RestHighLevelClient client;
-    private RestHighLevelClient proxyfiedClient;
 
     private boolean forceMapping;
 
@@ -330,19 +326,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("Starting Elasticsearch client");
-
-        if (async) {
-            Assert.notNull(taskExecutor, "taskExecutor can not be null");
-            Future<RestHighLevelClient> future = taskExecutor.submit(() -> initialize());
-
-            ProxyFactory proxyFactory = new ProxyFactory();
-            proxyFactory.setProxyTargetClass(true);
-            proxyFactory.setTargetClass(RestHighLevelClient.class);
-            proxyFactory.addAdvice(new GenericInvocationHandler(future));
-            proxyfiedClient = (RestHighLevelClient) proxyFactory.getProxy();
-        } else {
-            client = initialize();
-        }
+        client = initialize();
     }
 
     private RestHighLevelClient initialize() throws Exception {
@@ -373,7 +357,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     @Override
     public RestHighLevelClient getObject() {
-        return async ? proxyfiedClient : client;
+        return client;
     }
 
     @Override

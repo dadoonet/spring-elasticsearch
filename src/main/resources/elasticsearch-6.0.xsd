@@ -287,7 +287,6 @@
                 </xsd:annotation>
             </xsd:attribute>
 
-            <xsd:attributeGroup ref="asyncAttribute"/>
         </xsd:complexType>
     </xsd:element>
 
