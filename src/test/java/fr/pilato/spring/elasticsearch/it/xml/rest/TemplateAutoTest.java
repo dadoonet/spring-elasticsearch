@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -41,8 +41,8 @@ public class TemplateAutoTest extends AbstractXmlContextModel {
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestClient client) throws IOException {
-        Map<String, Object> response = runRestQuery(client, "/_template/twitter_template");
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_template/twitter_template");
         assertThat(response, hasKey("twitter_template"));
     }
 }

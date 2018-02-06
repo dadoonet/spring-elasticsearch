@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ public class Settings13Test extends AbstractXmlContextModel {
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestClient client) throws IOException {
-        assertShardsAndReplicas(client, "rss", 5, 1);
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 5, 1);
     }
 }

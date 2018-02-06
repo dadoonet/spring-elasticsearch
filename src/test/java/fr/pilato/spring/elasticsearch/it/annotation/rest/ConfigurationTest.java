@@ -20,7 +20,6 @@
 package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.After;
 import org.junit.Test;
@@ -40,18 +39,14 @@ import static org.junit.Assert.assertNotNull;
 public class ConfigurationTest extends BaseTest {
 
 	@Autowired
-	private RestClient client;
-
-	@Autowired
-	private RestHighLevelClient highLevelClient;
+	private RestHighLevelClient client;
 
 	@Test
 	public void testClient() throws IOException {
 		assertNotNull(client);
-		assertNotNull(highLevelClient);
 
 		// We call the High Level Rest client to make sure it works properly
-        highLevelClient.info();
+		client.info();
     }
 
 	@After

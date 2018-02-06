@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -37,10 +37,10 @@ public class SettingsNoMapping21Test extends AbstractXmlContextModel {
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestClient client) throws IOException {
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
         // We should have an existing index here
 
-        Map<String, Object> response = runRestQuery(client, "/twitter");
+        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/twitter");
         assertThat(response, hasKey("twitter"));
     }
 }

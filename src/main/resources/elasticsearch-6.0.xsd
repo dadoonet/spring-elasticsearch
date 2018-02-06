@@ -161,11 +161,11 @@
     <xsd:element name="rest-client">
         <xsd:annotation>
             <xsd:documentation><![CDATA[
-			Configures a org.elasticsearch.client.RestClient in the application context.
+			Configures a org.elasticsearch.client.RestHighLevelClient in the application context.
 		]]></xsd:documentation>
             <xsd:appinfo>
                 <tool:annotation>
-                    <tool:exports type="org.elasticsearch.client.RestClient"/>
+                    <tool:exports type="org.elasticsearch.client.RestHighLevelClient"/>
                 </tool:annotation>
             </xsd:appinfo>
         </xsd:annotation>
@@ -197,9 +197,9 @@
                     <xsd:documentation><![CDATA[
 					Elasticsearch properties.
 					example:
-                        <util:map id="esProperties">
-                            <entry key="cluster.name" value="newclustername"/>
-                        </util:map>
+                        <util:properties id="esProperties">
+                            <prop key="xpack.security.user">elastic:changeme</prop>
+                        </util:properties>
 
                         <elasticsearch:client id="esClient" properties="esProperties"  />
 				]]></xsd:documentation>

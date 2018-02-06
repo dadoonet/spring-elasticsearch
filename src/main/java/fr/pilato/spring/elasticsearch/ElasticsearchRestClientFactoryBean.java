@@ -31,6 +31,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;
@@ -47,7 +48,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.createAlias;
@@ -58,11 +58,11 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
 
 /**
  * An abstract {@link org.springframework.beans.factory.FactoryBean} used to create an Elasticsearch
- * {@link org.elasticsearch.client.RestClient}.
+ * {@link org.elasticsearch.client.RestHighLevelClient}.
  * <p>
- * The lifecycle of the underlying {@link RestClient} instance is tied to the
+ * The lifecycle of the underlying {@link RestHighLevelClient} instance is tied to the
  * lifecycle of the bean via the {@link #destroy()} method which calls
- * {@link RestClient#close()}
+ * {@link RestHighLevelClient#close()}
  * </p>
  * <p>
  * You need to define the nodes you want to communicate with.<br>
@@ -171,16 +171,16 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * By convention, the factory will create all settings and mappings found under the /es classpath.<br>
  * You can disable convention and use configuration by setting autoscan to false.
  *
- * @see RestClient
+ * @see RestHighLevelClient
  * @author David Pilato
  */
 public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFactoryBean
-        implements FactoryBean<RestClient>, InitializingBean, DisposableBean {
+        implements FactoryBean<RestHighLevelClient>, InitializingBean, DisposableBean {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchRestClientFactoryBean.class);
 
-    private RestClient client;
-    private RestClient proxyfiedClient;
+    private RestHighLevelClient client;
+    private RestHighLevelClient proxyfiedClient;
 
     private boolean forceMapping;
 
@@ -333,25 +333,20 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
         if (async) {
             Assert.notNull(taskExecutor, "taskExecutor can not be null");
-            Future<RestClient> future = taskExecutor.submit(new Callable<RestClient>() {
-                @Override
-                public RestClient call() throws Exception {
-                    return initialize();
-                }
-            });
+            Future<RestHighLevelClient> future = taskExecutor.submit(() -> initialize());
 
             ProxyFactory proxyFactory = new ProxyFactory();
             proxyFactory.setProxyTargetClass(true);
-            proxyFactory.setTargetClass(RestClient.class);
+            proxyFactory.setTargetClass(RestHighLevelClient.class);
             proxyFactory.addAdvice(new GenericInvocationHandler(future));
-            proxyfiedClient = (RestClient) proxyFactory.getProxy();
+            proxyfiedClient = (RestHighLevelClient) proxyFactory.getProxy();
         } else {
             client = initialize();
         }
     }
 
-    private RestClient initialize() throws Exception {
-        client = buildRestClient();
+    private RestHighLevelClient initialize() throws Exception {
+        client = buildRestHighLevelClient();
         if (autoscan) {
             computeMappings();
             computeTemplates();
@@ -365,7 +360,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         try {
             logger.info("Closing Elasticsearch client");
             if (client != null) {
@@ -377,13 +372,13 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     @Override
-    public RestClient getObject() throws Exception {
+    public RestHighLevelClient getObject() {
         return async ? proxyfiedClient : client;
     }
 
     @Override
-    public Class<RestClient> getObjectType() {
-        return RestClient.class;
+    public Class<RestHighLevelClient> getObjectType() {
+        return RestHighLevelClient.class;
     }
 
     @Override
@@ -403,7 +398,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                 Assert.hasText(template, "Can not read template in ["
                         + template
                         + "]. Check that templates is not empty.");
-                createTemplate(client, classpathRoot, template, forceTemplate);
+                createTemplate(client.getLowLevelClient(), classpathRoot, template, forceTemplate);
             }
         }
     }
@@ -481,14 +476,14 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
             // Let's initialize indexes and mappings if needed
             for (String index : indices.keySet()) {
-                createIndex(client, classpathRoot, index, forceMapping);
+                createIndex(client.getLowLevelClient(), classpathRoot, index, forceMapping);
                 if (mergeSettings) {
-                    updateSettings(client, classpathRoot, index);
+                    updateSettings(client.getLowLevelClient(), classpathRoot, index);
                 }
 
                 Collection<String> mappings = indices.get(index);
                 for (String type : mappings) {
-                    createMapping(client, classpathRoot, index, type, mergeMapping);
+                    createMapping(client.getLowLevelClient(), classpathRoot, index, type, mergeMapping);
                 }
             }
         }
@@ -531,7 +526,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 				if (alias == null) throw new Exception("Can not read mapping in [" + aliase +
 						"]. Check that aliases contains only aliasname:indexname elements.");
 
-				createAlias(client, alias, index);
+				createAlias(client.getLowLevelClient(), alias, index);
 			}
 		}
     }
@@ -546,8 +541,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
 	private String[] esNodes =  { "localhost:9200" };
-
-	private String[] plugins = { };
 
     /**
 	 * Define ES nodes to communicate with.
@@ -571,7 +564,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 		this.esNodes = esNodes;
 	}
 
-	private RestClient buildRestClient() throws Exception {
+	private RestHighLevelClient buildRestHighLevelClient() throws Exception {
         Collection<HttpHost> hosts = new ArrayList<>(esNodes.length);
 		for (String esNode : esNodes) {
             Tuple<String, Integer> addressPort = toAddress(esNode);
@@ -598,7 +591,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             rcb.setHttpClientConfigCallback(hcb -> hcb.setDefaultCredentialsProvider(credentialsProvider));
         }
 
-        return rcb.build();
+        return new RestHighLevelClient(rcb);
 	}
 
 	/**

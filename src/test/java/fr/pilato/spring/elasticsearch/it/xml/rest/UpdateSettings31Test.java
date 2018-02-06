@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 abstract public class UpdateSettings31Test extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/rest/update-settings-31/update-settings-31-context.xml"};
@@ -30,7 +30,7 @@ abstract public class UpdateSettings31Test extends AbstractXmlContextModel {
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestClient client) throws Exception {
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
         super.checkUseCaseSpecific(client);
         checkClient("esClient2");
     }

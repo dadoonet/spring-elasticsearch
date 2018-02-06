@@ -2,3 +2,4 @@ http\://www.pilato.fr/schema/elasticsearch/elasticsearch-0.2.xsd=elasticsearch-0
 http\://www.pilato.fr/schema/elasticsearch/elasticsearch-0.3.xsd=elasticsearch-0.3.xsd
 http\://www.pilato.fr/schema/elasticsearch/elasticsearch-0.4.xsd=elasticsearch-0.4.xsd
 http\://www.pilato.fr/schema/elasticsearch/elasticsearch-5.0.xsd=elasticsearch-5.0.xsd
+http\://www.pilato.fr/schema/elasticsearch/elasticsearch-6.0.xsd=elasticsearch-6.0.xsd

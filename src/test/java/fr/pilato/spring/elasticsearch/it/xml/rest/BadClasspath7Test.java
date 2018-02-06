@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -39,7 +39,7 @@ public class BadClasspath7Test extends AbstractXmlContextModel {
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestClient client) {
-        assertThat("tweet type should not exist in twitter index", isMappingExist(client, "twitter", "tweet"), is(false));
+    protected void checkUseCaseSpecific(RestHighLevelClient client) {
+        assertThat("tweet type should not exist in twitter index", isMappingExist(client.getLowLevelClient(), "twitter", "tweet"), is(false));
     }
 }

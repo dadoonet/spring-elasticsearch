@@ -23,12 +23,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.pilato.spring.elasticsearch.it.BaseTest;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.http.entity.ContentType;
-import org.elasticsearch.client.http.entity.StringEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,17 +87,17 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         }
     }
 
-    RestClient checkClient(String name) {
+    RestHighLevelClient checkClient(String name) {
         return checkClient(name, null);
     }
 
-    RestClient checkClient(String name, Boolean async) {
-        RestClient client;
+    RestHighLevelClient checkClient(String name, Boolean async) {
+        RestHighLevelClient client;
 
         if (name != null) {
-            client = ctx.getBean(name, RestClient.class);
+            client = ctx.getBean(name, RestHighLevelClient.class);
         } else {
-            client = ctx.getBean(RestClient.class);
+            client = ctx.getBean(RestHighLevelClient.class);
         }
         if (async != null) {
             if (async) {
@@ -138,22 +138,22 @@ public abstract class AbstractXmlContextModel extends BaseTest {
 
     @Test
     public void testFactoriesCreated() throws Exception {
-        RestClient client = checkClient(beanName());
+        RestHighLevelClient client = checkClient(beanName());
         checkUseCaseSpecific(client);
 
         // If an index is expected, let's check it actually exists
         if (indexName() != null) {
             // We test how many shards and replica we have
-            assertShardsAndReplicas(client, indexName(), expectedShards(), expectedReplicas());
+            assertShardsAndReplicas(client.getLowLevelClient(), indexName(), expectedShards(), expectedReplicas());
 
             // #92: search errors with async created Client
             Map<String, String> params = new HashMap<>();
             params.put("refresh", "true");
 
 
-            client.performRequest("PUT", "/twitter/tweet/1", params, new StringEntity("{\"foo\":\"bar\"}", ContentType.APPLICATION_JSON));
+            client.getLowLevelClient().performRequest("PUT", "/twitter/tweet/1", params, new StringEntity("{\"foo\":\"bar\"}", ContentType.APPLICATION_JSON));
             try {
-                client.performRequest("GET", "/twitter/tweet/1");
+                client.getLowLevelClient().performRequest("GET", "/twitter/tweet/1");
             } catch (ResponseException e) {
                 assertThat(e.getResponse().getStatusLine().getStatusCode(), not(404));
                 throw e;
@@ -165,7 +165,7 @@ public abstract class AbstractXmlContextModel extends BaseTest {
      * Overwrite it to implement use case specific tests
      * @param client Client representing bean named esClient
      */
-    protected void checkUseCaseSpecific(RestClient client) throws Exception {
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
     }
 
     /**

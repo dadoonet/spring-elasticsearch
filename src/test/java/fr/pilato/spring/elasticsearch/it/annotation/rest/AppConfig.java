@@ -19,9 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchHighLevelRestClientFactoryBean;
 import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +33,7 @@ import static fr.pilato.spring.elasticsearch.it.BaseTest.testCredentials;
 public class AppConfig {
 
 	@Bean
-	public RestClient esClient() throws Exception {
+	public RestHighLevelClient esClient() throws Exception {
 		// Let's add a default user in case we are running with XPack
 		Properties props = new Properties();
 		props.setProperty(XPACK_USER, testCredentials);
@@ -43,14 +41,6 @@ public class AppConfig {
 		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
 		factory.setEsNodes(new String[]{"127.0.0.1:9200"});
 		factory.setProperties(props);
-		factory.afterPropertiesSet();
-		return factory.getObject();
-    }
-
-	@Bean
-	public RestHighLevelClient esHighLevelClient() throws Exception {
-		ElasticsearchHighLevelRestClientFactoryBean factory = new ElasticsearchHighLevelRestClientFactoryBean();
-		factory.setClient(esClient());
 		factory.afterPropertiesSet();
 		return factory.getObject();
     }
