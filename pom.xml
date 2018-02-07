@@ -24,7 +24,7 @@
         <java.compiler.version>1.8</java.compiler.version>
 
         <spring.version>5.0.3.RELEASE</spring.version>
-        <elasticsearch.version>6.1.3</elasticsearch.version>
+        <elasticsearch.version>6.2.0</elasticsearch.version>
         <elasticsearch.rest.version>${elasticsearch.version}</elasticsearch.rest.version>
         <beyonder.version>6.0</beyonder.version>
         <slf4j.version>1.7.25</slf4j.version>
