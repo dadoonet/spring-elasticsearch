@@ -6,7 +6,7 @@
     <artifactId>spring-elasticsearch</artifactId>
     <packaging>jar</packaging>
     <name>spring-elasticsearch</name>
-    <version>6.0</version>
+    <version>6.1-SNAPSHOT</version>
     <url>https://github.com/dadoonet/spring-elasticsearch</url>
     <description>Spring factories for Elasticsearch</description>
 
@@ -76,7 +76,7 @@
         <url>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</url>
         <connection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</connection>
         <developerConnection>scm:git:git@github.com:dadoonet/spring-elasticsearch.git</developerConnection>
-      <tag>spring-elasticsearch-6.0</tag>
+      <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
