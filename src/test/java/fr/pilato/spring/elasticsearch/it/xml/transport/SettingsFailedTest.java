@@ -20,12 +20,12 @@
 package fr.pilato.spring.elasticsearch.it.xml.transport;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * We try to merge non merging settings.
@@ -40,17 +40,19 @@ public class SettingsFailedTest extends BaseTest {
 		return null;
 	}
 
-	@Test(expected=BeanCreationException.class)
-	public void test_merge_settings_failure() {
-		try {
-			if (securityInstalled) {
-				new ClassPathXmlApplicationContext("models/transport-xpack/settings-failed/settings-failed-context.xml");
-			} else {
-				new ClassPathXmlApplicationContext("models/transport/settings-failed/settings-failed-context.xml");
+	@Test
+	void test_merge_settings_failure() {
+		assertThrows(BeanCreationException.class, () -> {
+			try {
+				if (securityInstalled) {
+					new ClassPathXmlApplicationContext("models/transport-xpack/settings-failed/settings-failed-context.xml");
+				} else {
+					new ClassPathXmlApplicationContext("models/transport/settings-failed/settings-failed-context.xml");
+				}
+			} catch (BeanCreationException e) {
+				assertEquals(IllegalArgumentException.class, e.getCause().getClass());
+				throw e;
 			}
-		} catch (BeanCreationException e) {
-			assertEquals(IllegalArgumentException.class, e.getCause().getClass());
-			throw e;
-		}
+		});
 	}
 }

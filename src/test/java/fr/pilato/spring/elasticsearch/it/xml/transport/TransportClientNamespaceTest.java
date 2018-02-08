@@ -26,11 +26,10 @@ import org.elasticsearch.common.transport.TransportAddress;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-
 
 public class TransportClientNamespaceTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/transport-client-namespace/transport-client-namespace-context.xml"};

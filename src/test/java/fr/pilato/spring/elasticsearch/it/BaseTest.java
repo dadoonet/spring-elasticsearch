@@ -31,18 +31,15 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.logging.ESLoggerFactory;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assume.assumeNoException;
-import static org.junit.Assume.assumeThat;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public abstract class BaseTest {
     private final static Logger staticLogger = ESLoggerFactory.getLogger(BaseTest.class);
@@ -95,7 +92,7 @@ public abstract class BaseTest {
         } catch (ConnectException e) {
             // If we have an exception here, let's ignore the test
             staticLogger.warn("Integration tests are skipped: [{}]", e.getMessage());
-            assumeThat("Integration tests are skipped", e.getMessage(), not(containsString("Connection refused")));
+            assumeFalse(e.getMessage().contains("Connection refused"), "Integration tests are skipped");
             return withSecurity;
         } catch (ResponseException e) {
             if (e.getResponse().getStatusLine().getStatusCode() == 401) {
@@ -112,16 +109,16 @@ public abstract class BaseTest {
     }
 
 
-    @BeforeClass
+    @BeforeAll
     public static void testElasticsearchIsRunning() {
         try {
             startRestClient();
         } catch (Exception e) {
-            assumeNoException(e);
+            assumeFalse(true, "Elasticsearch does not seem to run.");
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopClient() throws IOException {
         if (client != null) {
             client.close();
@@ -129,7 +126,7 @@ public abstract class BaseTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void cleanIndex() throws IOException {
         if (indexName() != null) {
             try {

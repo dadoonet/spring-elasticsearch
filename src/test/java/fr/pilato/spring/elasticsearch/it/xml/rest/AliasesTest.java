@@ -23,8 +23,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertThat;
 
 public class AliasesTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/rest/aliases/aliases-context.xml"};
