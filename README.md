@@ -26,7 +26,8 @@ It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for off
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|       6.1-SNAPSHOT      |  6.0 - 6.x    |    5.0.7     |              |
+|       6.2-SNAPSHOT      |  6.0 - 6.x    |    5.0.7     |              |
+|            6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
 |            6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
 |            5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
 |           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
@@ -54,7 +55,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>6.0</version>
+  <version>6.1</version>
 </dependency>
 ```
 
@@ -530,7 +531,7 @@ Let's say you want to use Spring Java Annotations, here is a typical application
         <dependency>
             <groupId>fr.pilato.spring</groupId>
             <artifactId>spring-elasticsearch</artifactId>
-            <version>6.0</version>
+            <version>6.1</version>
         </dependency>
     </dependencies>
 </project>
