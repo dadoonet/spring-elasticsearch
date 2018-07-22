@@ -26,7 +26,7 @@ It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for off
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|       6.1-SNAPSHOT      |  6.0 - 6.x    |    5.0.3     |              |
+|       6.1-SNAPSHOT      |  6.0 - 6.x    |    5.0.7     |              |
 |            6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
 |            5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
 |           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
@@ -64,7 +64,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>6.2.0</version>
+    <version>6.3.1</version>
 </dependency>
 ```
 
@@ -74,7 +74,7 @@ If you want to use a transport client (deprecated), you must add it to your `pom
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>transport</artifactId>
-    <version>6.2.0</version>
+    <version>6.3.1</version>
 </dependency>
 ```
 
@@ -84,7 +84,7 @@ If you want to use a transport client secured with X-Pack (deprecated), you must
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>x-pack-transport</artifactId>
-    <version>6.2.0</version>
+    <version>6.3.1</version>
 </dependency>
 ```
 
@@ -152,17 +152,17 @@ If you want to do so, add to your `pom.xml`:
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-1.2-api</artifactId>
-    <version>2.7</version>
+    <version>2.11.0</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.7</version>
+    <version>2.11.0</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
-    <version>2.7</version>
+    <version>2.11.0</version>
 </dependency>
 ```
 
