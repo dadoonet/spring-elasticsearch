@@ -28,10 +28,10 @@
         <elasticsearch.rest.version>${elasticsearch.version}</elasticsearch.rest.version>
         <beyonder.version>6.3</beyonder.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <log4j.version>2.10.0</log4j.version>
-        <commons.io.version>2.5</commons.io.version>
-        <jackson.version>2.9.4</jackson.version>
-        <junit.version>5.0.3</junit.version>
+        <log4j.version>2.11.0</log4j.version>
+        <commons.io.version>2.6</commons.io.version>
+        <jackson.version>2.9.6</jackson.version>
+        <junit.version>5.3.0-M1</junit.version>
 
         <skipTests>false</skipTests>
         <skip.unit.tests>${skipTests}</skip.unit.tests>
