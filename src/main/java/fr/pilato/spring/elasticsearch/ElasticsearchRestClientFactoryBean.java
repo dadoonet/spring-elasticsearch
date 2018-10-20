@@ -586,7 +586,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 		if (address == null) return null;
 
 		String[] splitted = address.split(":");
-		int port = 9300;
+		int port = 9200;
 		if (splitted.length > 1) {
 			port = Integer.parseInt(splitted[1]);
 		}
