@@ -89,20 +89,6 @@ If you want to use a transport client secured with X-Pack (deprecated), you must
 </dependency>
 ```
 
-Note that you'd probably to add also the elastic maven repository:
-
-```xml
-<repositories>
-    <repository>
-        <id>elastic-download-service</id>
-        <name>Elastic Download Service</name>
-        <url>https://artifacts.elastic.co/maven/</url>
-        <releases><enabled>true</enabled></releases>
-        <snapshots><enabled>false</enabled></snapshots>
-    </repository>
-</repositories>
-```
-
 If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](https://oss.sonatype.org/content/repositories/snapshots/fr/pilato/spring/spring-elasticsearch/):
 
 ```xml
