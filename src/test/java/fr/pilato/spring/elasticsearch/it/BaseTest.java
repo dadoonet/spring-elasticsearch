@@ -26,14 +26,14 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -42,9 +42,9 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public abstract class BaseTest {
-    private final static Logger staticLogger = ESLoggerFactory.getLogger(BaseTest.class);
+    private final static Logger staticLogger = LoggerFactory.getLogger(BaseTest.class);
     public static boolean securityInstalled;
-    protected final Logger logger = ESLoggerFactory.getLogger(this.getClass().getName());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     private static RestClient client;
     public final static String testCredentials = System.getProperty("tests.cluster.credentials", "elastic:changeme");
