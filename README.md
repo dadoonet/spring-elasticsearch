@@ -194,12 +194,12 @@ In your spring context file, just define a client like this:
 ```
 
 By default, you will get an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
-connected to an Elasticsearch node already running at `localhost:9200`.
+connected to an Elasticsearch node already running at `http://localhost:9200`.
 
 You can set the nodes you want to connect to:
 
 ```xml
-<elasticsearch:rest-client id="esClient" esNodes="localhost:9200,localhost:9201" />
+<elasticsearch:rest-client id="esClient" esNodes="http://localhost:9200,http://localhost:9201" />
 ```
 
 #### Injecting the rest client in your java project
@@ -560,7 +560,7 @@ public class RestApp {
         @Bean
         public RestHighLevelClient esClient() throws Exception {
             ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
-            factory.setEsNodes(new String[]{"127.0.0.1:9200"});
+            factory.setEsNodes(new String[]{"http://127.0.0.1:9200"});
 
             // Begin: If you are running with x-pack
             Properties props = new Properties();
@@ -616,8 +616,8 @@ Note that you can use the old fashion method to define your beans instead of usi
     <bean id="esRestClient" class="fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean" >
         <property name="esNodes">
             <list>
-                <value>localhost:9200</value>
-                <value>localhost:9201</value>
+                <value>http://localhost:9200</value>
+                <value>http://localhost:9201</value>
             </list>
         </property>
 
@@ -747,7 +747,7 @@ mvn changes:announcement-mail -Dchanges.username='YourSmtpUserName' -Dchanges.pa
 
 This software is licensed under the Apache 2 license, quoted below.
 
-	Copyright 2011-2018 David Pilato
+	Copyright 2011-2019 David Pilato
 	
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not
 	use this file except in compliance with the License. You may obtain a copy of
