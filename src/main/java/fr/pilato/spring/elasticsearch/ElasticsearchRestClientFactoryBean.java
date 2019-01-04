@@ -22,7 +22,6 @@ package fr.pilato.spring.elasticsearch;
 import fr.pilato.elasticsearch.tools.index.IndexFinder;
 import fr.pilato.elasticsearch.tools.template.TemplateFinder;
 import fr.pilato.elasticsearch.tools.type.TypeFinder;
-import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -40,7 +39,6 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -524,23 +522,23 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         }
     }
 
-	private String[] esNodes =  { "localhost:9200" };
+	private String[] esNodes =  { "http://localhost:9200" };
 
     /**
 	 * Define ES nodes to communicate with.
-	 * <br>use : hostname:port form
+	 * <br>use : protocol://hostname:port form
 	 * <p>Example :</p>
 	 * <pre>
 	 * {@code
 	 * <property name="esNodes">
 	 *  <list>
-	 *   <value>localhost:9200</value>
-	 *   <value>localhost:9201</value>
+	 *   <value>http://localhost:9200</value>
+	 *   <value>http://localhost:9201</value>
 	 *  </list>
 	 * </property>
 	 * }
 	 * </pre>
-	 * If not set, default to [ "localhost:9200" ].
+	 * If not set, default to [ "http://localhost:9200" ].
 	 * <br>If port is not set, default to 9200.
 	 * @param esNodes An array of nodes hostname:port
 	 */
@@ -551,8 +549,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 	private RestHighLevelClient buildRestHighLevelClient() throws Exception {
         Collection<HttpHost> hosts = new ArrayList<>(esNodes.length);
 		for (String esNode : esNodes) {
-            Tuple<String, Integer> addressPort = toAddress(esNode);
-            hosts.add(new HttpHost(addressPort.v1(), addressPort.v2(), "http"));
+            hosts.add(HttpHost.create(esNode));
         }
 
         RestClientBuilder rcb = RestClient.builder(hosts.toArray(new HttpHost[]{}));
@@ -577,21 +574,4 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
         return new RestHighLevelClient(rcb);
 	}
-
-	/**
-	 * Helper to define an hostname and port with a String like hostname:port
-	 * @param address Node address hostname:port (or hostname)
-	 */
-	private Tuple<String, Integer> toAddress(String address) throws UnknownHostException {
-		if (address == null) return null;
-
-		String[] splitted = address.split(":");
-		int port = 9200;
-		if (splitted.length > 1) {
-			port = Integer.parseInt(splitted[1]);
-		}
-
-		return new Tuple<>(splitted[0], port);
-	}
-
 }
