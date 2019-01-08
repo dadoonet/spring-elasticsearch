@@ -26,7 +26,7 @@ It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for off
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|       6.2-SNAPSHOT      |  6.0 - 6.x    |    5.0.7     |              |
+|       6.2-SNAPSHOT      |  6.0 - 6.x    |    5.1.3     |              |
 |            6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
 |            6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
 |            5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
