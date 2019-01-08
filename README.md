@@ -26,7 +26,7 @@ It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for off
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|       6.2-SNAPSHOT      |  6.0 - 6.x    |    5.1.3     |              |
+|            6.2          |  6.0 - 6.x    |    5.1.3     |  2019-01-08  |
 |            6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
 |            6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
 |            5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
@@ -55,7 +55,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>6.1</version>
+  <version>6.2</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>6.3.1</version>
+    <version>6.5.3</version>
 </dependency>
 ```
 
@@ -75,7 +75,7 @@ If you want to use a transport client (deprecated), you must add it to your `pom
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>transport</artifactId>
-    <version>6.3.1</version>
+    <version>6.5.3</version>
 </dependency>
 ```
 
@@ -85,7 +85,7 @@ If you want to use a transport client secured with X-Pack (deprecated), you must
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>x-pack-transport</artifactId>
-    <version>6.3.1</version>
+    <version>6.5.3</version>
 </dependency>
 ```
 
@@ -109,7 +109,7 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>6.1-SNAPSHOT</version>
+  <version>6.3-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -531,7 +531,7 @@ Let's say you want to use Spring Java Annotations, here is a typical application
         <dependency>
             <groupId>fr.pilato.spring</groupId>
             <artifactId>spring-elasticsearch</artifactId>
-            <version>6.1</version>
+            <version>6.2</version>
         </dependency>
     </dependencies>
 </project>
