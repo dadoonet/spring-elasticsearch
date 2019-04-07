@@ -18,8 +18,8 @@ It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for off
 
 ## Documentation
 
-* For 7.x elasticsearch versions, look at [master branch](https://github.com/dadoonet/spring-elasticsearch).
-* For 6.x elasticsearch versions, you are reading the latest documentation.
+* For 7.x elasticsearch versions, you are reading the latest documentation.
+* For 6.x elasticsearch versions, look at [es-6.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-6.x).
 * For 5.x elasticsearch versions, look at [es-5.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-5.x).
 * For 2.x elasticsearch versions, look at [es-2.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-2.x).
 * For 1.x elasticsearch versions, look at [es-1.4 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.4).
