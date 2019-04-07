@@ -16,7 +16,7 @@
       </Console>
    </Appenders>
    <Loggers>
-      <Logger name="fr.pilato" level="trace" additivity="false">
+      <Logger name="fr.pilato" level="info" additivity="false">
          <AppenderRef ref="CONSOLE"/>
       </Logger>
       <Logger name="org.elasticsearch" level="info" additivity="false">
