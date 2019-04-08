@@ -27,7 +27,7 @@ It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for off
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|       6.3-SNAPSHOT      |  6.0 - 6.x    |    5.1.3     |              |
+|       7.0-SNAPSHOT      |  7.0 - 7.x    |    5.1.6     |              |
 |            6.2          |  6.0 - 6.x    |    5.1.3     |  2019-01-08  |
 |            6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
 |            6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
@@ -111,7 +111,7 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>6.3-SNAPSHOT</version>
+  <version>7.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -155,17 +155,17 @@ If you want to do so, add to your `pom.xml`:
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-1.2-api</artifactId>
-    <version>2.11.0</version>
+    <version>2.11.2</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.11.0</version>
+    <version>2.11.2</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
-    <version>2.11.0</version>
+    <version>2.11.2</version>
 </dependency>
 ```
 
