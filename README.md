@@ -155,17 +155,17 @@ If you want to do so, add to your `pom.xml`:
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-1.2-api</artifactId>
-    <version>2.11.0</version>
+    <version>2.11.2</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.11.0</version>
+    <version>2.11.2</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
-    <version>2.11.0</version>
+    <version>2.11.2</version>
 </dependency>
 ```
 
