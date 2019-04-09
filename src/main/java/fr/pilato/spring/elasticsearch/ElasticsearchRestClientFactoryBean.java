@@ -403,6 +403,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                     if (types.isEmpty()) {
                         autoMappings.add(index);
                     } else {
+                        if (types.size() > 1) {
+                            throw new IllegalArgumentException("Only one single type per index is supported. Replace the following " +
+                                    types + " by a single _doc type.");
+                        }
                         for (String type : types) {
                             autoMappings.add(index+"/"+type);
                         }
