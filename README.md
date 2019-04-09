@@ -67,7 +67,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>6.5.3</version>
+    <version>6.7.1</version>
 </dependency>
 ```
 
@@ -77,7 +77,7 @@ If you want to use a transport client (deprecated), you must add it to your `pom
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>transport</artifactId>
-    <version>6.5.3</version>
+    <version>6.7.1</version>
 </dependency>
 ```
 
@@ -87,7 +87,7 @@ If you want to use a transport client secured with X-Pack (deprecated), you must
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>x-pack-transport</artifactId>
-    <version>6.5.3</version>
+    <version>6.7.1</version>
 </dependency>
 ```
 
