@@ -201,7 +201,7 @@ public class TypeElasticsearchUpdater {
 
         if (mapping != null) {
             // Create type and mapping
-            Request request = new Request("PUT", "/" + index + "/_mapping/" + type);
+            Request request = new Request("PUT", "/" + index + "/_mapping");
             request.setJsonEntity(mapping);
             Response response = client.performRequest(request);
             if (response.getStatusLine().getStatusCode() != 200) {

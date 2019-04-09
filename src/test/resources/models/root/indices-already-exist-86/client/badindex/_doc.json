@@ -1,7 +1,5 @@
 {
-    "_doc" : {
-        "properties" : {
-            "foo" : {"type" : "text"}
-        }
+    "properties" : {
+        "foo" : {"type" : "text"}
     }
 }

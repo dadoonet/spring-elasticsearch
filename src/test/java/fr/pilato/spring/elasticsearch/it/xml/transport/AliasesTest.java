@@ -40,6 +40,6 @@ public class AliasesTest extends AbstractXmlContextModel {
                 .get();
         assertThat(response.getAliases().size(), is(2));
 
-        assertShardsAndReplicas(client, "rss", 5, 1);
+        assertShardsAndReplicas(client, "rss", 1, 1);
     }
 }

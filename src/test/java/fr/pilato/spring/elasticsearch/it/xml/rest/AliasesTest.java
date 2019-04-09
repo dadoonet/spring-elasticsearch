@@ -39,6 +39,6 @@ public class AliasesTest extends AbstractXmlContextModel {
         Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_alias/alltheworld");
         assertThat(response, hasKey("rss"));
         assertThat(response, hasKey("twitter"));
-        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 5, 1);
+        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 1, 1);
     }
 }

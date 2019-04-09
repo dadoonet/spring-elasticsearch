@@ -123,9 +123,9 @@ public abstract class AbstractXmlContextModel extends BaseTest {
 
         if (imd == null) return false;
 
-        MappingMetaData mdd = imd.mapping(type);
+        MappingMetaData mdd = imd.mapping();
 
-        return mdd != null;
+        return mdd.type().equals(type);
     }
 
     @Test
@@ -143,7 +143,7 @@ public abstract class AbstractXmlContextModel extends BaseTest {
             // #92: prepareSearch() errors with async created TransportClient
             client.prepareIndex("twitter", "_doc").setSource("foo", "bar").setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
             SearchResponse response = client.prepareSearch("twitter").get();
-            assertThat(response.getHits().getTotalHits(), is(1L));
+            assertThat(response.getHits().getTotalHits().value, is(1L));
         }
     }
 
@@ -155,11 +155,11 @@ public abstract class AbstractXmlContextModel extends BaseTest {
     }
 
     /**
-     * Overwrite it if the number of expected shards is not 5
+     * Overwrite it if the number of expected shards is not 1
      * @return Number of expected primaries
      */
     protected int expectedShards() {
-        return 5;
+        return 1;
     }
 
     /**

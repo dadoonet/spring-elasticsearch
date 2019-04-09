@@ -388,11 +388,9 @@ For example, create the following file `src/main/resources/es/twitter/_doc.json`
 
 ```javascript
 {
-  "_doc" : {
     "properties" : {
       "message" : {"type" : "text", "store" : "yes"}
     }
-  }
 }
 ```
 
@@ -448,12 +446,10 @@ To configure your template you have to define a file named `es/_template/twitter
         "number_of_shards" : 1
     },
     "mappings" : {
-        "_doc" : {
-            "properties" : {
-                "message" : {
-                    "type" : "text",
-                    "store" : "yes"
-                }
+        "properties" : {
+            "message" : {
+                "type" : "text",
+                "store" : "yes"
             }
         }
     }

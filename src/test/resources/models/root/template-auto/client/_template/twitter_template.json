@@ -4,12 +4,10 @@
         "number_of_shards" : 2
     },
     "mappings" : {
-        "_doc" : {
-            "properties" : {
-                "message" : {
-                    "type" : "text",
-                    "store" : true
-                }
+        "properties" : {
+            "message" : {
+                "type" : "text",
+                "store" : true
             }
         }
     }

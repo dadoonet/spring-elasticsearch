@@ -1,6 +1,5 @@
 {
-    "type2" : {
-        "properties" : {
-            "message" : {"type" : "text"  }        }
+    "properties" : {
+        "message" : {"type" : "text"  },
     }
 }

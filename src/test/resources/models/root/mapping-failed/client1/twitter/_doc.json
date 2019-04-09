@@ -1,7 +1,5 @@
 {
-    "_doc" : {
-        "properties" : {
-            "message" : {"type" : "text", "store" : true, "analyzer" : "francais" }
-        }
+    "properties" : {
+        "message" : {"type" : "text", "store" : true, "analyzer" : "francais" }
     }
 }
