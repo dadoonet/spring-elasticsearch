@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
@@ -138,6 +140,15 @@ public abstract class BaseTest {
                 }
             }
         }
+        for (String otherTestIndex : otherTestIndices()) {
+            try {
+                client.performRequest(new Request("DELETE", otherTestIndex));
+            } catch (ResponseException e) {
+                if (e.getResponse().getStatusLine().getStatusCode() != 404) {
+                    throw e;
+                }
+            }
+        }
         try {
             client.performRequest(new Request("DELETE", "twitter"));
         } catch (ResponseException e) {
@@ -153,5 +164,13 @@ public abstract class BaseTest {
      */
     protected String indexName() {
         return "twitter";
+    }
+
+    /**
+     * Overwrite if the test is using multiple indices. Can be null if no other index should be created
+     * @return Index name. Could be null
+     */
+    protected List<String> otherTestIndices() {
+        return new ArrayList<>();
     }
 }

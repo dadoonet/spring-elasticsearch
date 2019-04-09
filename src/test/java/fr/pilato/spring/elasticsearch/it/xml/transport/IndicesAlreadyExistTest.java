@@ -19,6 +19,9 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.transport;
 
+import java.util.Collections;
+import java.util.List;
+
 public class IndicesAlreadyExistTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/indices-already-exist-86/indices-already-exist-86.xml"};
 
@@ -28,8 +31,8 @@ public class IndicesAlreadyExistTest extends AbstractXmlContextModel {
     }
 
     @Override
-    protected String indexName() {
-        return "badindex";
+    protected List<String> otherTestIndices() {
+        return Collections.singletonList("badindex");
     }
 
     // We don't test really something.

@@ -21,6 +21,9 @@ package fr.pilato.spring.elasticsearch.it.xml.transport;
 
 import org.elasticsearch.client.Client;
 
+import java.util.Collections;
+import java.util.List;
+
 
 public class Settings13Test extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/settings-13/settings-13-context.xml"};
@@ -34,5 +37,10 @@ public class Settings13Test extends AbstractXmlContextModel {
     protected void checkUseCaseSpecific(Client client) {
         assertTransportClient(client, 2);
         assertShardsAndReplicas(client, "rss", 5, 1);
+    }
+
+    @Override
+    protected List<String> otherTestIndices() {
+        return Collections.singletonList("rss");
     }
 }

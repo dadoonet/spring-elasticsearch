@@ -22,6 +22,8 @@ package fr.pilato.spring.elasticsearch.it.xml.rest;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 
 public class Settings13Test extends AbstractXmlContextModel {
@@ -35,5 +37,10 @@ public class Settings13Test extends AbstractXmlContextModel {
     @Override
     protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
         assertShardsAndReplicas(client.getLowLevelClient(), "rss", 5, 1);
+    }
+
+    @Override
+    protected List<String> otherTestIndices() {
+        return Collections.singletonList("rss");
     }
 }
