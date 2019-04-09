@@ -22,6 +22,7 @@ package fr.pilato.spring.elasticsearch;
 import fr.pilato.elasticsearch.tools.index.IndexFinder;
 import fr.pilato.elasticsearch.tools.template.TemplateFinder;
 import fr.pilato.elasticsearch.tools.type.TypeFinder;
+import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -327,8 +328,8 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     private RestHighLevelClient initialize() throws Exception {
         client = buildRestHighLevelClient();
         if (autoscan) {
-            computeMappings();
-            computeTemplates();
+            mappings = computeMappings(mappings, classpathRoot);
+            templates = computeTemplates(templates, classpathRoot);
         }
 
         initTemplates();
@@ -385,7 +386,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     /**
      * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
      */
-    private void computeMappings() {
+    static String[] computeMappings(String[] mappings, String classpathRoot) {
         if (mappings == null || mappings.length == 0) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Automatic discovery is activated. Looking for definition files in classpath under [{}].",
@@ -408,18 +409,19 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                     }
                 }
 
-                mappings = autoMappings.toArray(new String[autoMappings.size()]);
+                return autoMappings.toArray(new String[autoMappings.size()]);
             } catch (IOException |URISyntaxException e) {
                 logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
                 logger.trace("", e);
             }
         }
+        return mappings;
     }
 
     /**
      * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
      */
-    private void computeTemplates() {
+    static String[] computeTemplates(String[] templates, String classpathRoot) {
         if (templates == null || templates.length == 0) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Automatic discovery is activated. Looking for template files in classpath under [{}].",
@@ -435,12 +437,13 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                     autoTemplates.add(template);
                 }
 
-                templates = autoTemplates.toArray(new String[autoTemplates.size()]);
+                return autoTemplates.toArray(new String[autoTemplates.size()]);
             } catch (IOException|URISyntaxException e) {
                 logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
                 logger.trace("", e);
             }
         }
+        return null;
     }
 
     /**
@@ -468,7 +471,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         }
     }
 
-    private static Map<String, Collection<String>> getIndexMappings(String[] mappings) throws Exception {
+    static Map<String, Collection<String>> getIndexMappings(String[] mappings) throws Exception {
         Map<String, Collection<String>> indices = new HashMap<>();
 
         for (String indexmapping : mappings) {
@@ -480,7 +483,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
             // We add the mapping in the collection of its index
             if (!indices.containsKey(index)) {
-                indices.put(index, new ArrayList<String>());
+                indices.put(index, new ArrayList<>());
             }
 
             if (indexmappingsplitted.length > 1) {
@@ -495,19 +498,24 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      */
     private void initAliases() throws Exception {
 		if (aliases != null && aliases.length > 0) {
-			for (String aliase : aliases) {
-				String[] aliasessplitted = aliase.split(":");
-				String alias = aliasessplitted[0];
-				String index = aliasessplitted[1];
-
-				if (index == null) throw new Exception("Can not read index in [" + aliase +
-						"]. Check that aliases contains only aliasname:indexname elements.");
-				if (alias == null) throw new Exception("Can not read mapping in [" + aliase +
-						"]. Check that aliases contains only aliasname:indexname elements.");
-
-				createAlias(client.getLowLevelClient(), alias, index);
+			for (String aliasIndex : aliases) {
+                Tuple<String, String> aliasIndexSplitted = computeAlias(aliasIndex);
+				createAlias(client.getLowLevelClient(), aliasIndexSplitted.v2(), aliasIndexSplitted.v1());
 			}
 		}
+    }
+
+    static Tuple<String, String> computeAlias(String aliasIndex) {
+        String[] aliasIndexSplitted = aliasIndex.split(":");
+        String alias = aliasIndexSplitted[0];
+        String index = aliasIndexSplitted[1];
+
+        if (index == null) throw new IllegalArgumentException("Can not read index in [" + aliasIndex +
+                "]. Check that aliases contains only aliasname:indexname elements.");
+        if (alias == null) throw new IllegalArgumentException("Can not read mapping in [" + aliasIndex +
+                "]. Check that aliases contains only aliasname:indexname elements.");
+
+        return new Tuple<>(index, alias);
     }
 
     /**
