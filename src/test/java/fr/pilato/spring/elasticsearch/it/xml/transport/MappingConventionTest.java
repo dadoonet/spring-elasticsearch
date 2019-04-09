@@ -33,6 +33,6 @@ public class MappingConventionTest extends AbstractXmlContextModel {
     }
 
     protected void checkUseCaseSpecific(Client client) {
-        assertThat("tweet type should exist in twitter index", isMappingExist(client, "twitter", "tweet"), is(true));
+        assertThat("_doc type should exist in twitter index", isMappingExist(client, "twitter", "_doc"), is(true));
     }
 }

@@ -27,6 +27,11 @@ public class IndicesAlreadyExistTest extends AbstractXmlContextModel {
         return xmlBeans;
     }
 
+    @Override
+    protected String indexName() {
+        return "badindex";
+    }
+
     // We don't test really something.
     // We just expect that there won't be any exception while starting the test
     // If someone wants to check anything, he has to read the logs for this test
