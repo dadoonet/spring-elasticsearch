@@ -56,7 +56,7 @@ import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.crea
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.updateSettings;
 import static fr.pilato.elasticsearch.tools.template.TemplateElasticsearchUpdater.createTemplate;
-import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.createMapping;
+import static fr.pilato.spring.elasticsearch.type.TypeElasticsearchUpdater.createMapping;
 
 /**
  * An abstract {@link FactoryBean} used to create an Elasticsearch

@@ -29,7 +29,7 @@ public class UpdateSettingsDisabled31Test extends UpdateSettings31Test {
 
     @Override
     protected int expectedShards() {
-        return 1;
+        return 2;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class MappingTest extends AbstractXmlContextModel {
     protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
         RestHighLevelClient client2 = checkClient("esClient2");
 
-        Map<String, Object> response = runRestQuery(client2.getLowLevelClient(), "/twitter/_mapping/_doc", "twitter", "mappings", "_doc", "properties");
+        Map<String, Object> response = runRestQuery(client2.getLowLevelClient(), "/twitter/_mapping", "twitter", "mappings", "_doc", "properties");
         // This one comes from the first mapping
         assertThat(response, hasKey("message"));
         // This one comes from the second mapping

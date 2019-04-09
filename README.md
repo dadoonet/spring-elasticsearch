@@ -374,7 +374,7 @@ For example, create the following file `src/main/resources/es/twitter/_settings.
 
 ```javascript
 {
-  "index" : {
+  "settings" : {
     "number_of_shards" : 3,
     "number_of_replicas" : 2
   }

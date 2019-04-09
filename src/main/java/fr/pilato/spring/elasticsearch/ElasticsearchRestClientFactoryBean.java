@@ -21,7 +21,7 @@ package fr.pilato.spring.elasticsearch;
 
 import fr.pilato.elasticsearch.tools.index.IndexFinder;
 import fr.pilato.elasticsearch.tools.template.TemplateFinder;
-import fr.pilato.elasticsearch.tools.type.TypeFinder;
+import fr.pilato.spring.elasticsearch.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -50,7 +50,7 @@ import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.crea
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.updateSettings;
 import static fr.pilato.elasticsearch.tools.template.TemplateElasticsearchUpdater.createTemplate;
-import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.createMapping;
+import static fr.pilato.spring.elasticsearch.type.TypeElasticsearchUpdater.createMapping;
 
 /**
  * An abstract {@link org.springframework.beans.factory.FactoryBean} used to create an Elasticsearch
