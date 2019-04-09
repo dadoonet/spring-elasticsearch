@@ -25,13 +25,15 @@ import fr.pilato.spring.elasticsearch.it.BaseTest;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -117,7 +119,7 @@ public abstract class AbstractXmlContextModel extends BaseTest {
 
     boolean isMappingExist(RestClient client, String index, String type) {
         try {
-            return client.performRequest("HEAD", "/" + index + "/_mapping/" + type).getStatusLine().getStatusCode() != 404;
+            return client.performRequest(new Request("HEAD", "/" + index + "/_mapping/" + type)).getStatusLine().getStatusCode() != 404;
         } catch (IOException e) {
             return false;
         }
@@ -134,8 +136,8 @@ public abstract class AbstractXmlContextModel extends BaseTest {
             assertShardsAndReplicas(client.getLowLevelClient(), indexName(), expectedShards(), expectedReplicas());
 
             // #92: search errors with async created Client
-            client.index(new IndexRequest("twitter", "tweet", "1").source("{\"foo\":\"bar\"}", XContentType.JSON));
-            assertThat(client.get(new GetRequest("twitter", "tweet", "1")).isExists(), is(true));
+            client.index(new IndexRequest("twitter").type("_doc").id("1").source("{\"foo\":\"bar\"}", XContentType.JSON), RequestOptions.DEFAULT);
+            assertThat(client.get(new GetRequest("twitter").type("_doc").id("1"), RequestOptions.DEFAULT).isExists(), is(true));
         }
     }
 
@@ -174,7 +176,7 @@ public abstract class AbstractXmlContextModel extends BaseTest {
     }
 
     Map<String, Object> runRestQuery(RestClient client, String url, String... fields) throws IOException {
-        Response response = client.performRequest("GET", url);
+        Response response = client.performRequest(new Request("GET", url));
         Map<String, Object> result = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<Map<String, Object>>(){});
         logger.trace("Raw result {}", result);
         if (fields.length > 0) {

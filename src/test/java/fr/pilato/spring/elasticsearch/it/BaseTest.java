@@ -26,6 +26,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
@@ -81,7 +82,7 @@ public abstract class BaseTest {
 
     private static boolean testClusterRunning(boolean withSecurity) throws IOException {
         try {
-            Response response = client.performRequest("GET", "/");
+            Response response = client.performRequest(new Request("GET", "/"));
             Map<String, Object> result = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<Map<String, Object>>(){});
 
             Map<String, Object> asMap = (Map<String, Object>) result.get("version");
@@ -130,7 +131,7 @@ public abstract class BaseTest {
     public void cleanIndex() throws IOException {
         if (indexName() != null) {
             try {
-                client.performRequest("DELETE", indexName());
+                client.performRequest(new Request("DELETE", indexName()));
             } catch (ResponseException e) {
                 if (e.getResponse().getStatusLine().getStatusCode() != 404) {
                     throw e;
@@ -138,7 +139,7 @@ public abstract class BaseTest {
             }
         }
         try {
-            client.performRequest("DELETE", "twitter");
+            client.performRequest(new Request("DELETE", "twitter"));
         } catch (ResponseException e) {
             if (e.getResponse().getStatusLine().getStatusCode() != 404) {
                 throw e;
