@@ -331,6 +331,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("Starting Elasticsearch client");
+        logger.warn("Elasticsearch Transport client is deprecated. You should switch to the Rest Client.");
 
         if (async) {
             Assert.notNull(taskExecutor, "taskExecutor can not be null");
