@@ -156,7 +156,7 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * {
  *   "_doc" : {
  *     "properties" : {
- *       "message" : {"type" : "string", "store" : "yes"}
+ *       "message" : {"type" : "text"}
  *     }
  *   }
  * }
