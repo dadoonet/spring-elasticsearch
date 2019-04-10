@@ -236,19 +236,19 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     /**
      * Define mappings you want to manage with this factory
-     * <br>use : indexname/_doc form
+     * <br>use : indexname form
      * <p>Example :</p>
      * <pre>
      * {@code
      * <property name="mappings">
      *  <list>
-     *   <value>twitter/_doc</value>
-     *   <value>rss/_doc</value>
+     *   <value>twitter</value>
+     *   <value>rss</value>
      *  </list>
      * </property>
      * }
      * </pre>
-     * @param mappings Array of indexname/_doc
+     * @param mappings Array of index names
      */
     public void setMappings(String[] mappings) {
         this.mappings = mappings;
@@ -408,7 +408,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                                     types + " by a single _doc type.");
                         }
                         for (String type : types) {
-                            autoMappings.add(index+"/"+type);
+                            autoMappings.add(index);
                         }
                     }
                 }
@@ -467,10 +467,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                     updateSettings(client.getLowLevelClient(), classpathRoot, index);
                 }
 
-                Collection<String> mappings = indices.get(index);
-                for (String type : mappings) {
-                    createMapping(client.getLowLevelClient(), classpathRoot, index, type, mergeMapping);
-                }
+                createMapping(client, classpathRoot, index, mergeMapping);
             }
         }
     }
@@ -483,7 +480,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             String index = indexmappingsplitted[0];
 
             if (index == null) throw new Exception("Can not read index in [" + indexmapping +
-                    "]. Check that mappings contains only indexname/mappingname elements.");
+                    "]. Check that mappings contains only indexname elements.");
 
             // We add the mapping in the collection of its index
             if (!indices.containsKey(index)) {
@@ -491,7 +488,8 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             }
 
             if (indexmappingsplitted.length > 1) {
-                indices.get(index).add(indexmappingsplitted[1]);
+                logger.warn("No need to specify mappings with {}/{} anymore as only one type is allowed. " +
+                        "Use now {} only", index, indexmappingsplitted[1], index);
             }
         }
         return indices;

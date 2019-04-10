@@ -21,8 +21,11 @@ package fr.pilato.spring.elasticsearch.it.xml.rest;
 
 import org.elasticsearch.client.RestHighLevelClient;
 
+import java.io.IOException;
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasKey;
 
 
 public class MappingConventionTest extends AbstractXmlContextModel {
@@ -34,7 +37,8 @@ public class MappingConventionTest extends AbstractXmlContextModel {
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) {
-        assertThat("_doc type should exist in twitter index", isMappingExist(client.getLowLevelClient(), "twitter", "_doc"), is(true));
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/twitter/_mapping", "twitter", "mappings", "properties");
+        assertThat(response, hasKey("message"));
     }
 }

@@ -117,14 +117,6 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         return client;
     }
 
-    boolean isMappingExist(RestClient client, String index, String type) {
-        try {
-            return client.performRequest(new Request("HEAD", "/" + index + "/_mapping/" + type)).getStatusLine().getStatusCode() != 404;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
     @Test
     public void testFactoriesCreated() throws Exception {
         RestHighLevelClient client = checkClient(beanName());

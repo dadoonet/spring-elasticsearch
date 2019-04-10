@@ -30,34 +30,32 @@ import java.io.IOException;
  * Manage elasticsearch type (mapping) files
  * @author David Pilato
  */
-public class TypeSettingsReader extends SettingsReader {
+class TypeSettingsReader extends SettingsReader {
 
 	private static final Logger logger = LoggerFactory.getLogger(TypeSettingsReader.class);
 
 	/**
-	 * Read a mapping
+	 * Read a mapping from index/_doc.json file
 	 * @param root dir within the classpath
 	 * @param index index name
-	 * @param type type name (.json will be appended)
 	 * @return The mapping
 	 * @throws IOException if the connection with elasticsearch is failing
 	 */
-	public static String readMapping(String root, String index, String type) throws IOException {
+	static String readMapping(String root, String index) throws IOException {
 		if (root == null) {
-			return readMapping(index, type);
+			return readMapping(index);
 		}
-		String mappingFile = root + "/" + index + "/" + type + Defaults.JsonFileExtension;
+		String mappingFile = root + "/" + index + "/_doc" + Defaults.JsonFileExtension;
 		return readFileFromClasspath(mappingFile);
 	}
 
 	/**
-	 * Read a mapping in default classpath dir
+	 * Read a mapping from index/_doc.json file in default classpath dir
 	 * @param index index name
-	 * @param type type name (.json will be appended)
 	 * @return The mapping
 	 * @throws IOException if the connection with elasticsearch is failing
 	 */
-	public static String readMapping(String index, String type) throws IOException {
-		return readMapping(Defaults.ConfigDir, index, type);
+	private static String readMapping(String index) throws IOException {
+		return readMapping(Defaults.ConfigDir, index);
 	}
 }
