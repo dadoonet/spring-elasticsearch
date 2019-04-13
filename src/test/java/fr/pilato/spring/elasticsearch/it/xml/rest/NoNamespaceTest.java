@@ -19,11 +19,19 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
+import java.util.Collections;
+import java.util.List;
+
 public class NoNamespaceTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/rest/no-namespace/no-namespace-context.xml"};
 
     @Override
     String[] xmlBeans() {
         return xmlBeans;
+    }
+
+    @Override
+    protected List<String> otherTestIndices() {
+        return Collections.singletonList("rss");
     }
 }

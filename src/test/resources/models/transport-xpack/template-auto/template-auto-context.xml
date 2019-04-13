@@ -22,7 +22,7 @@
 	</util:properties>
 
 	<elasticsearch:client id="esClient"
-						  classpathRoot="/models/root/template-auto/client"
+						  classpathRoot="/models/root/template-auto-transport/client"
 						  forceTemplate="true"
 						  properties="esProperties"
 	/>

@@ -67,7 +67,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>6.5.3</version>
+    <version>6.7.1</version>
 </dependency>
 ```
 
@@ -77,7 +77,7 @@ If you want to use a transport client (deprecated), you must add it to your `pom
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>transport</artifactId>
-    <version>6.5.3</version>
+    <version>6.7.1</version>
 </dependency>
 ```
 
@@ -87,7 +87,7 @@ If you want to use a transport client secured with X-Pack (deprecated), you must
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>x-pack-transport</artifactId>
-    <version>6.5.3</version>
+    <version>6.7.1</version>
 </dependency>
 ```
 
@@ -354,17 +354,17 @@ If you want to manage indexes and types at startup (creating missing indexes/typ
 
 ```xml
 <elasticsearch:rest-client id="esClient"
-    mappings="twitter/tweet" />
+    mappings="twitter/_doc" />
 ```
 
 This will create an [Elasticsearch Low Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-low.html)
-that will check when starting that index `twitter` exists and `tweet` type is defined.
+that will check when starting that index `twitter` exists and `_doc` type is defined.
 
-If you need to manage more than one type or index, just use a comma separated list:
+If you need to manage more than one index, just use a comma separated list:
 
 ```xml
 <elasticsearch:rest-client id="esClient"
-    mappings="twitter/tweet,twitter/user,facebook/user" />
+    mappings="twitter/_doc,facebook/_doc" />
 ```
 
 If you add in your classpath a file named `es/twitter/_settings.json`, it will be automatically applied to define
@@ -374,21 +374,21 @@ For example, create the following file `src/main/resources/es/twitter/_settings.
 
 ```javascript
 {
-  "index" : {
+  "settings" : {
     "number_of_shards" : 3,
     "number_of_replicas" : 2
   }
 }
 ```
 
-Also, if you define a file named `es/twitter/tweet.json`, it will be automatically applied as the mapping for
-the `tweet` type in the `twitter` index.
+Also, if you define a file named `es/twitter/_doc.json`, it will be automatically applied as the mapping for
+the `_doc` type in the `twitter` index.
 
-For example, create the following file `src/main/resources/es/twitter/tweet.json` in your project:
+For example, create the following file `src/main/resources/es/twitter/_doc.json` in your project:
 
 ```javascript
 {
-  "tweet" : {
+  "_doc" : {
     "properties" : {
       "message" : {"type" : "text", "store" : "yes"}
     }
@@ -399,7 +399,7 @@ For example, create the following file `src/main/resources/es/twitter/tweet.json
 ### Using convention over configuration
 
 By default, the factory will find every mapping file located under `es` directory.
-So, if you have a mapping file named `es/twitter/tweet.json` in your classpath, it will be automatically used by
+So, if you have a mapping file named `es/twitter/_doc.json` in your classpath, it will be automatically used by
 the factory without defining anything:
 
 ```xml
@@ -409,7 +409,7 @@ the factory without defining anything:
 You can disable this automatic lookup by setting the `autoscan` property to `false`:
 
 ```xml
-<elasticsearch:rest-client id="esClient" autoscan="false" mappings="twitter/tweet" />
+<elasticsearch:rest-client id="esClient" autoscan="false" mappings="twitter/_doc" />
 ```
 
 ### Creating aliases to indexes
@@ -448,7 +448,7 @@ To configure your template you have to define a file named `es/_template/twitter
         "number_of_shards" : 1
     },
     "mappings" : {
-        "tweet" : {
+        "_doc" : {
             "properties" : {
                 "message" : {
                     "type" : "text",
@@ -626,7 +626,7 @@ Note that you can use the old fashion method to define your beans instead of usi
         <property name="autoscan" value="false" />
         <property name="mappings">
             <list>
-                <value>twitter/tweet</value>
+                <value>twitter/_doc</value>
             </list>
         </property>
         <property name="classpathRoot" value="myownfolder" />
@@ -661,7 +661,7 @@ Note that you can use the old fashion method to define your beans instead of usi
         <property name="autoscan" value="false" />
         <property name="mappings">
             <list>
-                <value>twitter/tweet</value>
+                <value>twitter/_doc</value>
             </list>
         </property>
         <property name="classpathRoot" value="myownfolder" />

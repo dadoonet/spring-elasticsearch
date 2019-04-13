@@ -1,10 +1,10 @@
 {
     "index_patterns" : "twee*",
     "settings" : {
-        "number_of_shards" : 1
+        "number_of_shards" : 2
     },
     "mappings" : {
-        "tweet" : {
+        "_doc" : {
             "properties" : {
                 "message" : {
                     "type" : "text",

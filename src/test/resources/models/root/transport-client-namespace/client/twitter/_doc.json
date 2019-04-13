@@ -1,0 +1,7 @@
+{
+    "_doc" : {
+        "properties" : {
+            "message" : {"type" : "text", "store" : true}
+        }
+    }
+}

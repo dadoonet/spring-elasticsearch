@@ -21,7 +21,8 @@ package fr.pilato.spring.elasticsearch;
 
 import fr.pilato.elasticsearch.tools.index.IndexFinder;
 import fr.pilato.elasticsearch.tools.template.TemplateFinder;
-import fr.pilato.elasticsearch.tools.type.TypeFinder;
+import fr.pilato.spring.elasticsearch.type.TypeFinder;
+import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -49,7 +50,7 @@ import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.crea
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.updateSettings;
 import static fr.pilato.elasticsearch.tools.template.TemplateElasticsearchUpdater.createTemplate;
-import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.createMapping;
+import static fr.pilato.spring.elasticsearch.type.TypeElasticsearchUpdater.createMapping;
 
 /**
  * An abstract {@link org.springframework.beans.factory.FactoryBean} used to create an Elasticsearch
@@ -93,12 +94,11 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * </ul>
  * twitter index will contain a type :
  * <ul>
- *   <li>tweet
+ *   <li>_doc
  * </ul>
- * rss index will contain two types :
+ * rss index will contain a type :
  * <ul>
- *   <li>feed
- *   <li>source
+ *   <li>_doc
  * </ul>
  * Then we will define an alias alltheworld for twitter and rss indexes.
  *
@@ -108,9 +108,8 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  *    class="fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean" >
  *    <property name="mappings">
  *      <list>
- *        <value>twitter/tweet</value>
- *        <value>rss/feed</value>
- *        <value>rss/source</value>
+ *        <value>twitter/_doc</value>
+ *        <value>rss/_doc</value>
  *      </list>
  *    </property>
  *    <property name="aliases">
@@ -148,16 +147,16 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * }
  * </pre>
  * By default, types are not created and wait for the first document you send to Elasticsearch (auto mapping).
- * But, if you define a file named /es/indexname/type.json in your classpath, the type will be created at startup using
+ * But, if you define a file named /es/indexname/_doc.json in your classpath, the _doc type will be created at startup using
  * the type definition you give.
  * <br>
- * So if you create a file named /es/twitter/tweet.json in your src/main/resources folder (for maven lovers),
- * it will be used by the factory to create the tweet type in twitter index.
+ * So if you create a file named /es/twitter/_doc.json in your src/main/resources folder (for maven lovers),
+ * it will be used by the factory to create the _doc type in twitter index.
  * <pre>
  * {
- *   "tweet" : {
+ *   "_doc" : {
  *     "properties" : {
- *       "message" : {"type" : "string", "store" : "yes"}
+ *       "message" : {"type" : "text"}
  *     }
  *   }
  * }
@@ -237,20 +236,19 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     /**
      * Define mappings you want to manage with this factory
-     * <br>use : indexname/mappingname form
+     * <br>use : indexname/_doc form
      * <p>Example :</p>
      * <pre>
      * {@code
      * <property name="mappings">
      *  <list>
-     *   <value>twitter/tweet</value>
-     *   <value>rss/feed</value>
-     *   <value>rss/source</value>
+     *   <value>twitter/_doc</value>
+     *   <value>rss/_doc</value>
      *  </list>
      * </property>
      * }
      * </pre>
-     * @param mappings Array of indexname/mappingname
+     * @param mappings Array of indexname/_doc
      */
     public void setMappings(String[] mappings) {
         this.mappings = mappings;
@@ -306,8 +304,8 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * }
      * </pre>
      * That means that the factory will look in es folder to find index and mappings settings.
-     * <br>So if you want to define a mapping for the tweet mapping in the twitter index, you
-     * should put a tweet.json file under /es/twitter/ folder.
+     * <br>So if you want to define a mapping for the _doc type in the twitter index, you
+     * should put a _doc.json file under /es/twitter/ folder.
      * @param classpathRoot Classpath root for index and mapping files
      * @see #setMappings(String[])
      */
@@ -330,8 +328,8 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     private RestHighLevelClient initialize() throws Exception {
         client = buildRestHighLevelClient();
         if (autoscan) {
-            computeMappings();
-            computeTemplates();
+            mappings = computeMappings(mappings, classpathRoot);
+            templates = computeTemplates(templates, classpathRoot);
         }
 
         initTemplates();
@@ -388,7 +386,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     /**
      * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
      */
-    private void computeMappings() {
+    static String[] computeMappings(String[] mappings, String classpathRoot) {
         if (mappings == null || mappings.length == 0) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Automatic discovery is activated. Looking for definition files in classpath under [{}].",
@@ -405,24 +403,29 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                     if (types.isEmpty()) {
                         autoMappings.add(index);
                     } else {
+                        if (types.size() > 1) {
+                            throw new IllegalArgumentException("Only one single type per index is supported. Replace the following " +
+                                    types + " by a single _doc type.");
+                        }
                         for (String type : types) {
                             autoMappings.add(index+"/"+type);
                         }
                     }
                 }
 
-                mappings = autoMappings.toArray(new String[autoMappings.size()]);
+                return autoMappings.toArray(new String[autoMappings.size()]);
             } catch (IOException |URISyntaxException e) {
                 logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
                 logger.trace("", e);
             }
         }
+        return mappings;
     }
 
     /**
      * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
      */
-    private void computeTemplates() {
+    static String[] computeTemplates(String[] templates, String classpathRoot) {
         if (templates == null || templates.length == 0) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Automatic discovery is activated. Looking for template files in classpath under [{}].",
@@ -438,12 +441,13 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                     autoTemplates.add(template);
                 }
 
-                templates = autoTemplates.toArray(new String[autoTemplates.size()]);
+                return autoTemplates.toArray(new String[autoTemplates.size()]);
             } catch (IOException|URISyntaxException e) {
                 logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
                 logger.trace("", e);
             }
         }
+        return null;
     }
 
     /**
@@ -471,7 +475,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         }
     }
 
-    private static Map<String, Collection<String>> getIndexMappings(String[] mappings) throws Exception {
+    static Map<String, Collection<String>> getIndexMappings(String[] mappings) throws Exception {
         Map<String, Collection<String>> indices = new HashMap<>();
 
         for (String indexmapping : mappings) {
@@ -483,7 +487,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
             // We add the mapping in the collection of its index
             if (!indices.containsKey(index)) {
-                indices.put(index, new ArrayList<String>());
+                indices.put(index, new ArrayList<>());
             }
 
             if (indexmappingsplitted.length > 1) {
@@ -498,19 +502,24 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      */
     private void initAliases() throws Exception {
 		if (aliases != null && aliases.length > 0) {
-			for (String aliase : aliases) {
-				String[] aliasessplitted = aliase.split(":");
-				String alias = aliasessplitted[0];
-				String index = aliasessplitted[1];
-
-				if (index == null) throw new Exception("Can not read index in [" + aliase +
-						"]. Check that aliases contains only aliasname:indexname elements.");
-				if (alias == null) throw new Exception("Can not read mapping in [" + aliase +
-						"]. Check that aliases contains only aliasname:indexname elements.");
-
-				createAlias(client.getLowLevelClient(), alias, index);
+			for (String aliasIndex : aliases) {
+                Tuple<String, String> aliasIndexSplitted = computeAlias(aliasIndex);
+				createAlias(client.getLowLevelClient(), aliasIndexSplitted.v2(), aliasIndexSplitted.v1());
 			}
 		}
+    }
+
+    static Tuple<String, String> computeAlias(String aliasIndex) {
+        String[] aliasIndexSplitted = aliasIndex.split(":");
+        String alias = aliasIndexSplitted[0];
+        String index = aliasIndexSplitted[1];
+
+        if (index == null) throw new IllegalArgumentException("Can not read index in [" + aliasIndex +
+                "]. Check that aliases contains only aliasname:indexname elements.");
+        if (alias == null) throw new IllegalArgumentException("Can not read mapping in [" + aliasIndex +
+                "]. Check that aliases contains only aliasname:indexname elements.");
+
+        return new Tuple<>(index, alias);
     }
 
     /**

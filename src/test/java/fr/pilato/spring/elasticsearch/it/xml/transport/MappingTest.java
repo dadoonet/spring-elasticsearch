@@ -36,7 +36,7 @@ public class MappingTest extends AbstractXmlContextModel {
     protected void checkUseCaseSpecific(Client client) {
         checkClient("esClient2");
 
-        MappingMetaData response = client.admin().indices().prepareGetMappings().get().getMappings().get("twitter").get("tweet");
+        MappingMetaData response = client.admin().indices().prepareGetMappings().get().getMappings().get("twitter").get("_doc");
         String mapping = new String(response.source().uncompressed());
         // This one comes from the first mapping
         assertThat(mapping, containsString("message"));

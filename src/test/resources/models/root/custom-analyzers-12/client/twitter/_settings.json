@@ -1,5 +1,5 @@
 {
-	"index" : {
+	"settings" : {
 		"analysis":{
 			"analyzer":{
                 "custom_uax_url_email":{

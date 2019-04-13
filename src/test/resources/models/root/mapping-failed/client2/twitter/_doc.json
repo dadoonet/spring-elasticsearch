@@ -1,7 +1,7 @@
 {
-    "doc" : {
+    "_doc" : {
         "properties" : {
-            "message" : {"type" : "text", "store" : true, "analyzer" : "francais" },
+            "message" : {"type" : "date", "store" : true},
             "author" : {"type" : "text", "store" : false}
         }
     }
