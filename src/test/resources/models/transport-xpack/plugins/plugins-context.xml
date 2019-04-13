@@ -28,7 +28,7 @@
 		<property name="classpathRoot" value="/models/plugins/client" />
 		<property name="mappings">
 			<list>
-				<value>twitter/_doc</value>
+				<value>twitter</value>
 			</list>
 		</property>
 		<property name="plugins">

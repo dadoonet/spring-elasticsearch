@@ -36,7 +36,7 @@ public class Settings13Test extends AbstractXmlContextModel {
 
     @Override
     protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 5, 1);
+        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 1, 1);
     }
 
     @Override

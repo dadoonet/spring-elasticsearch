@@ -12,27 +12,19 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-7.0.xsd">
 
-	<bean id="esClient"
-		  class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
-		<property name="esNodes">
-			<list>
-				<value>localhost:9300</value>
-			</list>
-		</property>
-		<property name="classpathRoot" value="/models/plugins/client" />
-		<property name="mappings">
-			<list>
-				<value>twitter/_doc</value>
-			</list>
-		</property>
-		<property name="plugins">
-			<set>
-				<value>fr.pilato.spring.elasticsearch.it.xml.transport.PluginsTest.Dummy1Plugin</value>
-				<value>fr.pilato.spring.elasticsearch.it.xml.transport.PluginsTest.Dummy2Plugin</value>
-			</set>
-		</property>
-	</bean>
+    <util:properties id="esProperties">
+        <prop key="xpack.security.user">${tests.cluster.credentials}</prop>
+    </util:properties>
+
+    <elasticsearch:rest-client id="esClient" properties="esProperties"
+                          classpathRoot="/models/root/index-with-type/client"
+                          mappings="twitter/_doc"
+                          forceMapping="false"
+    />
 
 </beans>

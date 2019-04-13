@@ -117,14 +117,6 @@ public abstract class AbstractXmlContextModel extends BaseTest {
         return client;
     }
 
-    boolean isMappingExist(RestClient client, String index, String type) {
-        try {
-            return client.performRequest(new Request("HEAD", "/" + index + "/_mapping/" + type)).getStatusLine().getStatusCode() != 404;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
     @Test
     public void testFactoriesCreated() throws Exception {
         RestHighLevelClient client = checkClient(beanName());
@@ -136,8 +128,8 @@ public abstract class AbstractXmlContextModel extends BaseTest {
             assertShardsAndReplicas(client.getLowLevelClient(), indexName(), expectedShards(), expectedReplicas());
 
             // #92: search errors with async created Client
-            client.index(new IndexRequest("twitter").type("_doc").id("1").source("{\"foo\":\"bar\"}", XContentType.JSON), RequestOptions.DEFAULT);
-            assertThat(client.get(new GetRequest("twitter").type("_doc").id("1"), RequestOptions.DEFAULT).isExists(), is(true));
+            client.index(new IndexRequest("twitter").id("1").source("{\"foo\":\"bar\"}", XContentType.JSON), RequestOptions.DEFAULT);
+            assertThat(client.get(new GetRequest("twitter").id("1"), RequestOptions.DEFAULT).isExists(), is(true));
         }
     }
 
@@ -149,11 +141,11 @@ public abstract class AbstractXmlContextModel extends BaseTest {
     }
 
     /**
-     * Overwrite it if the number of expected shards is not 5
+     * Overwrite it if the number of expected shards is not 1
      * @return Number of expected primaries
      */
     protected int expectedShards() {
-        return 5;
+        return 1;
     }
 
     /**

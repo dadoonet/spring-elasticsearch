@@ -20,7 +20,7 @@
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
-import org.elasticsearch.client.ResponseException;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -54,9 +54,9 @@ public class MappingFailedTest extends BaseTest {
 				}
 			} catch (BeanCreationException e) {
 				Throwable cause = e.getCause();
-				assertEquals(ResponseException.class, cause.getClass());
-				ResponseException responseException = (ResponseException) cause;
-				assertThat(responseException.getResponse().getStatusLine().getStatusCode(), is(400));
+				assertEquals(ElasticsearchStatusException.class, cause.getClass());
+				ElasticsearchStatusException responseException = (ElasticsearchStatusException) cause;
+				assertThat(responseException.status().getStatus(), is(400));
 				throw e;
 			}
 		});

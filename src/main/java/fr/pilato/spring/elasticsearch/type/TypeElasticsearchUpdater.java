@@ -21,9 +21,13 @@ package fr.pilato.spring.elasticsearch.type;
 
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.GetMappingsRequest;
+import org.elasticsearch.client.indices.GetMappingsResponse;
+import org.elasticsearch.client.indices.PutMappingRequest;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,88 +45,91 @@ public class TypeElasticsearchUpdater {
      * @param client Elasticsearch client
      * @param root dir within the classpath
      * @param index Index name
-     * @param type Type name
      * @param merge Try to merge mapping if type already exists
      * @throws Exception if the elasticsearch call is failing
      */
-    public static void createMapping(Client client, String root, String index, String type, boolean merge)
+    public static void createMapping(Client client, String root, String index, boolean merge)
             throws Exception {
-        String mapping = TypeSettingsReader.readMapping(root, index, type);
-        createMappingWithJson(client, index, type, mapping, merge);
+        String mapping = TypeSettingsReader.readMapping(root, index);
+        if (mapping != null) {
+            createMappingWithJson(client, index, mapping, merge);
+        }
     }
 
     /**
      * Create a new type in Elasticsearch
      * @param client Elasticsearch client
      * @param index Index name
-     * @param type Type name
      * @param mapping Mapping if any, null if no specific mapping
      * @param merge Try to merge mapping if type already exists
      * @throws Exception if the elasticsearch call is failing
      */
-    private static void createMappingWithJson(Client client, String index, String type, String mapping, boolean merge)
+    private static void createMappingWithJson(Client client, String index, String mapping, boolean merge)
             throws Exception {
-        boolean mappingExist = isTypeExist(client, index, type);
+        boolean mappingExist = isMappingExist(client, index);
         if (merge || !mappingExist) {
             if (mappingExist) {
-                logger.debug("Updating type [{}]/[{}].", index, type);
+                logger.debug("Updating type for index [{}].", index);
             } else {
-                logger.debug("Type [{}]/[{}] doesn't exist. Creating it.", index, type);
+                logger.debug("Mapping for [{}] index doesn't exist. Creating it.", index);
             }
-            createTypeWithMappingInElasticsearch(client, index, type, mapping);
+            createTypeWithMappingInElasticsearch(client, index, mapping);
         } else {
-            logger.debug("Type [{}/{}] already exists and merge is not set.", index, type);
+            logger.debug("Mapping already exists in index [{}] and merge is not set.", index);
         }
 
         if (mappingExist) {
-            logger.debug("Type definition for [{}]/[{}] succesfully merged.", index, type);
+            logger.debug("Mapping definition for [{}] index succesfully merged.", index);
         } else {
-            logger.debug("Type definition for [{}]/[{}] succesfully created.", index, type);
+            logger.debug("Mapping definition for [{}] index succesfully created.", index);
         }
     }
 
     /**
-     * Check if a type already exists
+     * Check if an index already exist
      * @param client Elasticsearch client
      * @param index Index name
-     * @param type Type name
-     * @return true if type already exists
-     * @throws Exception if the elasticsearch call is failing
+     * @return true if the index already exist
      */
-    public static boolean isTypeExist(Client client, String index, String type) throws Exception {
-        return !client.admin().indices().prepareGetMappings(index).setTypes(type).get().getMappings().isEmpty();
+    private static boolean isMappingExist(Client client, String index) {
+        org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse mapping =
+                client.admin().indices().prepareGetMappings(index).get();
+        // Let's get the default mapping
+        if (mapping.mappings().isEmpty()) {
+            return false;
+        }
+        ImmutableOpenMap<String, MappingMetaData> doc = mapping.mappings().values().iterator().next().value;
+        return !doc.isEmpty();
     }
 
     /**
      * Create a new type in Elasticsearch
      * @param client Elasticsearch client
      * @param index Index name
-     * @param type Type name
      * @param mapping Mapping if any, null if no specific mapping
      * @throws Exception if the elasticsearch call is failing
      */
-    private static void createTypeWithMappingInElasticsearch(Client client, String index, String type, String mapping)
+    private static void createTypeWithMappingInElasticsearch(Client client, String index, String mapping)
             throws Exception {
-        logger.trace("createType([{}/{}])", index, type);
+        logger.trace("createTypeWithMappingInElasticsearch([{}])", index);
 
         assert client != null;
         assert index != null;
-        assert type != null;
 
         if (mapping != null) {
             // Create type and mapping
             AcknowledgedResponse response = client.admin().indices().preparePutMapping(index)
-                    .setType(type)
+                    .setType("_doc")
                     .setSource(mapping, XContentType.JSON).get();
             if (!response.isAcknowledged()) {
-                logger.warn("Could not create type [{}/{}]", index, type);
-                throw new Exception("Could not create type ["+index+"/"+type+"].");
+                logger.warn("Could not create mapping in [{}] index", index);
+                throw new Exception("Could not create mapping in ["+index+"] index.");
             }
         } else {
-            logger.trace("no content given for mapping. Ignoring type [{}/{}] creation.", index, type);
+            logger.trace("no content given for mapping. Ignoring mapping creation in index [{}].", index);
         }
 
-        logger.trace("/createType([{}/{}])", index, type);
+        logger.trace("/createTypeWithMappingInElasticsearch([{}])", index);
     }
 
     /**
@@ -130,88 +137,84 @@ public class TypeElasticsearchUpdater {
      * @param client Elasticsearch client
      * @param root dir within the classpath
      * @param index Index name
-     * @param type Type name
      * @param merge Try to merge mapping if type already exists
      * @throws Exception if the elasticsearch call is failing
      */
-    public static void createMapping(RestClient client, String root, String index, String type, boolean merge)
+    public static void createMapping(RestHighLevelClient client, String root, String index, boolean merge)
             throws Exception {
-        String mapping = TypeSettingsReader.readMapping(root, index, type);
-        createMappingWithJson(client, index, type, mapping, merge);
+        String mapping = TypeSettingsReader.readMapping(root, index);
+        if (mapping != null) {
+            createMappingWithJson(client, index, mapping, merge);
+        }
     }
 
     /**
      * Create a new type in Elasticsearch
      * @param client Elasticsearch client
      * @param index Index name
-     * @param type Type name
      * @param mapping Mapping if any, null if no specific mapping
      * @param merge Try to merge mapping if type already exists
      * @throws Exception if the elasticsearch call is failing
      */
-    private static void createMappingWithJson(RestClient client, String index, String type, String mapping, boolean merge)
+    private static void createMappingWithJson(RestHighLevelClient client, String index, String mapping, boolean merge)
             throws Exception {
-        boolean mappingExist = isTypeExist(client, index, type);
+        boolean mappingExist = isMappingExist(client, index);
         if (merge || !mappingExist) {
             if (mappingExist) {
-                logger.debug("Updating type [{}]/[{}].", index, type);
+                logger.debug("Updating type for index [{}].", index);
             } else {
-                logger.debug("Type [{}]/[{}] doesn't exist. Creating it.", index, type);
+                logger.debug("Mapping for [{}] index doesn't exist. Creating it.", index);
             }
-            createTypeWithMappingInElasticsearch(client, index, type, mapping);
+            createTypeWithMappingInElasticsearch(client, index, mapping);
         } else {
-            logger.debug("Type [{}/{}] already exists and merge is not set.", index, type);
+            logger.debug("Mapping already exists in index [{}] and merge is not set.", index);
         }
 
         if (mappingExist) {
-            logger.debug("Type definition for [{}]/[{}] succesfully merged.", index, type);
+            logger.debug("Mapping definition for [{}] index succesfully merged.", index);
         } else {
-            logger.debug("Type definition for [{}]/[{}] succesfully created.", index, type);
+            logger.debug("Mapping definition for [{}] index succesfully created.", index);
         }
     }
 
     /**
-     * Check if a type already exists
+     * Check if an index already exist
      * @param client Elasticsearch client
      * @param index Index name
-     * @param type Type name
-     * @return true if type already exists
+     * @return true if the index already exist
      * @throws Exception if the elasticsearch call is failing
      */
-    public static boolean isTypeExist(RestClient client, String index, String type) throws Exception {
-        Response response = client.performRequest(new Request("HEAD", "/" + index + "/_mapping/" + type));
-        return response.getStatusLine().getStatusCode() == 200;
+    private static boolean isMappingExist(RestHighLevelClient client, String index) throws Exception {
+        GetMappingsResponse mapping = client.indices().getMapping(new GetMappingsRequest().indices(index), RequestOptions.DEFAULT);
+        // Let's get the default mapping
+        if (mapping.mappings().isEmpty()) {
+            return false;
+        }
+        MappingMetaData doc = mapping.mappings().values().iterator().next();
+        return !doc.getSourceAsMap().isEmpty();
     }
 
     /**
      * Create a new type in Elasticsearch
      * @param client Elasticsearch client
      * @param index Index name
-     * @param type Type name
      * @param mapping Mapping if any, null if no specific mapping
      * @throws Exception if the elasticsearch call is failing
      */
-    private static void createTypeWithMappingInElasticsearch(RestClient client, String index, String type, String mapping)
+    private static void createTypeWithMappingInElasticsearch(RestHighLevelClient client, String index, String mapping)
             throws Exception {
-        logger.trace("createType([{}/{}])", index, type);
+        logger.trace("createTypeWithMappingInElasticsearch([{}])", index);
 
         assert client != null;
         assert index != null;
-        assert type != null;
 
         if (mapping != null) {
-            // Create type and mapping
-            Request request = new Request("PUT", "/" + index + "/_mapping/" + type);
-            request.setJsonEntity(mapping);
-            Response response = client.performRequest(request);
-            if (response.getStatusLine().getStatusCode() != 200) {
-                logger.warn("Could not create type [{}/{}]", index, type);
-                throw new Exception("Could not create type ["+index+"/"+type+"].");
-            }
+            // Create mapping
+            client.indices().putMapping(new PutMappingRequest(index).source(mapping, XContentType.JSON), RequestOptions.DEFAULT);
         } else {
-            logger.trace("no content given for mapping. Ignoring type [{}/{}] creation.", index, type);
+            logger.trace("no content given for mapping. Ignoring mapping creation in index [{}].", index);
         }
 
-        logger.trace("/createType([{}/{}])", index, type);
+        logger.trace("/createTypeWithMappingInElasticsearch([{}])", index);
     }
 }

@@ -37,6 +37,6 @@ public class MultipleClientsTest extends AbstractXmlContextModel {
         // We test how many shards and replica we have
         // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
         // See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
-        assertShardsAndReplicas(client2, "twitter", 5, 1);
+        assertShardsAndReplicas(client2, "twitter", 1, 1);
     }
 }

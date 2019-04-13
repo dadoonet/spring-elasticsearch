@@ -16,6 +16,8 @@ From 5.0, this project provides 2 implementations of an elasticsearch Client:
 From 6.0, the REST client implementation has been replaced by a High Level REST client.
 It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for official security.
 
+Starting from 7.0, only `_doc` as a document type is supported if you are not providing the mapping within index settings.
+
 ## Documentation
 
 * For 7.x elasticsearch versions, you are reading the latest documentation.
@@ -57,7 +59,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>6.2</version>
+  <version>7.0</version>
 </dependency>
 ```
 
@@ -67,7 +69,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>6.7.1</version>
+    <version>7.0.0</version>
 </dependency>
 ```
 
@@ -77,7 +79,7 @@ If you want to use a transport client (deprecated), you must add it to your `pom
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>transport</artifactId>
-    <version>6.7.1</version>
+    <version>7.0.0</version>
 </dependency>
 ```
 
@@ -87,7 +89,7 @@ If you want to use a transport client secured with X-Pack (deprecated), you must
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>x-pack-transport</artifactId>
-    <version>6.7.1</version>
+    <version>7.0.0</version>
 </dependency>
 ```
 
@@ -179,13 +181,13 @@ In your spring context file, just add namespaces like this:
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-6.0.xsd">
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-7.0.xsd">
 </beans>
 ```
 
 ### Getting a rest client bean
 
-From 5.0, you can now get a REST Client implementation.
+You can get a REST High Level Client implementation.
 
 #### Define a rest client bean
 
@@ -350,21 +352,21 @@ replace them with the Transport client by using `elasticsearch:client` instead.
 
 ### Managing indexes and types
 
-If you want to manage indexes and types at startup (creating missing indexes/types and applying mappings):
+If you want to manage indices at startup (creating missing indices and applying optional mapping):
 
 ```xml
 <elasticsearch:rest-client id="esClient"
-    mappings="twitter/_doc" />
+    mappings="twitter" />
 ```
 
-This will create an [Elasticsearch Low Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-low.html)
-that will check when starting that index `twitter` exists and `_doc` type is defined.
+This will create an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
+and will create an index `twitter`.
 
 If you need to manage more than one index, just use a comma separated list:
 
 ```xml
 <elasticsearch:rest-client id="esClient"
-    mappings="twitter/_doc,facebook/_doc" />
+    mappings="twitter,facebook" />
 ```
 
 If you add in your classpath a file named `es/twitter/_settings.json`, it will be automatically applied to define
@@ -388,13 +390,28 @@ For example, create the following file `src/main/resources/es/twitter/_doc.json`
 
 ```javascript
 {
-  "_doc" : {
+    "properties" : {
+      "message" : {"type" : "text", "store" : "yes"}
+    }
+}
+```
+
+But in general, it's better to use one single `_settings.json` file which combines all that, like:
+
+```javascript
+{
+  "settings" : {
+    "number_of_shards" : 3,
+    "number_of_replicas" : 2
+  },
+  "mappings" : {
     "properties" : {
       "message" : {"type" : "text", "store" : "yes"}
     }
   }
 }
 ```
+
 
 ### Using convention over configuration
 
@@ -409,7 +426,7 @@ the factory without defining anything:
 You can disable this automatic lookup by setting the `autoscan` property to `false`:
 
 ```xml
-<elasticsearch:rest-client id="esClient" autoscan="false" mappings="twitter/_doc" />
+<elasticsearch:rest-client id="esClient" autoscan="false" mappings="twitter" />
 ```
 
 ### Creating aliases to indexes
@@ -443,17 +460,15 @@ To configure your template you have to define a file named `es/_template/twitter
 
 ```javascript
 {
-    "template" : "twitter*",
+    "index_patterns" : "twitter*",
     "settings" : {
         "number_of_shards" : 1
     },
     "mappings" : {
-        "_doc" : {
-            "properties" : {
-                "message" : {
-                    "type" : "text",
-                    "store" : "yes"
-                }
+        "properties" : {
+            "message" : {
+                "type" : "text",
+                "store" : "yes"
             }
         }
     }
@@ -462,14 +477,15 @@ To configure your template you have to define a file named `es/_template/twitter
 
 ### Changing classpath search path for mapping and settings files
 
-By default, the factory look in `es` classpath folder to find if there is index settings or mappings definitions.
+By default, the factory look in `es` classpath folder to find if there is index settings (`_settings.json`)
+or mapping definition (`_doc.json`).
 If you need to change it, you can use the `classpathRoot` property:
 
 ```xml
 <elasticsearch:rest-client id="esClient" classpathRoot="myownfolder" />
 ```
 
-So, if a `myownfolder/twitter/_settings.xml` file exists in your classpath, it will be used by the factory.
+So, if a `myownfolder/twitter/_settings.json` file exists in your classpath, it will be used by the factory.
 
 ### Merge mappings
 
@@ -589,7 +605,7 @@ public class RestApp {
         context.close();
     }
 
-    private void run() throws IOException {
+    private void run() {
         // Run a High Level request
         client.info();
         // You still have access to the Low Level client
@@ -626,7 +642,7 @@ Note that you can use the old fashion method to define your beans instead of usi
         <property name="autoscan" value="false" />
         <property name="mappings">
             <list>
-                <value>twitter/_doc</value>
+                <value>twitter</value>
             </list>
         </property>
         <property name="classpathRoot" value="myownfolder" />
@@ -661,7 +677,7 @@ Note that you can use the old fashion method to define your beans instead of usi
         <property name="autoscan" value="false" />
         <property name="mappings">
             <list>
-                <value>twitter/_doc</value>
+                <value>twitter</value>
             </list>
         </property>
         <property name="classpathRoot" value="myownfolder" />

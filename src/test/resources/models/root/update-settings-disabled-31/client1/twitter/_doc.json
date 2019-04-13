@@ -1,7 +1,5 @@
 {
-    "_doc" : {
-        "properties" : {
-            "message" : {"type" : "text", "store" : true, "analyzer" : "simple" }
-        }
+    "properties" : {
+        "message" : {"type" : "text", "store" : true, "analyzer" : "simple" }
     }
 }

@@ -463,10 +463,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
                     updateSettings(client, classpathRoot, index);
                 }
 
-                Collection<String> mappings = indices.get(index);
-                for (String type : mappings) {
-                    createMapping(client, classpathRoot, index, type, mergeMapping);
-                }
+                createMapping(client, classpathRoot, index, mergeMapping);
             }
         }
     }

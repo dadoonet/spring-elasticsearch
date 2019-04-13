@@ -1,8 +1,6 @@
 {
-    "_doc" : {
-        "properties" : {
-            "message" : {"type" : "date", "store" : true},
-            "author" : {"type" : "text", "store" : false}
-        }
+    "properties" : {
+        "message" : {"type" : "date", "store" : true},
+        "author" : {"type" : "text", "store" : false}
     }
 }
