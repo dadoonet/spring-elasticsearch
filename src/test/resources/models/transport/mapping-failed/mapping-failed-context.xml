@@ -18,13 +18,13 @@
 
     <elasticsearch:client id="esClient"
                           classpathRoot="/models/root/mapping-failed/client1"
-                          mappings="twitter/tweet"
+                          mappings="twitter/_doc"
                           forceMapping="false"
     />
 
     <elasticsearch:client id="esClient2"
                           classpathRoot="/models/root/mapping-failed/client2"
-                          mappings="twitter/tweet"
+                          mappings="twitter/_doc"
                           mergeMapping="true"
     />
 

@@ -35,6 +35,6 @@ public class MappingConventionTest extends AbstractXmlContextModel {
 
     @Override
     protected void checkUseCaseSpecific(RestHighLevelClient client) {
-        assertThat("tweet type should exist in twitter index", isMappingExist(client.getLowLevelClient(), "twitter", "tweet"), is(true));
+        assertThat("_doc type should exist in twitter index", isMappingExist(client.getLowLevelClient(), "twitter", "_doc"), is(true));
     }
 }

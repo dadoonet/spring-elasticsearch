@@ -18,7 +18,7 @@
 
     <elasticsearch:client id="esClient"
                           classpathRoot="/models/root/custom-analyzers-12/client"
-                          mappings="twitter/tweet"
+                          mappings="twitter/_doc"
                           mergeSettings="true"
                           mergeMapping="true"
                           forceMapping="true"

@@ -21,6 +21,9 @@ package fr.pilato.spring.elasticsearch.it.xml.transport;
 
 import org.elasticsearch.client.Client;
 
+import java.util.Collections;
+import java.util.List;
+
 
 public class NoNamespaceTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/transport/no-namespace/no-namespace-context.xml"};
@@ -32,5 +35,10 @@ public class NoNamespaceTest extends AbstractXmlContextModel {
 
     protected void checkUseCaseSpecific(Client client) {
         assertTransportClient(client, 1);
+    }
+
+    @Override
+    protected List<String> otherTestIndices() {
+        return Collections.singletonList("rss");
     }
 }

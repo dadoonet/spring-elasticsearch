@@ -40,6 +40,6 @@ public class BadClasspath7Test extends AbstractXmlContextModel {
 
     @Override
     protected void checkUseCaseSpecific(Client client) {
-        assertThat("tweet type should not exist in twitter index", isMappingExist(client, "twitter", "tweet"), is(false));
+        assertThat("_doc type should not exist in twitter index", isMappingExist(client, "twitter", "_doc"), is(false));
     }
 }

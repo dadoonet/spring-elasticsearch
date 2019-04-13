@@ -19,10 +19,8 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import fr.pilato.elasticsearch.tools.index.IndexFinder;
-import fr.pilato.elasticsearch.tools.template.TemplateFinder;
-import fr.pilato.elasticsearch.tools.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
+import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequestBuilder;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateRequestBuilder;
@@ -45,13 +43,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -61,7 +56,7 @@ import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.crea
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.updateSettings;
 import static fr.pilato.elasticsearch.tools.template.TemplateElasticsearchUpdater.createTemplate;
-import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.createMapping;
+import static fr.pilato.spring.elasticsearch.type.TypeElasticsearchUpdater.createMapping;
 
 /**
  * An abstract {@link FactoryBean} used to create an Elasticsearch
@@ -105,12 +100,11 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * </ul>
  * twitter index will contain a type :
  * <ul>
- *   <li>tweet
+ *   <li>_doc
  * </ul>
  * rss index will contain two types :
  * <ul>
- *   <li>feed
- *   <li>source
+ *   <li>_doc
  * </ul>
  * Then we will define an alias alltheworld for twitter and rss indexes.
  *
@@ -120,9 +114,8 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  *    class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
  *    <property name="mappings">
  *      <list>
- *        <value>twitter/tweet</value>
- *        <value>rss/feed</value>
- *        <value>rss/source</value>
+ *        <value>twitter/_doc</value>
+ *        <value>rss/_doc</value>
  *      </list>
  *    </property>
  *    <property name="aliases">
@@ -160,16 +153,16 @@ import static fr.pilato.elasticsearch.tools.type.TypeElasticsearchUpdater.create
  * }
  * </pre>
  * By default, types are not created and wait for the first document you send to Elasticsearch (auto mapping).
- * But, if you define a file named /es/indexname/type.json in your classpath, the type will be created at startup using
+ * But, if you define a file named /es/indexname/_doc.json in your classpath, the _doc type will be created at startup using
  * the type definition you give.
  * <br>
- * So if you create a file named /es/twitter/tweet.json in your src/main/resources folder (for maven lovers),
- * it will be used by the factory to create the tweet type in twitter index.
+ * So if you create a file named /es/twitter/_doc.json in your src/main/resources folder (for maven lovers),
+ * it will be used by the factory to create the _doc type in twitter index.
  * <pre>
  * {
- *   "tweet" : {
+ *   "_doc" : {
  *     "properties" : {
- *       "message" : {"type" : "string", "store" : "yes"}
+ *       "message" : {"type" : "text"}
  *     }
  *   }
  * }
@@ -252,20 +245,19 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
 
     /**
      * Define mappings you want to manage with this factory
-     * <br>use : indexname/mappingname form
+     * <br>use : indexname/_doc form
      * <p>Example :</p>
      * <pre>
      * {@code
      * <property name="mappings">
      *  <list>
-     *   <value>twitter/tweet</value>
-     *   <value>rss/feed</value>
-     *   <value>rss/source</value>
+     *   <value>twitter/_doc</value>
+     *   <value>rss/_doc</value>
      *  </list>
      * </property>
      * }
      * </pre>
-     * @param mappings Array of indexname/mappingname
+     * @param mappings Array of indexname/_doc
      */
     public void setMappings(String[] mappings) {
         this.mappings = mappings;
@@ -321,8 +313,8 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
      * }
      * </pre>
      * That means that the factory will look in es folder to find index and mappings settings.
-     * <br>So if you want to define a mapping for the tweet mapping in the twitter index, you
-     * should put a tweet.json file under /es/twitter/ folder.
+     * <br>So if you want to define a mapping for the _doc mapping in the twitter index, you
+     * should put a _doc.json file under /es/twitter/ folder.
      * @param classpathRoot Classpath root for index and mapping files
      * @see #setMappings(String[])
      */
@@ -339,6 +331,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("Starting Elasticsearch client");
+        logger.warn("Elasticsearch Transport client is deprecated. You should switch to the Rest Client.");
 
         if (async) {
             Assert.notNull(taskExecutor, "taskExecutor can not be null");
@@ -362,15 +355,15 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
     private Client initialize() throws Exception {
         client = buildClient();
         if (autoscan) {
-            computeMappings();
-            computeTemplates();
+            mappings = ElasticsearchRestClientFactoryBean.computeMappings(mappings, classpathRoot);
+            templates = ElasticsearchRestClientFactoryBean.computeTemplates(templates, classpathRoot);
         }
 
         // We extract indexes and mappings to manage from mappings definition
         if (mappings != null && mappings.length > 0) {
             ClusterHealthRequestBuilder healthRequestBuilder = client.admin().cluster().prepareHealth().setWaitForYellowStatus();
             ClusterStateRequestBuilder clusterStateRequestBuilder = client.admin().cluster().prepareState();
-            Map<String, Collection<String>> indices = getIndexMappings(mappings);
+            Map<String, Collection<String>> indices = ElasticsearchRestClientFactoryBean.getIndexMappings(mappings);
             for (String index : indices.keySet()) {
                 clusterStateRequestBuilder.setIndices(index);
             }
@@ -454,67 +447,6 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
     }
 
     /**
-     * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
-     */
-    private void computeMappings() {
-        if (mappings == null || mappings.length == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Automatic discovery is activated. Looking for definition files in classpath under [{}].",
-                        classpathRoot);
-            }
-
-            ArrayList<String> autoMappings = new ArrayList<>();
-
-            try {
-                // Let's scan our resources
-                Collection<String> indices = IndexFinder.findIndexNames(classpathRoot);
-                for (String index : indices) {
-                    Collection<String> types = TypeFinder.findTypes(classpathRoot, index);
-                    if (types.isEmpty()) {
-                        autoMappings.add(index);
-                    } else {
-                        for (String type : types) {
-                            autoMappings.add(index+"/"+type);
-                        }
-                    }
-                }
-
-                mappings = autoMappings.toArray(new String[autoMappings.size()]);
-            } catch (IOException |URISyntaxException e) {
-                logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-                logger.trace("", e);
-            }
-        }
-    }
-
-    /**
-     * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
-     */
-    private void computeTemplates() {
-        if (templates == null || templates.length == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Automatic discovery is activated. Looking for template files in classpath under [{}].",
-                        classpathRoot);
-            }
-
-            ArrayList<String> autoTemplates = new ArrayList<>();
-
-            try {
-                // Let's scan our resources
-                List<String> scannedTemplates = TemplateFinder.findTemplates(classpathRoot);
-                for (String template : scannedTemplates) {
-                    autoTemplates.add(template);
-                }
-
-                templates = autoTemplates.toArray(new String[autoTemplates.size()]);
-            } catch (IOException|URISyntaxException e) {
-                logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-                logger.trace("", e);
-            }
-        }
-    }
-
-    /**
      * Init mapping if needed.
      * <p>Note that you can force to reinit mapping using {@link #setForceMapping(boolean)}
      */
@@ -522,7 +454,7 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
         checkClient();
         // We extract indexes and mappings to manage from mappings definition
         if (mappings != null && mappings.length > 0) {
-            Map<String, Collection<String>> indices = getIndexMappings(mappings);
+            Map<String, Collection<String>> indices = ElasticsearchRestClientFactoryBean.getIndexMappings(mappings);
 
             // Let's initialize indexes and mappings if needed
             for (String index : indices.keySet()) {
@@ -539,44 +471,14 @@ public class ElasticsearchTransportClientFactoryBean extends ElasticsearchAbstra
         }
     }
 
-    private static Map<String, Collection<String>> getIndexMappings(String[] mappings) throws Exception {
-        Map<String, Collection<String>> indices = new HashMap<>();
-
-        for (String indexmapping : mappings) {
-            String[] indexmappingsplitted = indexmapping.split("/");
-            String index = indexmappingsplitted[0];
-
-            if (index == null) throw new Exception("Can not read index in [" + indexmapping +
-                    "]. Check that mappings contains only indexname/mappingname elements.");
-
-            // We add the mapping in the collection of its index
-            if (!indices.containsKey(index)) {
-                indices.put(index, new ArrayList<String>());
-            }
-
-            if (indexmappingsplitted.length > 1) {
-                indices.get(index).add(indexmappingsplitted[1]);
-            }
-        }
-        return indices;
-    }
-
     /**
      * Init aliases if needed.
      */
     private void initAliases() throws Exception {
         if (aliases != null && aliases.length > 0) {
-            for (String aliase : aliases) {
-                String[] aliasessplitted = aliase.split(":");
-                String alias = aliasessplitted[0];
-                String index = aliasessplitted[1];
-
-                if (index == null) throw new Exception("Can not read index in [" + aliase +
-                        "]. Check that aliases contains only aliasname:indexname elements.");
-                if (alias == null) throw new Exception("Can not read mapping in [" + aliase +
-                        "]. Check that aliases contains only aliasname:indexname elements.");
-
-                createAlias(client, alias, index);
+            for (String aliasIndex : aliases) {
+                Tuple<String, String> aliasIndexSplitted = ElasticsearchRestClientFactoryBean.computeAlias(aliasIndex);
+                createAlias(client, aliasIndexSplitted.v2(), aliasIndexSplitted.v1());
             }
         }
     }
