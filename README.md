@@ -16,7 +16,10 @@ From 5.0, this project provides 2 implementations of an elasticsearch Client:
 From 6.0, the REST client implementation has been replaced by a High Level REST client.
 It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for official security.
 
-Starting from 7.0, only `_doc` as a document type is supported if you are not providing the mapping within index settings.
+Starting from 7.0, only `_doc` as a document type is supported if you
+are not providing the mapping within index settings. 
+
+Starting from 7.0, TransportClient has been removed.
 
 ## Documentation
 
@@ -71,40 +74,6 @@ If you want to set a specific version of the High Level Rest client, add it to y
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
     <version>7.0.0</version>
 </dependency>
-```
-
-If you want to use a transport client (deprecated), you must add it to your `pom.xml` file:
-
-```xml
-<dependency>
-    <groupId>org.elasticsearch.client</groupId>
-    <artifactId>transport</artifactId>
-    <version>7.0.0</version>
-</dependency>
-```
-
-If you want to use a transport client secured with X-Pack (deprecated), you must add it to your `pom.xml` file:
-
-```xml
-<dependency>
-    <groupId>org.elasticsearch.client</groupId>
-    <artifactId>x-pack-transport</artifactId>
-    <version>7.0.0</version>
-</dependency>
-```
-
-Note that you'd probably to add also the elastic maven repository:
-
-```xml
-<repositories>
-    <repository>
-        <id>elastic-download-service</id>
-        <name>Elastic Download Service</name>
-        <url>https://artifacts.elastic.co/maven/</url>
-        <releases><enabled>true</enabled></releases>
-        <snapshots><enabled>false</enabled></snapshots>
-    </repository>
-</repositories>
 ```
 
 If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](https://oss.sonatype.org/content/repositories/snapshots/fr/pilato/spring/spring-elasticsearch/):
@@ -235,120 +204,18 @@ You need to define the `xpack.security.user` property as follows:
 <elasticsearch:rest-client id="esClient" properties="esProperties" />
 ```
 
-### Getting a transport client bean (deprecated)
-
-From 5.0, the Transport Client implementation is deprecated. It is now marked as `optional` so
-you need to explicitly add it to your project as described in [Maven dependency chapter](#maven-dependency).
-
-#### Define a client Transport bean
-
-In your spring context file, just define a client like this:
-
-```xml
-<elasticsearch:client id="esClient" />
-```
-    
-By default, you will get an [Elasticsearch Transport Client](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/transport-client.html)
-connected to an Elasticsearch node already running at `localhost:9300` using `elasticsearch` as cluster name.
-
-You can set the nodes you want to connect to:
-
-```xml
-<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301" />
-```
-
-**Important notes**
-
-> Note that you should define the same clustername as the one you defined on your running nodes.
-> Otherwise, your Transport Client won't connect to the node. See [Elasticsearch properties](#transport-client-properties-deprecated).
-
-> Note also that you must define the transport client port (9300-9399) and not the REST port (9200-9299).
-> Transport client does not use REST API.
-
-#### Injecting transport client in your java project
-
-Now, you can use the transport client in your java classes.
-
-```java
-import org.elasticsearch.client.Client;
-
-Client client = ctx.getBean("esClient", Client.class);
-```
-
-Better, you should use `@Autowired` annotation.
-
-```java
-// Inject your client...
-@Autowired Client client;
-```
-
-#### Transport Client properties (deprecated)
-
-You can define your transport client properties using a property file such as:
-
-```properties
-cluster.name=myclustername
-```
-
-And load it in Spring context:
-
-```xml
-<util:properties id="esproperties"
-    location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
-```
-
-Note that you can also define properties as follow:
-
-```xml
-<util:map id="esProperties">
-    <entry key="cluster.name" value="newclustername"/>
-</util:map>
-```
-
-<elasticsearch:client id="esClient" esNodes="localhost:9300,localhost:9301"
-    properties="esproperties"/>
-
-Injecting properties in client is now easy:
-
-```xml
-<elasticsearch:client id="esClient" properties="esproperties" />
-```
-
-You can also add plugins to the transport client in case it needs it:
-
-```xml
-<elasticsearch:client id="esClient" plugins="org.elasticsearch.plugin.deletebyquery.DeleteByQueryPlugin" />
-```
-
-#### Connecting to a secured X-Pack cluster
-
-You need to define the `xpack.security.user` property as follows:
-
-```
-<util:properties id="esProperties">
-    <prop key="xpack.security.user">elastic:changeme</prop>
-</util:properties>
-
-<elasticsearch:client id="esClient" properties="esProperties" />
-```
-
-Note that it needs that you imported to your project the `x-pack-transport` jar.
-
 #### Asynchronous initialization
 
 Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
 
 ```xml
 <task:executor pool-size="4" id="taskExecutor"/>
-<elasticsearch:client id="esClient" async="true" taskExecutor="taskExecutor"/>
+<elasticsearch:rest-client id="esClient" async="true" taskExecutor="taskExecutor"/>
 ```
 Asynchronous initialization does not block Spring startup but it continues on background on another thread.
 Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
 
 ## Automatically create indices
-
-The following examples are documented using the Rest Client implementation `elasticsearch:rest-client` but you can
-replace them with the Transport client by using `elasticsearch:client` instead.
 
 ### Managing indexes and types
 
@@ -549,7 +416,7 @@ Let's say you want to use Spring Java Annotations, here is a typical application
         <dependency>
             <groupId>fr.pilato.spring</groupId>
             <artifactId>spring-elasticsearch</artifactId>
-            <version>6.2</version>
+            <version>7.0</version>
         </dependency>
     </dependencies>
 </project>
@@ -607,9 +474,9 @@ public class RestApp {
 
     private void run() {
         // Run a High Level request
-        client.info();
+        client.info(RequestOptions.DEFAULT);
         // You still have access to the Low Level client
-        client.getLowLevel().performRequest("GET", "/");
+        client.getLowLevelClient().performRequest(new Request("GET", "/"));
     }
 }
 ```
@@ -638,41 +505,6 @@ Note that you can use the old fashion method to define your beans instead of usi
                 <value>http://localhost:9201</value>
             </list>
         </property>
-
-        <property name="autoscan" value="false" />
-        <property name="mappings">
-            <list>
-                <value>twitter</value>
-            </list>
-        </property>
-        <property name="classpathRoot" value="myownfolder" />
-        <property name="forceMapping" value="true" />
-        <property name="mergeSettings" value="true" />
-        <property name="templates">
-            <list>
-                <value>twitter_template</value>
-            </list>
-        </property>
-        <property name="forceTemplate" value="true" />
-        <property name="aliases">
-            <list>
-                <value>twitter:twitter2012</value>
-                <value>twitter:twitter2013</value>
-                <value>twitter:twitter2014</value>
-            </list>
-        </property>
-    </bean>
-
-    <!-- The deprecated Transport Client -->
-    <bean id="esTransportClient" class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
-        <property name="esNodes">
-            <list>
-                <value>localhost:9300</value>
-                <value>localhost:9301</value>
-            </list>
-        </property>
-
-        <property name="properties" ref="esproperties" />
 
         <property name="autoscan" value="false" />
         <property name="mappings">

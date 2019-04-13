@@ -129,6 +129,10 @@ public abstract class BaseTest {
         }
     }
 
+    protected void executeBefore(RestClient client) throws IOException {
+        // Do nothing
+    }
+
     @BeforeEach
     public void cleanIndex() throws IOException {
         if (indexName() != null) {
@@ -156,6 +160,7 @@ public abstract class BaseTest {
                 throw e;
             }
         }
+        executeBefore(client);
     }
 
     /**
