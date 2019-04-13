@@ -19,13 +19,17 @@
 
 package fr.pilato.spring.elasticsearch.it.xml.rest;
 
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.ResponseException;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.IndexTemplatesExistRequest;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
 
 public class TemplateTest extends AbstractXmlContextModel {
     private final String[] xmlBeans = {"models/rest/template/template-context.xml"};
@@ -41,8 +45,16 @@ public class TemplateTest extends AbstractXmlContextModel {
     }
 
     @Override
+    protected void executeBefore(RestClient client) throws IOException {
+        try {
+            client.performRequest(new Request("DELETE", "/_template/twitter_template"));
+        } catch (ResponseException ignored) { }
+    }
+
+    @Override
     protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_template/twitter_template");
-        assertThat(response, hasKey("twitter_template"));
+        boolean existsTemplate = client.indices().existsTemplate(new IndexTemplatesExistRequest("twitter_template"),
+                RequestOptions.DEFAULT);
+        assertThat(existsTemplate, is(true));
     }
 }

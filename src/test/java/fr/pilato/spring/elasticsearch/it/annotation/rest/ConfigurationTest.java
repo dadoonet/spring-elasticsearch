@@ -20,6 +20,7 @@
 package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.AfterEach;
@@ -48,6 +49,9 @@ class ConfigurationTest extends BaseTest {
 
 		// We call the High Level Rest client to make sure it works properly
 		client.info(RequestOptions.DEFAULT);
+
+		// We call the Low Level Rest client for documentation purpose
+		client.getLowLevelClient().performRequest(new Request("GET", "/"));
     }
 
 	@AfterEach
