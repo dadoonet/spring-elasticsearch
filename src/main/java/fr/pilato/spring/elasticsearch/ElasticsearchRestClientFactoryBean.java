@@ -447,7 +447,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                 logger.trace("", e);
             }
         }
-        return null;
+        return templates;
     }
 
     /**
