@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.configuration.security.Configuration;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -34,7 +34,6 @@ public class AppConfig {
 
 	@Bean
 	public RestHighLevelClient esClient() throws Exception {
-		// Let's add a default user in case we are running with XPack
 		Properties props = new Properties();
 		props.setProperty(XPACK_USER, testCredentials);
 

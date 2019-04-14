@@ -19,14 +19,16 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
-class ConfigurationTest extends AbstractAnnotationContextModel {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-	@Override
-	protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
-		// We call the High Level Rest client to make sure it works properly
-		client.info(RequestOptions.DEFAULT);
-	}
+
+public class MappingConventionTest extends AbstractAnnotationContextModel {
+
+    @Override
+    protected void checkUseCaseSpecific(RestHighLevelClient client) {
+        assertThat("_doc type should exist in twitter index", isMappingExist(client.getLowLevelClient(), "twitter", "_doc"), is(true));
+    }
 }
