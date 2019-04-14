@@ -17,21 +17,17 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport;
 
 import org.elasticsearch.client.Client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class MappingConventionTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/mapping-convention/mapping-convention-context.xml"};
+
+public class MappingConventionTest extends AbstractAnnotationContextModel {
 
     @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
     protected void checkUseCaseSpecific(Client client) {
         assertThat("_doc type should exist in twitter index", isMappingExist(client, "twitter", "_doc"), is(true));
     }

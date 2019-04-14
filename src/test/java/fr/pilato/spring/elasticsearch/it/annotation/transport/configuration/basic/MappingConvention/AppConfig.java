@@ -17,8 +17,20 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.configuration.basic.MappingConvention;
 
-class ConfigurationTest extends AbstractAnnotationContextModel {
+import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
+import org.elasticsearch.client.Client;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
+public class AppConfig {
+
+	@Bean
+	public Client esClient() throws Exception {
+		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
+		factory.afterPropertiesSet();
+		return factory.getObject();
+	}
 }
