@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
 import org.elasticsearch.client.RestHighLevelClient;
 
@@ -26,13 +26,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 
-public class AliasesTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/rest/aliases/aliases-context.xml"};
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
+public class AliasesTest extends AbstractAnnotationContextModel {
 
     @Override
     protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {

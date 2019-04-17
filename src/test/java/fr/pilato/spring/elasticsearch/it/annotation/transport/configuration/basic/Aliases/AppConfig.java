@@ -17,29 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.configuration.basic.Aliases;
 
-import org.elasticsearch.action.admin.indices.alias.get.GetAliasesResponse;
+import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
 import org.elasticsearch.client.Client;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+@Configuration
+public class AppConfig {
 
-public class AliasesTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/aliases/aliases-context.xml"};
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    protected void checkUseCaseSpecific(Client client) {
-        GetAliasesResponse response = client.admin().indices()
-                .prepareGetAliases("alltheworld")
-                .addIndices("twitter", "rss")
-                .get();
-        assertThat(response.getAliases().size(), is(2));
-
-        assertShardsAndReplicas(client, "rss", 5, 1);
-    }
+	@Bean
+	public Client esClient() throws Exception {
+		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
+		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
+		factory.setMappings(new String[]{"twitter", "rss"});
+		factory.setForceMapping(true);
+		factory.afterPropertiesSet();
+		return factory.getObject();
+	}
 }
