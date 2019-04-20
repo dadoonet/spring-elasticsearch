@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractTransportAnnotationContextModel extends AbstractAnnotationContextModel {
 
-    Client checkClient(String name) {
+    protected Client checkClient(String name) {
         return checkClient(name, null);
     }
 

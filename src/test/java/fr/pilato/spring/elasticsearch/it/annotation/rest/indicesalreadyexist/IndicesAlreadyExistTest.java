@@ -17,27 +17,31 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.indicesalreadyexist;
+
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 
-public class IndicesAlreadyExistTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/indices-already-exist-86/indices-already-exist-86.xml"};
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
+public class IndicesAlreadyExistTest extends AbstractRestAnnotationContextModel {
 
     @Override
     protected List<String> otherTestIndices() {
         return Collections.singletonList("badindex");
     }
 
-    // We don't test really something.
-    // We just expect that there won't be any exception while starting the test
-    // If someone wants to check anything, he has to read the logs for this test
-    // and check that "we have to check some indices status as they already exist..."
-    // appears...
+    @Test
+    void testTwoClients() {
+        RestHighLevelClient esClient = checkClient("esClient");
+        assertThat(esClient, notNullValue());
+        RestHighLevelClient esClient2 = checkClient("esClient2");
+        assertThat(esClient2, notNullValue());
+    }
+
 }

@@ -46,7 +46,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractRestAnnotationContextModel extends AbstractAnnotationContextModel {
-    RestHighLevelClient checkClient(String name) {
+    protected RestHighLevelClient checkClient(String name) {
         return checkClient(name, null);
     }
 
