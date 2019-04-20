@@ -20,20 +20,15 @@
 package fr.pilato.spring.elasticsearch.it.annotation.rest.mappingconvention;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.context.annotation.Bean;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Properties;
-
 @Configuration
-public class AppConfig {
+public class AppConfig extends RestAppConfig {
 
-	@Bean
-	public RestHighLevelClient esClient(Properties esProperties) throws Exception {
-		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
-		factory.setProperties(esProperties);
-		factory.afterPropertiesSet();
-		return factory.getObject();
-    }
+	@Override
+	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
+
+	}
+
 }

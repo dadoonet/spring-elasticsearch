@@ -17,29 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.badclasspath;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
+import org.elasticsearch.client.Client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 
-public class BadClasspath7Test extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/rest/bad-classpath-7/bad-classpath-7-context.xml"};
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
+public class BadClasspath7Test extends AbstractTransportAnnotationContextModel {
     @Override
     public String indexName() {
         return null;
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) {
-        assertThat("_doc type should not exist in twitter index", isMappingExist(client.getLowLevelClient(), "twitter", "_doc"), is(false));
+    protected void checkUseCaseSpecific(Client client) {
+        assertThat("_doc type should not exist in twitter index", isMappingExist(client, "twitter", "_doc"), is(false));
     }
 }

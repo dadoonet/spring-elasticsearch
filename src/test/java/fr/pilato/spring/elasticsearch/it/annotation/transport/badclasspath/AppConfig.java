@@ -17,20 +17,17 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.aliases;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.badclasspath;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
+import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.TransportAppConfig;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AppConfig extends RestAppConfig {
+public class AppConfig extends TransportAppConfig {
 
 	@Override
-	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
-		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
-		factory.setMappings(new String[]{"twitter", "rss"});
-		factory.setForceMapping(true);
+	protected void enrichFactory(ElasticsearchTransportClientFactoryBean factory) {
+		factory.setClasspathRoot("/esdoesnotexist");
 	}
-
 }

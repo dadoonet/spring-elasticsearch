@@ -17,29 +17,24 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport;
 
+import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
 import org.elasticsearch.client.Client;
+import org.springframework.context.annotation.Bean;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import java.util.Properties;
 
+public abstract class TransportAppConfig {
 
-public class BadClasspath7Test extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/bad-classpath-7/bad-classpath-7-context.xml"};
+	abstract protected void enrichFactory(ElasticsearchTransportClientFactoryBean factory);
 
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    @Override
-    public String indexName() {
-        return null;
-    }
-
-    @Override
-    protected void checkUseCaseSpecific(Client client) {
-        assertThat("_doc type should not exist in twitter index", isMappingExist(client, "twitter", "_doc"), is(false));
-    }
+	@Bean
+	public Client esClient(Properties esProperties) throws Exception {
+		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
+		factory.setProperties(esProperties);
+		enrichFactory(factory);
+		factory.afterPropertiesSet();
+		return factory.getObject();
+	}
 }

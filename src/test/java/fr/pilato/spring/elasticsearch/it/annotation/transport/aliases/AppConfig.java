@@ -20,22 +20,15 @@
 package fr.pilato.spring.elasticsearch.it.annotation.transport.aliases;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
-import org.elasticsearch.client.Client;
-import org.springframework.context.annotation.Bean;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.TransportAppConfig;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Properties;
-
 @Configuration
-public class AppConfig {
-	@Bean
-	public Client esClient(Properties esProperties) throws Exception {
-		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
-		factory.setProperties(esProperties);
+public class AppConfig extends TransportAppConfig {
+	@Override
+	protected void enrichFactory(ElasticsearchTransportClientFactoryBean factory) {
 		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
 		factory.setMappings(new String[]{"twitter", "rss"});
 		factory.setForceMapping(true);
-		factory.afterPropertiesSet();
-		return factory.getObject();
 	}
 }

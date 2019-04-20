@@ -17,20 +17,24 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.aliases;
+package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
-import org.springframework.context.annotation.Configuration;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.context.annotation.Bean;
 
-@Configuration
-public class AppConfig extends RestAppConfig {
+import java.util.Properties;
 
-	@Override
-	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
-		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
-		factory.setMappings(new String[]{"twitter", "rss"});
-		factory.setForceMapping(true);
+public abstract class RestAppConfig {
+
+	abstract protected void enrichFactory(ElasticsearchRestClientFactoryBean factory);
+
+	@Bean
+	public RestHighLevelClient esClient(Properties esProperties) throws Exception {
+		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+		factory.setProperties(esProperties);
+		enrichFactory(factory);
+		factory.afterPropertiesSet();
+		return factory.getObject();
 	}
-
 }

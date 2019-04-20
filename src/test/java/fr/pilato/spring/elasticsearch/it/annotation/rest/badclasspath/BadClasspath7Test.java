@@ -17,20 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.aliases;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.badclasspath;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
-import org.springframework.context.annotation.Configuration;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
+import org.elasticsearch.client.RestHighLevelClient;
 
-@Configuration
-public class AppConfig extends RestAppConfig {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-	@Override
-	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
-		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
-		factory.setMappings(new String[]{"twitter", "rss"});
-		factory.setForceMapping(true);
-	}
 
+public class BadClasspath7Test extends AbstractRestAnnotationContextModel {
+    @Override
+    public String indexName() {
+        return null;
+    }
+
+    @Override
+    protected void checkUseCaseSpecific(RestHighLevelClient client) {
+        assertThat("_doc type should not exist in twitter index", isMappingExist(client.getLowLevelClient(), "twitter", "_doc"), is(false));
+    }
 }

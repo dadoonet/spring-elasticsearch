@@ -20,21 +20,14 @@
 package fr.pilato.spring.elasticsearch.it.annotation.transport.configuration;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
-import org.elasticsearch.client.Client;
-import org.springframework.context.annotation.Bean;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.TransportAppConfig;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Properties;
-
 @Configuration
-public class AppConfig {
+public class AppConfig extends TransportAppConfig {
 
-	@Bean
-	public Client esClient(Properties esProperties) throws Exception {
-		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
-		factory.setProperties(esProperties);
+	@Override
+	protected void enrichFactory(ElasticsearchTransportClientFactoryBean factory) {
 		factory.setEsNodes(new String[]{"127.0.0.1:9300"});
-		factory.afterPropertiesSet();
-		return factory.getObject();
 	}
 }
