@@ -17,24 +17,21 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.customanalyzers;
 
-import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
-import org.elasticsearch.client.Client;
+import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.TransportAppConfig;
+import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+@Configuration
+public class AppConfig extends TransportAppConfig {
 
-public class CustomAnalyzers12Test extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/custom-analyzers-12/custom-analyzers-12-context.xml"};
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    protected void checkUseCaseSpecific(Client client) {
-        GetSettingsResponse response = client.admin().indices().prepareGetSettings().get();
-        assertThat(response.getSetting("twitter", "index.analysis.analyzer.francais.type"), is("custom"));
-    }
+	@Override
+	protected void enrichFactory(ElasticsearchTransportClientFactoryBean factory) {
+		factory.setClasspathRoot("/models/root/custom-analyzers-12/client");
+		factory.setMappings(new String[] {"twitter/_doc"});
+		factory.setMergeSettings(true);
+		factory.setMergeMapping(true);
+		factory.setForceMapping(true);
+	}
 }

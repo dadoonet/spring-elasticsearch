@@ -17,28 +17,20 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.customanalyzers;
 
-import org.elasticsearch.client.RestHighLevelClient;
-
-import java.io.IOException;
-import java.util.Map;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
+import org.elasticsearch.client.Client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.is;
 
-
-public class CustomAnalyzers12Test extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/rest/custom-analyzers-12/custom-analyzers-12-context.xml"};
+public class CustomAnalyzers12Test extends AbstractTransportAnnotationContextModel {
 
     @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        Map<String, Object> result = runRestQuery(client.getLowLevelClient(), "/twitter/_settings", "twitter", "settings", "index", "analysis", "analyzer", "francais");
-        assertThat(result, hasEntry("type", "custom"));
+    protected void checkUseCaseSpecific(Client client) {
+        GetSettingsResponse response = client.admin().indices().prepareGetSettings().get();
+        assertThat(response.getSetting("twitter", "index.analysis.analyzer.francais.type"), is("custom"));
     }
 }
