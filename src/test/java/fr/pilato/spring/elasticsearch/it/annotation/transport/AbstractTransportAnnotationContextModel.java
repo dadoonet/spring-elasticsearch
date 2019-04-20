@@ -118,7 +118,7 @@ public abstract class AbstractTransportAnnotationContextModel extends AbstractAn
         assertThat(response.getState().getMetaData().getIndices().get(indexName).getNumberOfReplicas(), is(expectedReplicas));
     }
 
-    void assertTransportClient(Client client, int expectedAdresses) {
+    protected void assertTransportClient(Client client, int expectedAdresses) {
         assertThat(client, instanceOf(TransportClient.class));
 
         TransportClient tClient = (TransportClient) client;

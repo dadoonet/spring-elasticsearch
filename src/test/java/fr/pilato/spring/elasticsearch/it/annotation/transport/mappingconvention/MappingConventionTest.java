@@ -31,5 +31,6 @@ public class MappingConventionTest extends AbstractTransportAnnotationContextMod
     @Override
     protected void checkUseCaseSpecific(Client client) {
         assertThat("_doc type should exist in twitter index", isMappingExist(client, "twitter", "_doc"), is(true));
+        assertTransportClient(client, 1);
     }
 }
