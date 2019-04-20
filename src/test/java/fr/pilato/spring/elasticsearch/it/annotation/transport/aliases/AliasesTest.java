@@ -17,22 +17,24 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.aliases;
 
-import org.elasticsearch.client.RestHighLevelClient;
-
-import java.util.Map;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
+import org.elasticsearch.action.admin.indices.alias.get.GetAliasesRequest;
+import org.elasticsearch.action.admin.indices.alias.get.GetAliasesResponse;
+import org.elasticsearch.client.Client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
 
-public class AliasesTest extends AbstractAnnotationContextModel {
+public class AliasesTest extends AbstractTransportAnnotationContextModel {
 
     @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
-        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_alias/alltheworld");
-        assertThat(response, hasKey("rss"));
-        assertThat(response, hasKey("twitter"));
-        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 5, 1);
+    protected void checkUseCaseSpecific(Client client) throws Exception {
+        GetAliasesResponse aliases = client.admin().indices().getAliases(new GetAliasesRequest("alltheworld")).get();
+
+        assertThat(aliases.getAliases().containsKey("rss"), is(true));
+        assertThat(aliases.getAliases().containsKey("twitter"), is(true));
+        assertShardsAndReplicas(client, "rss", 5, 1);
     }
 }

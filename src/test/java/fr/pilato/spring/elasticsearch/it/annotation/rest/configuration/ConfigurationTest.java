@@ -17,21 +17,17 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.configuration.basic.Configuration;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.configuration;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class AppConfig {
+class ConfigurationTest extends AbstractRestAnnotationContextModel {
 
-	@Bean
-	public RestHighLevelClient esClient() throws Exception {
-		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
-		factory.setEsNodes(new String[]{"127.0.0.1:9200"});
-		factory.afterPropertiesSet();
-		return factory.getObject();
-    }
+	@Override
+	protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
+		// We call the High Level Rest client to make sure it works properly
+		client.info(RequestOptions.DEFAULT);
+	}
 }

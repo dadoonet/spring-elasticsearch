@@ -17,16 +17,19 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.mappingconvention;
 
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
+import org.elasticsearch.client.Client;
 
-class ConfigurationTest extends AbstractAnnotationContextModel {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-	@Override
-	protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
-		// We call the High Level Rest client to make sure it works properly
-		client.info(RequestOptions.DEFAULT);
-	}
+
+public class MappingConventionTest extends AbstractTransportAnnotationContextModel {
+
+    @Override
+    protected void checkUseCaseSpecific(Client client) {
+        assertThat("_doc type should exist in twitter index", isMappingExist(client, "twitter", "_doc"), is(true));
+    }
 }

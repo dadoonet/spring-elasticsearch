@@ -21,7 +21,7 @@ package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.pilato.spring.elasticsearch.it.BaseTest;
+import fr.pilato.spring.elasticsearch.it.annotation.AbstractAnnotationContextModel;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
@@ -31,12 +31,8 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.framework.Advised;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
 import java.lang.reflect.Proxy;
@@ -49,45 +45,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public abstract class AbstractAnnotationContextModel extends BaseTest {
-    private ConfigurableApplicationContext ctx;
-
-    /**
-     * @return list of specific classpath to load if not the default one
-     */
-    String classpath() {
-        return null;
-    }
-
-    @BeforeEach
-    void startContext() {
-        String classpath = classpath();
-
-        if (classpath == null || classpath.isEmpty()) {
-            // If not set, we guess the package name from the test name.
-            // If test name is FooBarTest, the package name will be:
-            // fr.pilato.spring.elasticsearch.it.annotation.rest.configuration.basic.FooBar
-            classpath = "fr.pilato.spring.elasticsearch.it.annotation.rest.configuration.basic." +
-                    this.getClass().getSimpleName().replace("Test", "");
-        }
-
-        // Let's hack the context depending if the test cluster is running securely or not
-        if (securityInstalled) {
-            classpath = classpath.replace(".configuration.basic.", ".configuration.security.");
-        }
-
-        logger.info("  --> Starting Spring Context on [{}] classpath", classpath);
-        ctx = new AnnotationConfigApplicationContext(classpath);
-    }
-
-    @AfterEach
-    void stopContext() {
-        if (ctx != null) {
-            logger.info("  --> Closing Spring Context");
-            ctx.close();
-        }
-    }
-
+public abstract class AbstractRestAnnotationContextModel extends AbstractAnnotationContextModel {
     RestHighLevelClient checkClient(String name) {
         return checkClient(name, null);
     }
@@ -148,34 +106,13 @@ public abstract class AbstractAnnotationContextModel extends BaseTest {
     protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
     }
 
-    /**
-     * Overwrite it if the number of expected shards is not 5
-     * @return Number of expected primaries
-     */
-    protected int expectedShards() {
-        return 5;
-    }
-
-    /**
-     * Overwrite it if the number of expected replicas is not 1
-     * @return Number of expected replicas
-     */
-    protected int expectedReplicas() {
-        return 1;
-    }
-
-
-    private String beanName() {
-        return "esClient";
-    }
-
-    void assertShardsAndReplicas(RestClient client, String indexName, int expectedShards, int expectedReplicas) throws IOException {
+    protected void assertShardsAndReplicas(RestClient client, String indexName, int expectedShards, int expectedReplicas) throws IOException {
         Map<String, Object> result = runRestQuery(client, "/" + indexName + "/_settings", indexName, "settings", "index");
         assertThat(Integer.parseInt((String) result.get("number_of_shards")), is(expectedShards));
         assertThat(Integer.parseInt((String) result.get("number_of_replicas")), is(expectedReplicas));
     }
 
-    Map<String, Object> runRestQuery(RestClient client, String url, String... fields) throws IOException {
+    protected Map<String, Object> runRestQuery(RestClient client, String url, String... fields) throws IOException {
         Response response = client.performRequest(new Request("GET", url));
         Map<String, Object> result = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<Map<String, Object>>(){});
         logger.trace("Raw result {}", result);

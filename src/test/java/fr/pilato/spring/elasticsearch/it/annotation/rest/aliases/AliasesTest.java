@@ -17,21 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.transport.configuration.basic.Configuration;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.aliases;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
-import org.elasticsearch.client.Client;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
+import org.elasticsearch.client.RestHighLevelClient;
 
-@Configuration
-public class AppConfig {
+import java.util.Map;
 
-	@Bean
-	public Client esClient() throws Exception {
-		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
-		factory.setEsNodes(new String[]{"127.0.0.1:9300"});
-		factory.afterPropertiesSet();
-		return factory.getObject();
-	}
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasKey;
+
+public class AliasesTest extends AbstractRestAnnotationContextModel {
+
+    @Override
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
+        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_alias/alltheworld");
+        assertThat(response, hasKey("rss"));
+        assertThat(response, hasKey("twitter"));
+        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 5, 1);
+    }
 }

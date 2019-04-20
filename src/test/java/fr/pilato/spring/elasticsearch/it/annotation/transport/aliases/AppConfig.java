@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.transport.configuration.security.Configuration;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.aliases;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
 import org.elasticsearch.client.Client;
@@ -26,19 +26,15 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Properties;
 
-import static fr.pilato.spring.elasticsearch.ElasticsearchAbstractFactoryBean.XPACK_USER;
-import static fr.pilato.spring.elasticsearch.it.BaseTest.testCredentials;
-
 @Configuration
 public class AppConfig {
-
 	@Bean
-	public Client esClient() throws Exception {
+	public Client esClient(Properties esProperties) throws Exception {
 		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
-		factory.setEsNodes(new String[]{"127.0.0.1:9300"});
-		Properties props = new Properties();
-		props.setProperty(XPACK_USER, testCredentials);
-		factory.setProperties(props);
+		factory.setProperties(esProperties);
+		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
+		factory.setMappings(new String[]{"twitter", "rss"});
+		factory.setForceMapping(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}

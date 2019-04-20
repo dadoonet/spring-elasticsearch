@@ -17,32 +17,26 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.transport.configuration.security.Aliases;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.aliases;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
-import org.elasticsearch.client.Client;
+import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Properties;
 
-import static fr.pilato.spring.elasticsearch.ElasticsearchAbstractFactoryBean.XPACK_USER;
-import static fr.pilato.spring.elasticsearch.it.BaseTest.testCredentials;
-
 @Configuration
 public class AppConfig {
 
 	@Bean
-	public Client esClient() throws Exception {
-		Properties props = new Properties();
-		props.setProperty(XPACK_USER, testCredentials);
-
-		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
-		factory.setProperties(props);
+	public RestHighLevelClient esClient(Properties esProperties) throws Exception {
+		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+		factory.setProperties(esProperties);
 		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
 		factory.setMappings(new String[]{"twitter", "rss"});
 		factory.setForceMapping(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();
-	}
+    }
 }

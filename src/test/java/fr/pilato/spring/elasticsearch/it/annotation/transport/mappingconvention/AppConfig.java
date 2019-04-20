@@ -17,20 +17,22 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.configuration.basic.MappingConvention;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.mappingconvention;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RestHighLevelClient;
+import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
+import org.elasticsearch.client.Client;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Properties;
+
 @Configuration
 public class AppConfig {
-
 	@Bean
-	public RestHighLevelClient esClient() throws Exception {
-		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+	public Client esClient(Properties esProperties) throws Exception {
+		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
+		factory.setProperties(esProperties);
 		factory.afterPropertiesSet();
 		return factory.getObject();
-    }
+	}
 }

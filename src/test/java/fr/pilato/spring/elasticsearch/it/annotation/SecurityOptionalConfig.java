@@ -17,10 +17,8 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.configuration.security.Configuration;
+package fr.pilato.spring.elasticsearch.it.annotation;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,17 +28,12 @@ import static fr.pilato.spring.elasticsearch.ElasticsearchAbstractFactoryBean.XP
 import static fr.pilato.spring.elasticsearch.it.BaseTest.testCredentials;
 
 @Configuration
-public class AppConfig {
+public class SecurityOptionalConfig {
 
-	@Bean
-	public RestHighLevelClient esClient() throws Exception {
-		Properties props = new Properties();
-		props.setProperty(XPACK_USER, testCredentials);
-
-		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
-		factory.setEsNodes(new String[]{"127.0.0.1:9200"});
-		factory.setProperties(props);
-		factory.afterPropertiesSet();
-		return factory.getObject();
-    }
+	@Bean("esProperties")
+	public Properties properties() {
+		Properties properties = new Properties();
+		properties.setProperty(XPACK_USER, testCredentials);
+		return properties;
+	}
 }

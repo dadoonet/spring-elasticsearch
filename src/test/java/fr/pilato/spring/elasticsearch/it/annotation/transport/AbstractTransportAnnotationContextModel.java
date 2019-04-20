@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.transport;
 
-import fr.pilato.spring.elasticsearch.it.BaseTest;
+import fr.pilato.spring.elasticsearch.it.annotation.AbstractAnnotationContextModel;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -30,16 +30,11 @@ import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.framework.Advised;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyCollectionOf;
@@ -49,44 +44,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public abstract class AbstractAnnotationContextModel extends BaseTest {
-    private ConfigurableApplicationContext ctx;
-
-    /**
-     * @return list of specific classpath to load if not the default one
-     */
-    String classpath() {
-        return null;
-    }
-
-    @BeforeEach
-    void startContext() {
-        String classpath = classpath();
-
-        if (classpath == null || classpath.isEmpty()) {
-            // If not set, we guess the package name from the test name.
-            // If test name is FooBarTest, the package name will be:
-            // fr.pilato.spring.elasticsearch.it.annotation.rest.configuration.basic.FooBar
-            classpath = "fr.pilato.spring.elasticsearch.it.annotation.transport.configuration.basic." +
-                    this.getClass().getSimpleName().replace("Test", "");
-        }
-
-        // Let's hack the context depending if the test cluster is running securely or not
-        if (securityInstalled) {
-            classpath = classpath.replace(".configuration.basic.", ".configuration.security.");
-        }
-
-        logger.info("  --> Starting Spring Context on [{}] classpath", classpath);
-        ctx = new AnnotationConfigApplicationContext(classpath);
-    }
-
-    @AfterEach
-    void stopContext() {
-        if (ctx != null) {
-            logger.info("  --> Closing Spring Context");
-            ctx.close();
-        }
-    }
+public abstract class AbstractTransportAnnotationContextModel extends AbstractAnnotationContextModel {
 
     Client checkClient(String name) {
         return checkClient(name, null);
@@ -117,7 +75,7 @@ public abstract class AbstractAnnotationContextModel extends BaseTest {
         return client;
     }
 
-    boolean isMappingExist(Client client, String index, String type) {
+    protected boolean isMappingExist(Client client, String index, String type) {
         ClusterState cs = client.admin().cluster().prepareState().setIndices(index).get().getState();
         IndexMetaData imd = cs.getMetaData().index(index);
 
@@ -129,7 +87,7 @@ public abstract class AbstractAnnotationContextModel extends BaseTest {
     }
 
     @Test
-    public void testFactoriesCreated() throws ExecutionException, InterruptedException {
+    public void testFactoriesCreated() throws Exception {
         Client client = checkClient(beanName());
         checkUseCaseSpecific(client);
 
@@ -151,31 +109,10 @@ public abstract class AbstractAnnotationContextModel extends BaseTest {
      * Overwrite it to implement use case specific tests
      * @param client Client representing bean named esClient
      */
-    protected void checkUseCaseSpecific(Client client) {
+    protected void checkUseCaseSpecific(Client client) throws Exception {
     }
 
-    /**
-     * Overwrite it if the number of expected shards is not 5
-     * @return Number of expected primaries
-     */
-    protected int expectedShards() {
-        return 5;
-    }
-
-    /**
-     * Overwrite it if the number of expected replicas is not 1
-     * @return Number of expected replicas
-     */
-    protected int expectedReplicas() {
-        return 1;
-    }
-
-
-    protected String beanName() {
-        return "esClient";
-    }
-
-    void assertShardsAndReplicas(Client client, String indexName, int expectedShards, int expectedReplicas) {
+    protected void assertShardsAndReplicas(Client client, String indexName, int expectedShards, int expectedReplicas) {
         ClusterStateResponse response = client.admin().cluster().prepareState().execute().actionGet();
         assertThat(response.getState().getMetaData().getIndices().get(indexName).getNumberOfShards(), is(expectedShards));
         assertThat(response.getState().getMetaData().getIndices().get(indexName).getNumberOfReplicas(), is(expectedReplicas));

@@ -17,8 +17,24 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.configuration;
 
-class ConfigurationTest extends AbstractAnnotationContextModel {
+import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+import java.util.Properties;
+
+@Configuration
+public class AppConfig {
+
+	@Bean
+	public RestHighLevelClient esClient(Properties esProperties) throws Exception {
+		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+		factory.setProperties(esProperties);
+		factory.setEsNodes(new String[]{"127.0.0.1:9200"});
+		factory.afterPropertiesSet();
+		return factory.getObject();
+    }
 }

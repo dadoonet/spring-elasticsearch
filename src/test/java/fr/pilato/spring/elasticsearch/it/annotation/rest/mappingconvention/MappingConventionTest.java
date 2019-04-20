@@ -17,20 +17,19 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.transport.configuration.basic.MappingConvention;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.mappingconvention;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean;
-import org.elasticsearch.client.Client;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
+import org.elasticsearch.client.RestHighLevelClient;
 
-@Configuration
-public class AppConfig {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-	@Bean
-	public Client esClient() throws Exception {
-		ElasticsearchTransportClientFactoryBean factory = new ElasticsearchTransportClientFactoryBean();
-		factory.afterPropertiesSet();
-		return factory.getObject();
-	}
+
+public class MappingConventionTest extends AbstractRestAnnotationContextModel {
+
+    @Override
+    protected void checkUseCaseSpecific(RestHighLevelClient client) {
+        assertThat("_doc type should exist in twitter index", isMappingExist(client.getLowLevelClient(), "twitter", "_doc"), is(true));
+    }
 }
