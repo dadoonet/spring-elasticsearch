@@ -17,21 +17,17 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.mapping;
 
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
-public class MappingTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/mapping/mapping-context.xml"};
 
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
+public class MappingTest extends AbstractTransportAnnotationContextModel {
 
     protected void checkUseCaseSpecific(Client client) {
         checkClient("esClient2");
