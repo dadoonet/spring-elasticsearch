@@ -17,13 +17,16 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.mappingfailed;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
+import fr.pilato.spring.elasticsearch.it.annotation.SecurityOptionalConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -41,18 +44,18 @@ public class MappingFailedTest extends BaseTest {
 	}
 
 	@Test
-    void test_transport_client() {
-        assertThrows(BeanCreationException.class, () -> {
-            try {
-                if (securityInstalled) {
-                    new ClassPathXmlApplicationContext("models/transport-xpack/mapping-failed/mapping-failed-context.xml");
-                } else {
-                    new ClassPathXmlApplicationContext("models/transport/mapping-failed/mapping-failed-context.xml");
-                }
-            } catch (BeanCreationException e) {
-                assertEquals(IllegalArgumentException.class, e.getCause().getClass());
-                throw e;
-            }
+	void test_transport_client() {
+		assertThrows(BeanCreationException.class, () -> {
+			try {
+				logger.info("  --> Starting Spring Context on [{}] classpath", this.getClass().getPackage().getName());
+				new AnnotationConfigApplicationContext(SecurityOptionalConfig.class, AppConfig.class);
+			} catch (BeanCreationException e) {
+				Throwable cause = e.getCause().getCause();
+				assertEquals(IllegalArgumentException.class, cause.getClass());
+				IllegalArgumentException responseException = (IllegalArgumentException) cause;
+				assertThat(responseException.getMessage(), is("mapper [message] of different type, current_type [text], merged_type [date]"));
+				throw e;
+			}
 		});
 	}
 }

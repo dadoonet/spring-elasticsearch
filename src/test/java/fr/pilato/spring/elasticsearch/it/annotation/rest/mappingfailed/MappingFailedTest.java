@@ -17,13 +17,14 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.mappingfailed;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
+import fr.pilato.spring.elasticsearch.it.annotation.SecurityOptionalConfig;
 import org.elasticsearch.client.ResponseException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -47,13 +48,10 @@ public class MappingFailedTest extends BaseTest {
 	void test_rest_client() {
 		assertThrows(BeanCreationException.class, () -> {
 			try {
-				if (securityInstalled) {
-					new ClassPathXmlApplicationContext("models/rest-xpack/mapping-failed/mapping-failed-context.xml");
-				} else {
-					new ClassPathXmlApplicationContext("models/rest/mapping-failed/mapping-failed-context.xml");
-				}
+				logger.info("  --> Starting Spring Context on [{}] classpath", this.getClass().getPackage().getName());
+				new AnnotationConfigApplicationContext(SecurityOptionalConfig.class, AppConfig.class);
 			} catch (BeanCreationException e) {
-				Throwable cause = e.getCause();
+				Throwable cause = e.getCause().getCause();
 				assertEquals(ResponseException.class, cause.getClass());
 				ResponseException responseException = (ResponseException) cause;
 				assertThat(responseException.getResponse().getStatusLine().getStatusCode(), is(400));
