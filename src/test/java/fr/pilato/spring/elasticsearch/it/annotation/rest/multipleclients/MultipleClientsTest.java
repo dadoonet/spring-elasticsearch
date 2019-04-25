@@ -17,28 +17,22 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.multipleclients;
 
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 
+public class MultipleClientsTest extends AbstractRestAnnotationContextModel {
 
-public class MultipleClientsTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/rest/multiple-clients/multiple-clients-context.xml"};
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        RestHighLevelClient client2 = checkClient("esClient2");
-        // We test how many shards and replica we have
-        // Let's do the same thing with the second client
-        // We test how many shards and replica we have
-        // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
-        // See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
-        assertShardsAndReplicas(client2.getLowLevelClient(), "twitter", 5, 1);
-    }
+	protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+		RestHighLevelClient client2 = checkClient("esClient2");
+		// We test how many shards and replica we have
+		// Let's do the same thing with the second client
+		// We test how many shards and replica we have
+		// We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
+		// See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
+		assertShardsAndReplicas(client2.getLowLevelClient(), "twitter", 5, 1);
+	}
 }

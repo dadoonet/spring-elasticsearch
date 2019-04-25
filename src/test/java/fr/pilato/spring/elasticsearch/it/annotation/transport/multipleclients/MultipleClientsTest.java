@@ -17,26 +17,20 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.multipleclients;
 
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
 import org.elasticsearch.client.Client;
 
+public class MultipleClientsTest extends AbstractTransportAnnotationContextModel {
 
-public class MultipleClientsTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/multiple-clients/multiple-clients-context.xml"};
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    protected void checkUseCaseSpecific(Client client) {
-        Client client2 = checkClient("esClient2");
-        // We test how many shards and replica we have
-        // Let's do the same thing with the second client
-        // We test how many shards and replica we have
-        // We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
-        // See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
-        assertShardsAndReplicas(client2, "twitter", 5, 1);
-    }
+	protected void checkUseCaseSpecific(Client client) {
+		Client client2 = checkClient("esClient2");
+		// We test how many shards and replica we have
+		// Let's do the same thing with the second client
+		// We test how many shards and replica we have
+		// We don't expect the number of replicas to be 4 as we won't merge _update_settings.json
+		// See #31: https://github.com/dadoonet/spring-elasticsearch/issues/31
+		assertShardsAndReplicas(client2, "twitter", 5, 1);
+	}
 }
