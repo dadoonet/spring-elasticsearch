@@ -17,26 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.settingsnomapping21;
 
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
-import org.elasticsearch.client.Client;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
+import org.elasticsearch.client.RestHighLevelClient;
+
+import java.io.IOException;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasKey;
 
-public class SettingsNoMapping21Test extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/settings-no-mapping-21/settings-no-mapping-21-context.xml"};
 
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
+public class SettingsNoMapping21Test extends AbstractRestAnnotationContextModel {
 
-    @Override
-    protected void checkUseCaseSpecific(Client client) {
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
         // We should have an existing index here
-        IndicesExistsResponse ier = client.admin().indices().prepareExists("twitter").execute().actionGet();
-        assertThat(ier.isExists(), is(true));
+        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/twitter");
+        assertThat(response, hasKey("twitter"));
     }
 }
