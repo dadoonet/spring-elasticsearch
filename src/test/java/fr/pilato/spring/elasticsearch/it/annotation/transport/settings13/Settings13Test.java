@@ -17,30 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.settings13;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
+import org.elasticsearch.client.Client;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 
-public class Settings13Test extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/rest/settings-13/settings-13-context.xml"};
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 5, 1);
-    }
+public class Settings13Test extends AbstractTransportAnnotationContextModel {
 
     @Override
     protected List<String> otherTestIndices() {
         return Collections.singletonList("rss");
+    }
+
+    protected void checkUseCaseSpecific(Client client) {
+        assertShardsAndReplicas(client, "rss", 5, 1);
     }
 }

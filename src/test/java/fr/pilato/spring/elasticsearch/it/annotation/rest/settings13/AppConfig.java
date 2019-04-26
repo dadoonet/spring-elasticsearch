@@ -17,30 +17,19 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.settings13;
 
-import org.elasticsearch.client.Client;
+import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
+import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
-import java.util.List;
+@Configuration
+public class AppConfig extends RestAppConfig {
 
+	@Override
+	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
+		factory.setClasspathRoot("/models/root/settings-13/client");
+		factory.setForceMapping(true);
+	}
 
-public class Settings13Test extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/settings-13/settings-13-context.xml"};
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    @Override
-    protected void checkUseCaseSpecific(Client client) {
-        assertTransportClient(client, 2);
-        assertShardsAndReplicas(client, "rss", 5, 1);
-    }
-
-    @Override
-    protected List<String> otherTestIndices() {
-        return Collections.singletonList("rss");
-    }
 }
