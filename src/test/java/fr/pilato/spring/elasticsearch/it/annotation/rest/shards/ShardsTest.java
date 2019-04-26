@@ -17,15 +17,12 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.shards;
 
-public class ShardsTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/rest/shards/shards-context.xml"};
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
 
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
+
+public class ShardsTest extends AbstractRestAnnotationContextModel {
 
     @Override
     protected int expectedShards() {
