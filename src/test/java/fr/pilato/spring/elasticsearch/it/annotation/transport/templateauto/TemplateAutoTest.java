@@ -17,28 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.templateauto;
 
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
 import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
 import org.elasticsearch.client.Client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class TemplateAutoTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/template-auto/template-auto-context.xml"};
+
+public class TemplateAutoTest extends AbstractTransportAnnotationContextModel {
 
     @Override
     protected String indexName() {
         return null;
     }
-
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
-
-    @Override
+    
     protected void checkUseCaseSpecific(Client client) {
         GetIndexTemplatesResponse response = client.admin().indices().prepareGetTemplates("twitter_template").get();
         assertThat(response.getIndexTemplates().size(), is(1));
