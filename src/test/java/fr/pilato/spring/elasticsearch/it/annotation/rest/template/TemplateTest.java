@@ -17,30 +17,27 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.template;
 
-import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
-import org.elasticsearch.client.Client;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
+import org.elasticsearch.client.RestHighLevelClient;
+
+import java.io.IOException;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasKey;
 
-public class TemplateTest extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/transport/template/template-context.xml"};
 
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
+public class TemplateTest extends AbstractRestAnnotationContextModel {
 
     @Override
     protected String indexName() {
         return null;
     }
 
-    @Override
-    protected void checkUseCaseSpecific(Client client) {
-        GetIndexTemplatesResponse response = client.admin().indices().prepareGetTemplates("twitter_template").get();
-        assertThat(response.getIndexTemplates().size(), is(1));
+    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_template/twitter_template");
+        assertThat(response, hasKey("twitter_template"));
     }
 }
