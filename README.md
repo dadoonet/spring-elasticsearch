@@ -169,6 +169,95 @@ If you want to do so, add to your `pom.xml`:
 </dependency>
 ```
 
+## Using Java Annotations
+
+Let's say you want to use Spring Java Annotations, here is a typical application you can build.
+
+`pom.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fr.pilato.tests</groupId>
+    <artifactId>spring-elasticsearch-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>fr.pilato.spring</groupId>
+            <artifactId>spring-elasticsearch</artifactId>
+            <version>6.7</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+`App.java`:
+
+```java
+package fr.pilato.tests;
+
+import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+public class RestApp {
+
+    @Configuration
+    public class AppConfig {
+        @Bean
+        public RestHighLevelClient esClient() throws Exception {
+            ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+            factory.setEsNodes(new String[]{"http://127.0.0.1:9200"});
+
+            // Begin: If you are running with x-pack
+            Properties props = new Properties();
+            props.setProperty("xpack.security.user", "elastic:changeme");
+		    factory.setProperties(props);
+            // End: If you are running with x-pack
+
+            factory.afterPropertiesSet();
+            return factory.getObject();
+        }
+    }
+
+    @Autowired
+    private RestHighLevelClient client;
+
+    public static void main(String[] args) throws IOException {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.scan("fr.pilato.tests");
+        context.refresh();
+
+        RestApp p = context.getBean(RestApp.class);
+        p.run();
+
+        context.close();
+    }
+
+    private void run() throws IOException {
+        // Run a High Level request
+        client.info(RequestOptions.DEFAULT);
+        // You still have access to the Low Level client
+        client.getLowLevel().performRequest(new Request("GET", "/"));
+    }
+}
+```
+
+## Using XML (deprecated)
+
 ### Using elasticsearch spring namespace for XML files
 
 In your spring context file, just add namespaces like this:
@@ -510,92 +599,6 @@ Just set  `forceTemplate` property to `true`.
 
 ```xml
 <elasticsearch:rest-client id="esClient" forceTemplate="true" />
-```
-
-## Using Java Annotations
-
-Let's say you want to use Spring Java Annotations, here is a typical application you can build.
-
-`pom.xml`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>fr.pilato.tests</groupId>
-    <artifactId>spring-elasticsearch-test</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <dependencies>
-        <dependency>
-            <groupId>fr.pilato.spring</groupId>
-            <artifactId>spring-elasticsearch</artifactId>
-            <version>6.2</version>
-        </dependency>
-    </dependencies>
-</project>
-```
-
-`App.java`:
-
-```java
-package fr.pilato.tests;
-
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-
-@Component
-public class RestApp {
-
-    @Configuration
-    public class AppConfig {
-        @Bean
-        public RestHighLevelClient esClient() throws Exception {
-            ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
-            factory.setEsNodes(new String[]{"http://127.0.0.1:9200"});
-
-            // Begin: If you are running with x-pack
-            Properties props = new Properties();
-            props.setProperty("xpack.security.user", "elastic:changeme");
-		    factory.setProperties(props);
-            // End: If you are running with x-pack
-
-            factory.afterPropertiesSet();
-            return factory.getObject();
-        }
-    }
-
-    @Autowired
-    private RestClient client;
-
-    public static void main(String[] args) throws IOException {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.scan("fr.pilato.tests");
-        context.refresh();
-
-        RestApp p = context.getBean(RestApp.class);
-        p.run();
-
-        context.close();
-    }
-
-    private void run() throws IOException {
-        // Run a High Level request
-        client.info();
-        // You still have access to the Low Level client
-        client.getLowLevel().performRequest("GET", "/");
-    }
-}
 ```
 
 ## Old fashion bean definition
