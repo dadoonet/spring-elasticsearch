@@ -17,22 +17,21 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.settingsfailed;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
-import org.elasticsearch.client.ResponseException;
+import fr.pilato.spring.elasticsearch.it.annotation.SecurityOptionalConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
 /**
- * We try to merge non merging settings.
+ * We try to merge non merging mapping.
  * An exception should be raised.
  * @author David Pilato aka dadoonet
  *
@@ -45,21 +44,18 @@ public class SettingsFailedTest extends BaseTest {
 	}
 
 	@Test
-	void test_merge_settings_failure() {
-        assertThrows(BeanCreationException.class, () -> {
-            try {
-                if (securityInstalled) {
-                    new ClassPathXmlApplicationContext("models/rest-xpack/settings-failed/settings-failed-context.xml");
-                } else {
-                    new ClassPathXmlApplicationContext("models/rest/settings-failed/settings-failed-context.xml");
-                }
-            } catch (BeanCreationException e) {
-                Throwable cause = e.getCause();
-                assertEquals(ResponseException.class, cause.getClass());
-                ResponseException responseException = (ResponseException) cause;
-                assertThat(responseException.getResponse().getStatusLine().getStatusCode(), is(400));
-                throw e;
-            }
-        });
+	void test_transport_client() {
+		assertThrows(BeanCreationException.class, () -> {
+			try {
+				logger.info("  --> Starting Spring Context on [{}] classpath", this.getClass().getPackage().getName());
+				new AnnotationConfigApplicationContext(SecurityOptionalConfig.class, AppConfig.class);
+			} catch (BeanCreationException e) {
+				Throwable cause = e.getCause().getCause();
+				assertEquals(IllegalArgumentException.class, cause.getClass());
+				IllegalArgumentException responseException = (IllegalArgumentException) cause;
+				assertThat(responseException.getMessage(), containsString("Can't update non dynamic settings"));
+				throw e;
+			}
+		});
 	}
 }

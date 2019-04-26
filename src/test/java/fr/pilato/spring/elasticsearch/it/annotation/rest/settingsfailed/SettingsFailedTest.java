@@ -17,18 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.transport;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.settingsfailed;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
+import fr.pilato.spring.elasticsearch.it.annotation.SecurityOptionalConfig;
+import org.elasticsearch.client.ResponseException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * We try to merge non merging settings.
+ * We try to merge non merging mapping.
  * An exception should be raised.
  * @author David Pilato aka dadoonet
  *
@@ -41,16 +46,17 @@ public class SettingsFailedTest extends BaseTest {
 	}
 
 	@Test
-	void test_merge_settings_failure() {
+	void test_rest_client() {
 		assertThrows(BeanCreationException.class, () -> {
 			try {
-				if (securityInstalled) {
-					new ClassPathXmlApplicationContext("models/transport-xpack/settings-failed/settings-failed-context.xml");
-				} else {
-					new ClassPathXmlApplicationContext("models/transport/settings-failed/settings-failed-context.xml");
-				}
+				logger.info("  --> Starting Spring Context on [{}] classpath", this.getClass().getPackage().getName());
+				new AnnotationConfigApplicationContext(SecurityOptionalConfig.class, AppConfig.class);
 			} catch (BeanCreationException e) {
-				assertEquals(IllegalArgumentException.class, e.getCause().getClass());
+				Throwable cause = e.getCause().getCause();
+				assertEquals(ResponseException.class, cause.getClass());
+				ResponseException responseException = (ResponseException) cause;
+				assertThat(responseException.getResponse().getStatusLine().getStatusCode(), is(400));
+				assertThat(responseException.getMessage(), containsString("Can't update non dynamic settings"));
 				throw e;
 			}
 		});
