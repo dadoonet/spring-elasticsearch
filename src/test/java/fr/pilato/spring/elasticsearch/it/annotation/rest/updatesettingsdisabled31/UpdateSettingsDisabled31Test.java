@@ -17,21 +17,20 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.updatesettingsdisabled31;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
 
-abstract public class UpdateSettings31Test extends AbstractXmlContextModel {
-    private final String[] xmlBeans = {"models/rest/update-settings-31/update-settings-31-context.xml"};
+public class UpdateSettingsDisabled31Test extends AbstractRestAnnotationContextModel {
 
     @Override
-    String[] xmlBeans() {
-        return xmlBeans;
+    protected int expectedShards() {
+        return 2;
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
-        super.checkUseCaseSpecific(client);
-        checkClient("esClient2");
+    protected int expectedReplicas() {
+        return 0;
     }
+
 }

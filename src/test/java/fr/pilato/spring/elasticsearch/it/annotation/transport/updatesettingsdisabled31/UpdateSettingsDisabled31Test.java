@@ -17,18 +17,20 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.xml.rest;
+package fr.pilato.spring.elasticsearch.it.annotation.transport.updatesettingsdisabled31;
 
-public class UpdateSettingsEnabled31Test extends UpdateSettings31Test {
-    private final String[] xmlBeans = {"models/rest/update-settings-31/update-settings-31-context.xml"};
+import fr.pilato.spring.elasticsearch.it.annotation.transport.AbstractTransportAnnotationContextModel;
 
-    @Override
-    String[] xmlBeans() {
-        return xmlBeans;
-    }
+public class UpdateSettingsDisabled31Test extends AbstractTransportAnnotationContextModel {
 
     @Override
     protected int expectedShards() {
         return 2;
     }
+
+    @Override
+    protected int expectedReplicas() {
+        return 0;
+    }
+
 }
