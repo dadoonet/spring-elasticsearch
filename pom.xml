@@ -330,8 +330,8 @@
                 <configuration>
                     <images>
                         <image>
-                            <alias>elasticsearch-it</alias>
-                            <name>dadoonet/docker-elasticsearch:${project.version}</name>
+                            <alias>spring-elasticsearch</alias>
+                            <name>dadoonet/spring-elasticsearch:${project.version}</name>
                             <build>
                                 <from>${integ.elasticsearch.image}:${integ.elasticsearch.version}</from>
                                 <env>
