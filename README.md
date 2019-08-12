@@ -32,7 +32,7 @@ Starting from 7.0, TransportClient has been removed.
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|       7.0-SNAPSHOT      |  7.0 - 7.x    |    5.1.6     |              |
+|       7.0-SNAPSHOT      |  7.0 - 7.x    |    5.1.8     |              |
 |            6.2          |  6.0 - 6.x    |    5.1.3     |  2019-01-08  |
 |            6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
 |            6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
@@ -72,7 +72,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>7.0.0</version>
+    <version>7.3.0</version>
 </dependency>
 ```
 
