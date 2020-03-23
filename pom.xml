@@ -30,7 +30,7 @@
         <log4j.version>2.13.1</log4j.version>
         <commons.io.version>2.6</commons.io.version>
         <jackson.version>2.10.3</jackson.version>
-        <junit.version>5.6.0</junit.version>
+        <junit.version>5.6.1</junit.version>
 
         <skipTests>false</skipTests>
         <skip.unit.tests>${skipTests}</skip.unit.tests>
