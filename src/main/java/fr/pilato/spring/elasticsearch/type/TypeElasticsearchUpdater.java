@@ -24,7 +24,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.GetMappingsRequest;
 import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.elasticsearch.client.indices.PutMappingRequest;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.cluster.metadata.MappingMetadata;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +95,7 @@ public class TypeElasticsearchUpdater {
         if (mapping.mappings().isEmpty()) {
             return false;
         }
-        MappingMetaData doc = mapping.mappings().values().iterator().next();
+        MappingMetadata doc = mapping.mappings().values().iterator().next();
         return !doc.getSourceAsMap().isEmpty();
     }
 
