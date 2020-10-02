@@ -29,7 +29,7 @@
         <slf4j.version>1.7.30</slf4j.version>
         <log4j.version>2.13.3</log4j.version>
         <commons.io.version>2.8.0</commons.io.version>
-        <jackson.version>2.11.2</jackson.version>
+        <jackson.version>2.11.3</jackson.version>
         <junit.version>5.7.0</junit.version>
 
         <skipTests>false</skipTests>
