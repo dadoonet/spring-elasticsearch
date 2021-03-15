@@ -27,7 +27,7 @@
         <elasticsearch.version>7.11.2</elasticsearch.version>
         <beyonder.version>7.5</beyonder.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <log4j.version>2.14.0</log4j.version>
+        <log4j.version>2.14.1</log4j.version>
         <commons.io.version>2.8.0</commons.io.version>
         <jackson.version>2.12.2</jackson.version>
         <junit.version>5.7.1</junit.version>
