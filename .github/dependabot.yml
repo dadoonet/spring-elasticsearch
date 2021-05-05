@@ -12,7 +12,3 @@ updates:
   - dadoonet
   labels:
   - update
-  ignore:
-  - dependency-name: org.elasticsearch.client:elasticsearch-rest-high-level-client
-    versions:
-    - 7.11.0
