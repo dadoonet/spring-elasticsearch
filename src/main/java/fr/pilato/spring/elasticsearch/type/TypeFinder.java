@@ -19,8 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.type;
 
-import fr.pilato.elasticsearch.tools.ResourceList;
-import fr.pilato.elasticsearch.tools.SettingsFinder;
+import fr.pilato.elasticsearch.tools.util.ResourceList;
+import fr.pilato.elasticsearch.tools.util.SettingsFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

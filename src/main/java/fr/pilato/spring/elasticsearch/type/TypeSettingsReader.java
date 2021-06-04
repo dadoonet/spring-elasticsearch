@@ -19,8 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.type;
 
-import fr.pilato.elasticsearch.tools.SettingsFinder.Defaults;
-import fr.pilato.elasticsearch.tools.SettingsReader;
+import fr.pilato.elasticsearch.tools.util.SettingsFinder;
+import fr.pilato.elasticsearch.tools.util.SettingsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ class TypeSettingsReader extends SettingsReader {
 		if (root == null) {
 			return readMapping(index);
 		}
-		String mappingFile = root + "/" + index + "/_doc" + Defaults.JsonFileExtension;
+		String mappingFile = root + "/" + index + "/_doc" + SettingsFinder.Defaults.JsonFileExtension;
 		return readFileFromClasspath(mappingFile);
 	}
 
@@ -56,6 +56,6 @@ class TypeSettingsReader extends SettingsReader {
 	 * @throws IOException if the connection with elasticsearch is failing
 	 */
 	private static String readMapping(String index) throws IOException {
-		return readMapping(Defaults.ConfigDir, index);
+		return readMapping(SettingsFinder.Defaults.ConfigDir, index);
 	}
 }

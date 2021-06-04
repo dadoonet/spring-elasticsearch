@@ -19,8 +19,8 @@
 
 package fr.pilato.spring.elasticsearch;
 
-import fr.pilato.elasticsearch.tools.index.IndexFinder;
-import fr.pilato.elasticsearch.tools.template.TemplateFinder;
+import fr.pilato.elasticsearch.tools.util.ResourceList;
+import fr.pilato.elasticsearch.tools.util.SettingsFinder;
 import fr.pilato.spring.elasticsearch.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
@@ -46,10 +46,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static fr.pilato.elasticsearch.tools.alias.AliasElasticsearchUpdater.createAlias;
-import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.createIndex;
-import static fr.pilato.elasticsearch.tools.index.IndexElasticsearchUpdater.updateSettings;
-import static fr.pilato.elasticsearch.tools.template.TemplateElasticsearchUpdater.createTemplate;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.createAlias;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.createIndex;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.updateSettings;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchTemplateUpdater.createTemplate;
+import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
 import static fr.pilato.spring.elasticsearch.type.TypeElasticsearchUpdater.createMapping;
 
 /**
@@ -312,7 +313,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     public void setClasspathRoot(String classpathRoot) {
         // For compatibility reasons, we need to convert "/classpathroot" to "classpathroot"
         if (classpathRoot.startsWith("/")) {
-            this.classpathRoot = classpathRoot.substring(1, classpathRoot.length());
+            this.classpathRoot = classpathRoot.substring(1);
         } else {
 
             this.classpathRoot = classpathRoot;
@@ -397,7 +398,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
             try {
                 // Let's scan our resources
-                Collection<String> indices = IndexFinder.findIndexNames(classpathRoot);
+                Collection<String> indices = findIndexNames(classpathRoot);
                 for (String index : indices) {
                     Collection<String> types = TypeFinder.findTypes(classpathRoot, index);
                     if (types.isEmpty()) {
@@ -436,7 +437,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
             try {
                 // Let's scan our resources
-                List<String> scannedTemplates = TemplateFinder.findTemplates(classpathRoot);
+                List<String> scannedTemplates = ResourceList.getResourceNames(classpathRoot, SettingsFinder.Defaults.TemplateDir);
                 for (String template : scannedTemplates) {
                     autoTemplates.add(template);
                 }
