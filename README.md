@@ -72,7 +72,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>7.8.0</version>
+    <version>7.13.1</version>
 </dependency>
 ```
 
@@ -126,17 +126,17 @@ If you want to do so, add to your `pom.xml`:
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-1.2-api</artifactId>
-    <version>2.13.3</version>
+    <version>2.14.1</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.13.3</version>
+    <version>2.14.1</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
-    <version>2.13.3</version>
+    <version>2.14.1</version>
 </dependency>
 ```
 
@@ -600,7 +600,7 @@ mvn changes:announcement-mail -Dchanges.username='YourSmtpUserName' -Dchanges.pa
 
 This software is licensed under the Apache 2 license, quoted below.
 
-	Copyright 2011-2020 David Pilato
+	Copyright 2011-2021 David Pilato
 	
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not
 	use this file except in compliance with the License. You may obtain a copy of
