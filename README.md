@@ -33,6 +33,7 @@ Starting from 7.0, TransportClient has been removed.
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
 |       7.0-SNAPSHOT      |  7.0 - 7.x    |    5.1.8     |              |
+|            6.7          |  6.7 - 6.x    |    5.1.3     |  2019-04-13  |
 |            6.2          |  6.0 - 6.x    |    5.1.3     |  2019-01-08  |
 |            6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
 |            6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
