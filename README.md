@@ -48,8 +48,8 @@ Starting from 7.0, TransportClient has been removed.
 
 ## Build Status
 
-Thanks to Travis for the [build status](https://travis-ci.org/dadoonet/spring-elasticsearch): 
-[![Build Status](https://travis-ci.org/dadoonet/spring-elasticsearch.svg)](https://travis-ci.org/dadoonet/spring-elasticsearch)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.pilato.spring/spring-elasticsearch/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/fr.pilato.spring/spring-elasticsearch/)
+[![Build Status](https://github.com/dadoonet/spring-elasticsearch/actions/workflows/maven.yml/badge.svg)](https://github.com/dadoonet/spring-elasticsearch/actions/workflows/maven.yml)
 
 
 ## Getting Started
