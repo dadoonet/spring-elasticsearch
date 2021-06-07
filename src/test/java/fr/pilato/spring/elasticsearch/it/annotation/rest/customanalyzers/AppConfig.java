@@ -29,10 +29,6 @@ public class AppConfig extends RestAppConfig {
 	@Override
 	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/custom-analyzers-12/client");
-		factory.setMappings(new String[] {"twitter"});
-		factory.setMergeSettings(true);
-		factory.setMergeMapping(true);
-		factory.setForceMapping(true);
 	}
 
 }

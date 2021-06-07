@@ -46,7 +46,7 @@ public class AppConfig {
 		factory.setProperties(esProperties);
 		factory.setClasspathRoot("/models/root/mapping-failed/client2");
 		factory.setMappings(new String[]{"twitter"});
-		factory.setMergeMapping(true);
+		factory.setMergeSettings(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}

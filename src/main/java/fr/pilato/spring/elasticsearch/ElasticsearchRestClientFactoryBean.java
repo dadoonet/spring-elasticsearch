@@ -178,8 +178,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     private boolean forceTemplate;
 
-    private boolean mergeMapping;
-
     private boolean mergeSettings = true;
 
     private boolean autoscan = true;
@@ -191,6 +189,8 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     private String[] templates;
 
     private String classpathRoot = "es";
+
+    private String[] esNodes =  { "http://localhost:9200" };
 
     /**
      * Set to true if you want to force reinit indexes/mapping
@@ -212,8 +212,9 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * Set to true if you want to try to merge mappings
      * @param mergeMapping true if you want to try to merge mappings
      */
+    @Deprecated
     public void setMergeMapping(boolean mergeMapping) {
-        this.mergeMapping = mergeMapping;
+        logger.warn("This setting has been removed as we only manage index settings from 7.0.");
     }
 
     /**
@@ -318,6 +319,28 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         }
     }
 
+    /**
+     * Define ES nodes to communicate with.
+     * <br>use : protocol://hostname:port form
+     * <p>Example :</p>
+     * <pre>
+     * {@code
+     * <property name="esNodes">
+     *  <list>
+     *   <value>http://localhost:9200</value>
+     *   <value>http://localhost:9201</value>
+     *  </list>
+     * </property>
+     * }
+     * </pre>
+     * If not set, default to [ "http://localhost:9200" ].
+     * <br>If port is not set, default to 9200.
+     * @param esNodes An array of nodes hostname:port
+     */
+    public void setEsNodes(String[] esNodes) {
+        this.esNodes = esNodes;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("Starting Elasticsearch client");
@@ -327,7 +350,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     private RestHighLevelClient initialize() throws Exception {
         client = buildRestHighLevelClient();
         if (autoscan) {
-            mappings = computeMappings(mappings, classpathRoot);
+            mappings = computeIndexNames(mappings, classpathRoot);
             templates = computeTemplates(templates, classpathRoot);
         }
 
@@ -366,26 +389,9 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
-     * Init templates if needed.
-     * <p>
-     * Note that you can force to recreate template using
-     * {@link #setForceTemplate(boolean)}
-     */
-    private void initTemplates() throws Exception {
-        if (templates != null && templates.length > 0) {
-            for (String template : templates) {
-                Assert.hasText(template, "Can not read template in ["
-                        + template
-                        + "]. Check that templates is not empty.");
-                createTemplate(client.getLowLevelClient(), classpathRoot, template, forceTemplate);
-            }
-        }
-    }
-
-    /**
      * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
      */
-    static String[] computeMappings(String[] mappings, String classpathRoot) {
+    static String[] computeIndexNames(String[] mappings, String classpathRoot) {
         if (mappings == null || mappings.length == 0) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Automatic discovery is activated. Looking for definition files in classpath under [{}].",
@@ -450,6 +456,23 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         }
     }
 
+    /**
+     * Init templates if needed.
+     * <p>
+     * Note that you can force to recreate template using
+     * {@link #setForceTemplate(boolean)}
+     */
+    private void initTemplates() throws Exception {
+        if (templates != null && templates.length > 0) {
+            for (String template : templates) {
+                Assert.hasText(template, "Can not read template in ["
+                        + template
+                        + "]. Check that templates is not empty.");
+                createTemplate(client.getLowLevelClient(), classpathRoot, template, forceTemplate);
+            }
+        }
+    }
+
     static Map<String, Collection<String>> getIndexMappings(String[] mappings) throws Exception {
         Map<String, Collection<String>> indices = new HashMap<>();
 
@@ -506,30 +529,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             throw new Exception("Elasticsearch client doesn't exist. Your factory is not properly initialized.");
         }
     }
-
-	private String[] esNodes =  { "http://localhost:9200" };
-
-    /**
-	 * Define ES nodes to communicate with.
-	 * <br>use : protocol://hostname:port form
-	 * <p>Example :</p>
-	 * <pre>
-	 * {@code
-	 * <property name="esNodes">
-	 *  <list>
-	 *   <value>http://localhost:9200</value>
-	 *   <value>http://localhost:9201</value>
-	 *  </list>
-	 * </property>
-	 * }
-	 * </pre>
-	 * If not set, default to [ "http://localhost:9200" ].
-	 * <br>If port is not set, default to 9200.
-	 * @param esNodes An array of nodes hostname:port
-	 */
-	public void setEsNodes(String[] esNodes) {
-		this.esNodes = esNodes;
-	}
 
 	private RestHighLevelClient buildRestHighLevelClient() throws Exception {
         Collection<HttpHost> hosts = new ArrayList<>(esNodes.length);
