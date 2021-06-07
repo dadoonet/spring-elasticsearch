@@ -21,7 +21,6 @@ package fr.pilato.spring.elasticsearch;
 
 import fr.pilato.elasticsearch.tools.util.ResourceList;
 import fr.pilato.elasticsearch.tools.util.SettingsFinder;
-import fr.pilato.spring.elasticsearch.type.TypeFinder;
 import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -51,7 +50,6 @@ import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.c
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.updateSettings;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchTemplateUpdater.createTemplate;
 import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
-import static fr.pilato.spring.elasticsearch.type.TypeElasticsearchUpdater.createMapping;
 
 /**
  * An abstract {@link org.springframework.beans.factory.FactoryBean} used to create an Elasticsearch
@@ -394,27 +392,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                         classpathRoot);
             }
 
-            ArrayList<String> autoMappings = new ArrayList<>();
-
             try {
                 // Let's scan our resources
                 Collection<String> indices = findIndexNames(classpathRoot);
-                for (String index : indices) {
-                    Collection<String> types = TypeFinder.findTypes(classpathRoot, index);
-                    if (types.isEmpty()) {
-                        autoMappings.add(index);
-                    } else {
-                        if (types.size() > 1) {
-                            throw new IllegalArgumentException("Only one single type per index is supported. Replace the following " +
-                                    types + " by a single _doc type.");
-                        }
-                        for (String type : types) {
-                            autoMappings.add(index);
-                        }
-                    }
-                }
-
-                return autoMappings.toArray(new String[autoMappings.size()]);
+                return indices.toArray(new String[0]);
             } catch (IOException |URISyntaxException e) {
                 logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
                 logger.trace("", e);
@@ -438,11 +419,9 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             try {
                 // Let's scan our resources
                 List<String> scannedTemplates = ResourceList.getResourceNames(classpathRoot, SettingsFinder.Defaults.TemplateDir);
-                for (String template : scannedTemplates) {
-                    autoTemplates.add(template);
-                }
+                autoTemplates.addAll(scannedTemplates);
 
-                return autoTemplates.toArray(new String[autoTemplates.size()]);
+                return autoTemplates.toArray(new String[0]);
             } catch (IOException|URISyntaxException e) {
                 logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
                 logger.trace("", e);
@@ -467,8 +446,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                 if (mergeSettings) {
                     updateSettings(client.getLowLevelClient(), classpathRoot, index);
                 }
-
-                createMapping(client, classpathRoot, index, mergeMapping);
             }
         }
     }

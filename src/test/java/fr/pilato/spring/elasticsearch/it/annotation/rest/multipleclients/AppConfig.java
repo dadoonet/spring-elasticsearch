@@ -34,7 +34,7 @@ public class AppConfig {
 		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
 		factory.setProperties(esProperties);
 		factory.setClasspathRoot("/models/root/multiple-clients/client1");
-		factory.setMappings(new String[]{"twitter/_doc"});
+		factory.setMappings(new String[]{"twitter"});
 		factory.setForceMapping(false);
 		factory.afterPropertiesSet();
 		return factory.getObject();
@@ -45,7 +45,7 @@ public class AppConfig {
 		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
 		factory.setProperties(esProperties);
 		factory.setClasspathRoot("/models/root/multiple-clients/client2");
-		factory.setMappings(new String[]{"twitter/_doc"});
+		factory.setMappings(new String[]{"twitter"});
 		factory.setMergeSettings(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();

@@ -331,44 +331,19 @@ settings for your `twitter` index.
 
 For example, create the following file `src/main/resources/es/twitter/_settings.json` in your project:
 
-```javascript
-{
-  "settings" : {
-    "number_of_shards" : 3,
-    "number_of_replicas" : 2
-  }
-}
-```
-
-Also, if you define a file named `es/twitter/_doc.json`, it will be automatically applied as the mapping for
-the `_doc` type in the `twitter` index.
-
-For example, create the following file `src/main/resources/es/twitter/_doc.json` in your project:
-
-```javascript
-{
-    "properties" : {
-      "message" : {"type" : "text", "store" : "yes"}
-    }
-}
-```
-
-But in general, it's better to use one single `_settings.json` file which combines all that, like:
-
-```javascript
+```json
 {
   "settings" : {
     "number_of_shards" : 3,
     "number_of_replicas" : 2
   },
-  "mappings" : {
+  "mappings": {
     "properties" : {
       "message" : {"type" : "text", "store" : "yes"}
     }
   }
 }
 ```
-
 
 ### Using convention over configuration
 

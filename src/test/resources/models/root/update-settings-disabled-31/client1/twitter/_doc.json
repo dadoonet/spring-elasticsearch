@@ -1,5 +1,0 @@
-{
-    "properties" : {
-        "message" : {"type" : "text", "store" : true, "analyzer" : "simple" }
-    }
-}

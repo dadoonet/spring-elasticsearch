@@ -34,7 +34,7 @@ public class AppConfig {
 		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
 		factory.setProperties(esProperties);
 		factory.setClasspathRoot("/models/root/mapping-failed/client1");
-		factory.setMappings(new String[]{"twitter/_doc"});
+		factory.setMappings(new String[]{"twitter"});
 		factory.setForceMapping(false);
 		factory.afterPropertiesSet();
 		return factory.getObject();
@@ -45,7 +45,7 @@ public class AppConfig {
 		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
 		factory.setProperties(esProperties);
 		factory.setClasspathRoot("/models/root/mapping-failed/client2");
-		factory.setMappings(new String[]{"twitter/_doc"});
+		factory.setMappings(new String[]{"twitter"});
 		factory.setMergeMapping(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();
