@@ -130,10 +130,29 @@
 				]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
+            <xsd:attribute name="componentTemplates" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of component templates (comma separated)
+                    Example:
+                        "component1,component2"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="indexTemplates" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of index templates (comma separated)
+                    Example:
+                        "twitter,facebook"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
             <xsd:attribute name="templates" type="xsd:string">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[
-					List of templates (comma separated)
+					List of legacy templates (comma separated)
+                    Deprecated by indexTemplates and componentTemplates
                     Example:
                         "twitter_template,facebook_template"
 				]]></xsd:documentation>

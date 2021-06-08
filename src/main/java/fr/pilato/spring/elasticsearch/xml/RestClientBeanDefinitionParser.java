@@ -47,6 +47,8 @@ class RestClientBeanDefinitionParser implements BeanDefinitionParser {
         String classpathRoot = XMLParserUtil.getElementStringValue(element, "classpathRoot");
         String mappings = XMLParserUtil.getElementStringValue(element, "mappings");
         String aliases = XMLParserUtil.getElementStringValue(element, "aliases");
+        String componentTemplates = XMLParserUtil.getElementStringValue(element, "componentTemplates");
+        String indexTemplates = XMLParserUtil.getElementStringValue(element, "indexTemplates");
         String templates = XMLParserUtil.getElementStringValue(element, "templates");
 
 		String taskExecutor = XMLParserUtil.getElementStringValue(element, "taskExecutor");
@@ -63,7 +65,7 @@ class RestClientBeanDefinitionParser implements BeanDefinitionParser {
         bdef.setBeanClass(ElasticsearchRestClientFactoryBean.class);
         BeanDefinitionBuilder clientBuilder = startClientBuilder(ElasticsearchRestClientFactoryBean.class,
                 properties, forceIndex, forceTemplate, mergeSettings, autoscan,
-                classpathRoot, mappings, aliases, templates, null, taskExecutor);
+                classpathRoot, mappings, aliases, componentTemplates, indexTemplates, templates, null, taskExecutor);
         client = buildRestClientDef(clientBuilder, esNodes);
 
 		// Register NodeBeanDefinition

@@ -7,7 +7,9 @@ and automatically create index settings and templates based on what is found in 
 
 * `/es/INDEXNAME/_settings.json` for [index settings and mappings](#managing-indices) for a given index `INDEXNAME`
 * `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#update-settings) for a given index `INDEXNAME`
-* `/es/_template/` for [index templates](#creating-templates)
+* `/es/_component_templates/` for [component templates](#creating-templates)
+* `/es/_index_templates/` for [index templates](#creating-templates)
+* `/es/_template/` for [legacy index templates](#creating-templates)
 
 ## Documentation
 

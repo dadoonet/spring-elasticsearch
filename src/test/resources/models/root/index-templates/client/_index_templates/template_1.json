@@ -1,0 +1,31 @@
+{
+    "index_patterns": ["te*", "bar*"],
+    "template": {
+        "settings": {
+            "number_of_shards": 1
+        },
+        "mappings": {
+            "_source": {
+                "enabled": true
+            },
+            "properties": {
+                "host_name": {
+                    "type": "keyword"
+                },
+                "created_at": {
+                    "type": "date",
+                    "format": "EEE MMM dd HH:mm:ss Z yyyy"
+                }
+            }
+        },
+        "aliases": {
+            "mydata": { }
+        }
+    },
+    "priority": 500,
+    "composed_of": ["component1", "component2"],
+    "version": 3,
+    "_meta": {
+        "description": "my custom"
+    }
+}

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.templateauto;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.indextemplates;
 
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
 import org.elasticsearch.client.Request;
@@ -25,7 +25,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.IndexTemplatesExistRequest;
+import org.elasticsearch.client.indices.ComposableIndexTemplateExistRequest;
 
 import java.io.IOException;
 
@@ -33,12 +33,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 
-public class TemplateAutoTest extends AbstractRestAnnotationContextModel {
+public class IndexTemplatesTest extends AbstractRestAnnotationContextModel {
 
     @Override
     protected void executeBefore(RestClient client) throws IOException {
         try {
-            client.performRequest(new Request("DELETE", "/_template/twitter_template"));
+            client.performRequest(new Request("DELETE", "/_index_template/template_1"));
+        } catch (ResponseException ignored) { }
+        try {
+            client.performRequest(new Request("DELETE", "/_component_template/component1"));
+        } catch (ResponseException ignored) { }
+        try {
+            client.performRequest(new Request("DELETE", "/_component_template/component2"));
         } catch (ResponseException ignored) { }
     }
 
@@ -48,7 +54,7 @@ public class TemplateAutoTest extends AbstractRestAnnotationContextModel {
     }
 
     protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        boolean existsTemplate = client.indices().existsTemplate(new IndexTemplatesExistRequest("twitter_template"),
+        boolean existsTemplate = client.indices().existsIndexTemplate(new ComposableIndexTemplateExistRequest("template_1"),
                 RequestOptions.DEFAULT);
         assertThat(existsTemplate, is(true));
     }

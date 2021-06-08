@@ -165,6 +165,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     private String[] aliases;
 
+    private String[] componentTemplates;
+
+    private String[] indexTemplates;
+
     private String[] templates;
 
     private String classpathRoot = "es";
@@ -254,6 +258,48 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
+     * Define the index templates you want to manage with this factory
+     * <p>Example:</p>
+     *
+     * <pre>
+     * {@code
+     * <property name="indexTemplates">
+     *  <list>
+     *   <value>template_1</value>
+     *   <value>template_2</value>
+     *  </list>
+     * </property>
+     * }
+     * </pre>
+     *
+     * @param indexTemplates list of index templates
+     */
+    public void setIndexTemplates(String[] indexTemplates) {
+        this.indexTemplates = indexTemplates;
+    }
+
+    /**
+     * Define component templates you want to manage with this factory
+     * <p>Example:</p>
+     *
+     * <pre>
+     * {@code
+     * <property name="componentTemplates">
+     *  <list>
+     *   <value>template_1</value>
+     *   <value>template_2</value>
+     *  </list>
+     * </property>
+     * }
+     * </pre>
+     *
+     * @param componentTemplates list of component templates
+     */
+    public void setComponentTemplates(String[] componentTemplates) {
+        this.componentTemplates = componentTemplates;
+    }
+
+    /**
      * Define templates you want to manage with this factory
      * <p>Example :</p>
      *
@@ -269,7 +315,9 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * </pre>
      *
      * @param templates list of template
+     * @deprecated Use {@link #componentTemplates} instead
      */
+    @Deprecated
     public void setTemplates(String[] templates) {
         this.templates = templates;
     }

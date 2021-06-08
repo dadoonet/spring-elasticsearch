@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.templateauto;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.indextemplates;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
@@ -28,9 +28,7 @@ public class AppConfig extends RestAppConfig {
 
 	@Override
 	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
-		factory.setClasspathRoot("/models/root/template-auto/client");
-		factory.setTemplates(new String[]{"twitter_template"});
-		factory.setForceTemplate(true);
+		factory.setClasspathRoot("/models/root/index-templates/client");
 	}
 
 }

@@ -24,13 +24,16 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 class ClientBeanDefinitionParser {
 
     /**
-     * Managing common properties for TransportClient
+     * Managing common properties
      */
     static BeanDefinitionBuilder startClientBuilder(Class beanClass, String properties,
                                                     boolean forceIndex, boolean forceTemplate,
                                                     boolean mergeSettings,
                                                     boolean autoscan, String classpathRoot, String mappings,
-                                                    String aliases, String templates, String async, String taskExecutor) {
+                                                    String aliases,
+                                                    String componentTemplates, String indexTemplates,
+                                                    String templates,
+                                                    String async, String taskExecutor) {
         BeanDefinitionBuilder nodeFactory = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
         if (properties != null && properties.length() > 0) {
             nodeFactory.addPropertyReference("properties", properties);
@@ -47,6 +50,12 @@ class ClientBeanDefinitionParser {
         }
         if (aliases != null && aliases.length() > 0) {
             nodeFactory.addPropertyValue("aliases", aliases);
+        }
+        if (componentTemplates != null && componentTemplates.length() > 0) {
+            nodeFactory.addPropertyValue("componentTemplates", componentTemplates);
+        }
+        if (indexTemplates != null && indexTemplates.length() > 0) {
+            nodeFactory.addPropertyValue("indexTemplates", indexTemplates);
         }
         if (templates != null && templates.length() > 0) {
             nodeFactory.addPropertyValue("templates", templates);
