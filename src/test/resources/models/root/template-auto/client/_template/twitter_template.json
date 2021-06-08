@@ -1,0 +1,14 @@
+{
+    "index_patterns" : "twee*",
+    "settings" : {
+        "number_of_shards" : 2
+    },
+    "mappings" : {
+        "properties" : {
+            "message" : {
+                "type" : "text",
+                "store" : true
+            }
+        }
+    }
+}
