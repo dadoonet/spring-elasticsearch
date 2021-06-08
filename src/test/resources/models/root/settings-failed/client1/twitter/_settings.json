@@ -1,5 +1,8 @@
 {
 	"settings" : {
+		"index" : {
+			"number_of_shards" : 1
+		},
 		"analysis":{
 			"analyzer":{
 				"francais":{
@@ -18,6 +21,11 @@
 					"name" : "french"
 				}
 			}
+		}
+	},
+	"mappings": {
+		"properties" : {
+			"message" : {"type" : "text", "store" : true, "analyzer" : "francais" }
 		}
 	}
 }

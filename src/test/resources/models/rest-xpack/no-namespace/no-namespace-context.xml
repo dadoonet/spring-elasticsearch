@@ -26,10 +26,9 @@
 				<value>localhost:9200</value>
 			</list>
 		</property>
-        <property name="forceMapping" value="true" />
+        <property name="forceIndex" value="true" />
         <property name="autoscan" value="true" />
         <property name="forceTemplate" value="false" />
-        <property name="mergeMapping" value="false" />
         <property name="mergeSettings" value="false" />
 		<property name="properties" ref="esProperties" />
 	</bean>

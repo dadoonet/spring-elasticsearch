@@ -1,6 +1,11 @@
 {
-	"settings" : {
-        "number_of_shards" : 2,
-        "number_of_replicas" : 0
-	}
+  "settings" : {
+      "number_of_shards" : 2,
+      "number_of_replicas" : 0
+  },
+  "mappings": {
+    "properties" : {
+      "message" : {"type" : "text", "store" : true, "analyzer" : "simple" }
+    }
+  }
 }

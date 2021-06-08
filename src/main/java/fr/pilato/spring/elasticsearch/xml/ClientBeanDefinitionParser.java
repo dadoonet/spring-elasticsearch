@@ -27,17 +27,16 @@ class ClientBeanDefinitionParser {
      * Managing common properties for TransportClient
      */
     static BeanDefinitionBuilder startClientBuilder(Class beanClass, String properties,
-                                                    boolean forceMapping, boolean forceTemplate,
-                                                    boolean mergeMapping, boolean mergeSettings,
+                                                    boolean forceIndex, boolean forceTemplate,
+                                                    boolean mergeSettings,
                                                     boolean autoscan, String classpathRoot, String mappings,
                                                     String aliases, String templates, String async, String taskExecutor) {
         BeanDefinitionBuilder nodeFactory = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
         if (properties != null && properties.length() > 0) {
             nodeFactory.addPropertyReference("properties", properties);
         }
-        nodeFactory.addPropertyValue("forceMapping", forceMapping);
+        nodeFactory.addPropertyValue("forceIndex", forceIndex);
         nodeFactory.addPropertyValue("forceTemplate", forceTemplate);
-        nodeFactory.addPropertyValue("mergeMapping", mergeMapping);
         nodeFactory.addPropertyValue("mergeSettings", mergeSettings);
         nodeFactory.addPropertyValue("autoscan", autoscan);
         if (classpathRoot != null && classpathRoot.length() > 0) {

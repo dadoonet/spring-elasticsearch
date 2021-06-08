@@ -33,8 +33,8 @@ public class AppConfig extends RestAppConfig {
 	@Override
 	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/mapping/client1");
-		factory.setMappings(new String[]{"twitter/_doc"});
-		factory.setForceMapping(false);
+		factory.setIndices(new String[]{"twitter"});
+		factory.setForceIndex(false);
 	}
 
 	@Bean
@@ -42,7 +42,7 @@ public class AppConfig extends RestAppConfig {
 		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
 		factory.setProperties(esProperties);
 		factory.setClasspathRoot("/models/root/mapping/client2");
-		factory.setMappings(new String[]{"twitter/_doc"});
+		factory.setIndices(new String[]{"twitter"});
 		factory.setMergeSettings(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();

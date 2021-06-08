@@ -69,10 +69,11 @@
                     </xsd:appinfo>
                 </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="forceMapping" type="xsd:boolean">
+            <xsd:attribute name="forceIndex" type="xsd:boolean">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[
-					Set to true if you want to force reinit indexes/mapping.
+					Set to true if you want to force reinit the indices.
+					This will remove all existing indices managed by the factory.
 				]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
@@ -80,13 +81,6 @@
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[
 					Set to true if you want to force recreate templates.
-				]]></xsd:documentation>
-                </xsd:annotation>
-            </xsd:attribute>
-            <xsd:attribute name="mergeMapping" type="xsd:boolean">
-                <xsd:annotation>
-                    <xsd:documentation><![CDATA[
-					Set to true if you want to try to merge mappings.
 				]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
@@ -109,16 +103,16 @@
             <xsd:attribute name="classpathRoot" type="xsd:string">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[
-					Classpath root for index and mapping files (default : /es)
+					Classpath root for index files (default : /es)
                     Example:
                         "/es"
-                    That means that the factory will look in es folder to find index and mappings settings.
-                    So if you want to define a mapping for the tweet mapping in the twitter index, you
-                    should put a tweet.json file under /es/twitter/ folder.
+                    That means that the factory will look in es folder to find index settings.
+                    So if you want to define a twitter index, you
+                    should put a _settings.json file under /es/twitter/ folder.
 				]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="mappings" type="xsd:string">
+            <xsd:attribute name="indices" type="xsd:string">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[
 					List of indices (comma separated)

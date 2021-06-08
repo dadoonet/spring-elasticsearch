@@ -1,7 +1,7 @@
 {
 	"mappings": {
 		"properties" : {
-			"message" : {"type" : "text" }
+			"message" : {"type" : "date"}
 		}
 	}
 }

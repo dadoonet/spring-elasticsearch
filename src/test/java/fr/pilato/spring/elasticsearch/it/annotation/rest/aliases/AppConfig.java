@@ -29,8 +29,8 @@ public class AppConfig extends RestAppConfig {
 	@Override
 	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
 		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
-		factory.setMappings(new String[]{"twitter", "rss"});
-		factory.setForceMapping(true);
+		factory.setIndices(new String[]{"twitter", "rss"});
+		factory.setForceIndex(true);
 	}
 
 }
