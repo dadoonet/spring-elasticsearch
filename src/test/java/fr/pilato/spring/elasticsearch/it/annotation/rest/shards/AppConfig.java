@@ -29,7 +29,7 @@ public class AppConfig extends RestAppConfig {
 	@Override
 	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/shards/client");
-		factory.setForceMapping(true);
+		factory.setForceIndex(true);
 	}
 
 }

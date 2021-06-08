@@ -22,7 +22,7 @@
 				<value>localhost:9200</value>
 			</list>
 		</property>
-        <property name="forceMapping" value="true" />
+        <property name="forceIndex" value="true" />
         <property name="autoscan" value="true" />
         <property name="forceTemplate" value="false" />
         <property name="mergeMapping" value="false" />

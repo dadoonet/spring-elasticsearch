@@ -1,25 +1,13 @@
 # Spring factories for Elasticsearch
 
-Welcome to the Spring factories for [Elasticsearch](http://www.elasticsearch.org/) project.
+Welcome to the Spring factories for [Elasticsearch](https://www.elastic.co/elasticsearch/) project.
 
-Actually, since version 1.4.1, this project has been split in two parts:
+The factory provides a [High Level Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
+and automatically create index settings and templates based on what is found in the classpath:
 
-* [Elasticsearch Beyonder](https://github.com/dadoonet/elasticsearch-beyonder/) which find resources in
-project classpath to automatically create indices, types and templates.
-* This project which is building Client beans using [Spring framework](http://projects.spring.io/spring-framework/).
-
-From 5.0, this project provides 2 implementations of an elasticsearch Client:
-
-* The REST client
-* The Transport client (deprecated)
-
-From 6.0, the REST client implementation has been replaced by a High Level REST client.
-It now also supports [X-Pack](https://www.elastic.co/fr/products/x-pack) for official security.
-
-Starting from 7.0, only `_doc` as a document type is supported if you
-are not providing the mapping within index settings. 
-
-Starting from 7.0, TransportClient has been removed.
+* `/es/INDEXNAME/_settings.json` for [index settings and mappings](#managing-indices) for a given index `INDEXNAME`
+* `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#update-settings) for a given index `INDEXNAME`
+* `/es/_template/` for [index templates](#creating-templates)
 
 ## Documentation
 
@@ -52,6 +40,15 @@ Starting from 7.0, TransportClient has been removed.
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.pilato.spring/spring-elasticsearch/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/fr.pilato.spring/spring-elasticsearch/)
 [![Build Status](https://github.com/dadoonet/spring-elasticsearch/actions/workflows/maven.yml/badge.svg)](https://github.com/dadoonet/spring-elasticsearch/actions/workflows/maven.yml)
 
+## Major (breaking) changes in 7.x
+
+* The `TransportClient` has been removed.
+
+* As in Elasticsearch 7.x, only one single type is supported, you need to provide the mapping within
+  the index settings ( `_settings.json` file). As a consequence:
+ * `forceMapping` setting has been replaced by `forceIndex`.
+ * `mappings` setting has been replaced by `indices`.
+ * `mergeMapping` setting has been removed.
 
 ## Getting Started
 
@@ -256,7 +253,7 @@ In your spring context file, just define a client like this:
 <elasticsearch:rest-client id="esClient" />
 ```
 
-By default, you will get an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
+By default, you will get an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
 connected to an Elasticsearch node already running at `http://localhost:9200`.
 
 You can set the nodes you want to connect to:
@@ -305,15 +302,15 @@ Client bean initialization is by default synchronously. It can be initialized as
 Asynchronous initialization does not block Spring startup but it continues on background on another thread.
 Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
 
-## Automatically create indices
+## Automatically create indices and templates
 
-### Managing indexes and types
+### Managing indices
 
 If you want to manage indices at startup (creating missing indices and applying optional mapping):
 
 ```xml
 <elasticsearch:rest-client id="esClient"
-    mappings="twitter" />
+                           indices="twitter" />
 ```
 
 This will create an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
@@ -322,8 +319,8 @@ and will create an index `twitter`.
 If you need to manage more than one index, just use a comma separated list:
 
 ```xml
-<elasticsearch:rest-client id="esClient"
-    mappings="twitter,facebook" />
+<elasticsearch:rest-client id="esClient" 
+                           indices="twitter,facebook" />
 ```
 
 If you add in your classpath a file named `es/twitter/_settings.json`, it will be automatically applied to define
@@ -358,7 +355,7 @@ the factory without defining anything:
 You can disable this automatic lookup by setting the `autoscan` property to `false`:
 
 ```xml
-<elasticsearch:rest-client id="esClient" autoscan="false" mappings="twitter" />
+<elasticsearch:rest-client id="esClient" autoscan="false" indices="twitter" />
 ```
 
 ### Creating aliases to indexes
@@ -368,8 +365,8 @@ For example, if you planned to have indexes per year for twitter feeds (twitter2
 to define an alias named twitter, you can use the `aliases` property:
 
 ```xml
-<elasticsearch:rest-client id="esClient"
-    aliases="twitter:twitter2012,twitter:twitter2013,twitter:twitter2014" />
+<elasticsearch:rest-client id="esClient" 
+                           aliases="twitter:twitter2012,twitter:twitter2013,twitter:twitter2014" />
 ```
 
 ### Creating templates
@@ -384,13 +381,13 @@ to define a template named `twitter_template`, you can use the `templates` prope
     We add also a facebook_template template just for showing how to
     define more than one template...
 -->
-<elasticsearch:rest-client id="esClient"
-    templates="twitter_template,facebook_template" />
+<elasticsearch:rest-client id="esClient" 
+                           templates="twitter_template,facebook_template" />
 ```
 
 To configure your template you have to define a file named `es/_template/twitter_template.json` in your project:
 
-```javascript
+```json
 {
     "index_patterns" : "twitter*",
     "settings" : {
@@ -409,8 +406,8 @@ To configure your template you have to define a file named `es/_template/twitter
 
 ### Changing classpath search path for mapping and settings files
 
-By default, the factory look in `es` classpath folder to find if there is index settings (`_settings.json`)
-or mapping definition (`_doc.json`).
+By default, the factory look in `es` classpath folder to find if there is any of the files which are
+used by the factory.
 If you need to change it, you can use the `classpathRoot` property:
 
 ```xml
@@ -419,18 +416,7 @@ If you need to change it, you can use the `classpathRoot` property:
 
 So, if a `myownfolder/twitter/_settings.json` file exists in your classpath, it will be used by the factory.
 
-### Merge mappings
-
-If you need to merge mapping for an existing `type`, set  `mergeMapping` property to `true`.
-
-```xml
-<elasticsearch:rest-client id="esClient" mergeMapping="true" />
-```
-
-If merging fails, the factory will not start ([BeanCreationException](https://github.com/SpringSource/spring-framework/blob/master/spring-beans/src/main/java/org/springframework/beans/factory/BeanCreationException.java)
- will be raised).
-
-### Merge settings
+### Update settings
 
 If you need to merge settings for an existing `index`, add a file named  `es/twitter/_update_settings.json` in your
 classpath. The factory will detect it and will try to merge settings unless you explicitly set `mergeSettings` to `false`.
@@ -445,10 +431,10 @@ If merging fails, the factory will not start.
 ### Force rebuild indices (use with caution)
 
 For test purpose or for continuous integration, you could force the factory to clean the previous `indices` when starting the client.
-It will *remove all your datas* for every index which has been defined. Just set  `forceMapping` property to `true`.
+It will *remove all your datas* for every index which has been defined. Just set  `forceIndex` property to `true`.
 
 ```xml
-<elasticsearch:rest-client id="esClient" forceMapping="true" />
+<elasticsearch:rest-client id="esClient" forceIndex="true" />
 ```
 
 ### Force rebuild templates (use with caution)
@@ -486,13 +472,13 @@ Note that you can use the old fashion method to define your beans instead of usi
         </property>
 
         <property name="autoscan" value="false" />
-        <property name="mappings">
+        <property name="indices">
             <list>
                 <value>twitter</value>
             </list>
         </property>
         <property name="classpathRoot" value="myownfolder" />
-        <property name="forceMapping" value="true" />
+        <property name="forceIndex" value="true" />
         <property name="mergeSettings" value="true" />
         <property name="templates">
             <list>

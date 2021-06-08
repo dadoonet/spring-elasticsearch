@@ -39,9 +39,8 @@ class RestClientBeanDefinitionParser implements BeanDefinitionParser {
 
         String properties = XMLParserUtil.getElementStringValue(element, "properties");
 
-        boolean forceMapping = XMLParserUtil.getElementBooleanValue(element, "forceMapping");
+        boolean forceIndex = XMLParserUtil.getElementBooleanValue(element, "forceIndex");
         boolean forceTemplate = XMLParserUtil.getElementBooleanValue(element, "forceTemplate");
-        boolean mergeMapping = XMLParserUtil.getElementBooleanValue(element, "mergeMapping");
         boolean mergeSettings = XMLParserUtil.getElementBooleanValue(element, "mergeSettings");
         boolean autoscan = XMLParserUtil.getElementBooleanValue(element, "autoscan", true);
 
@@ -63,7 +62,7 @@ class RestClientBeanDefinitionParser implements BeanDefinitionParser {
         GenericBeanDefinition bdef = new GenericBeanDefinition();
         bdef.setBeanClass(ElasticsearchRestClientFactoryBean.class);
         BeanDefinitionBuilder clientBuilder = startClientBuilder(ElasticsearchRestClientFactoryBean.class,
-                properties, forceMapping, forceTemplate, mergeMapping, mergeSettings, autoscan,
+                properties, forceIndex, forceTemplate, mergeSettings, autoscan,
                 classpathRoot, mappings, aliases, templates, null, taskExecutor);
         client = buildRestClientDef(clientBuilder, esNodes);
 
