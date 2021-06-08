@@ -510,23 +510,12 @@ Special thanks to
 # Running tests
 
 If you want to run tests (integration tests) from your IDE, you need to start first an elasticsearch instance.
-
-If you are not using x-pack, then just run the tests from your IDE. Tests are expecting a node running at `localhost:9200`.
-
-If you are using x-pack, tests are expecting a user named `elastic` with `changeme` as the password.
-You can set this user by running `bin/x-pack/setup-passwords interactive`.
+Tests are expecting a node running at `localhost:9200`.
 
 To run the tests using Maven (on the CLI), just run:
 
 ```sh
 mvn clean install
-```
-
-Note that when the tests are launched with maven, they are not running with x-pack yet.
-To run tests against x-pack, you need to start elasticsearch with x-pack manually and run the tests with:
-
-```sh
-mvn clean install -Px-pack
 ```
 
 # Release guide

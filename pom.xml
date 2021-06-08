@@ -42,6 +42,10 @@
         <integ.elasticsearch.version>${elasticsearch.version}</integ.elasticsearch.version>
         <tests.cluster.rest.port>9200</tests.cluster.rest.port>
         <tests.cluster.transport.port>9300</tests.cluster.transport.port>
+
+        <!-- Smtp Settings for announcements -->
+        <changes.smtpHost>smtp.ionos.fr</changes.smtpHost>
+        <changes.smtpPort implementation="java.lang.Integer">465</changes.smtpPort>
     </properties>
 
     <distributionManagement>
@@ -90,7 +94,6 @@
     </issueManagement>
 
     <repositories>
-        <!-- This repository is used to test with x-pack -->
         <repository>
             <id>elastic-download-service</id>
             <name>Elastic Download Service</name>
@@ -291,8 +294,6 @@
                 <artifactId>maven-changes-plugin</artifactId>
                 <version>2.12.1</version>
                 <configuration>
-                    <smtpHost>auth.smtp.1and1.fr</smtpHost>
-                    <smtpPort implementation="java.lang.Integer">465</smtpPort>
                     <sslMode>true</sslMode>
                     <fromDeveloperId>dadoonet</fromDeveloperId>
                     <toAddresses>
@@ -341,7 +342,6 @@
                             <run>
                                 <ports>
                                     <port>tests.cluster.rest.port:9200</port>
-                                    <port>tests.cluster.transport.port:9300</port>
                                 </ports>
                                 <wait>
                                     <http>
