@@ -380,9 +380,9 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         client = buildRestHighLevelClient();
         if (autoscan) {
             indices = computeIndexNames(indices, classpathRoot);
-            templates = computeTemplates(templates, classpathRoot);
-            componentTemplates = computeComponentTemplates(componentTemplates, classpathRoot);
-            indexTemplates = computeIndexTemplates(indexTemplates, classpathRoot);
+            templates = discoverFromClasspath(templates, classpathRoot, SettingsFinder.Defaults.TemplateDir);
+            componentTemplates = discoverFromClasspath(componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
+            indexTemplates = discoverFromClasspath(indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
         }
 
         initTemplates();
@@ -440,76 +440,28 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         return indices;
     }
 
-    /**
-     * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
-     */
-    static String[] computeTemplates(String[] templates, String classpathRoot) {
-        if (templates == null || templates.length == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Automatic discovery is activated. Looking for template files in classpath under [{}].",
-                        classpathRoot);
-            }
-
-            ArrayList<String> autoTemplates = new ArrayList<>();
-
-            try {
-                // Let's scan our resources
-                List<String> scannedTemplates = ResourceList.getResourceNames(classpathRoot, SettingsFinder.Defaults.TemplateDir);
-                autoTemplates.addAll(scannedTemplates);
-
-                return autoTemplates.toArray(new String[0]);
-            } catch (IOException|URISyntaxException e) {
-                logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-                logger.trace("", e);
-            }
+    static String[] discoverFromClasspath(String[] resources, String classpathRoot, String subdir) {
+        if (resources != null && resources.length > 0) {
+            logger.debug("Resources are manually provided so we won't do any automatic discovery.");
+            return resources;
         }
-        return templates;
-    }
 
-    static String[] computeComponentTemplates(String[] componentTemplates, String classpathRoot) {
-        if (componentTemplates == null || componentTemplates.length == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Automatic discovery is activated. Looking for component templates in classpath under [{}].",
-                        classpathRoot);
-            }
+        logger.debug("Automatic discovery is activated. Looking for resource files in classpath under [{}/{}].",
+                classpathRoot, subdir);
 
-            ArrayList<String> autoTemplates = new ArrayList<>();
+        ArrayList<String> autoResources = new ArrayList<>();
 
-            try {
-                // Let's scan our resources
-                List<String> scannedTemplates = ResourceList.getResourceNames(classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
-                autoTemplates.addAll(scannedTemplates);
+        try {
+            // Let's scan our resources
+            List<String> scannedResources = ResourceList.getResourceNames(classpathRoot, subdir);
+            autoResources.addAll(scannedResources);
 
-                return autoTemplates.toArray(new String[0]);
-            } catch (IOException|URISyntaxException e) {
-                logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-                logger.trace("", e);
-            }
+            return autoResources.toArray(new String[0]);
+        } catch (IOException|URISyntaxException e) {
+            logger.debug("Automatic discovery does not succeed for finding json files in classpath under [{}/{}].", classpathRoot, subdir);
+            logger.trace("", e);
+            return resources;
         }
-        return componentTemplates;
-    }
-
-    static String[] computeIndexTemplates(String[] indexTemplates, String classpathRoot) {
-        if (indexTemplates == null || indexTemplates.length == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Automatic discovery is activated. Looking for index templates in classpath under [{}].",
-                        classpathRoot);
-            }
-
-            ArrayList<String> autoTemplates = new ArrayList<>();
-
-            try {
-                // Let's scan our resources
-                List<String> scannedTemplates = ResourceList.getResourceNames(classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
-                autoTemplates.addAll(scannedTemplates);
-
-                return autoTemplates.toArray(new String[0]);
-            } catch (IOException|URISyntaxException e) {
-                logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-                logger.trace("", e);
-            }
-        }
-        return indexTemplates;
     }
 
     /**
