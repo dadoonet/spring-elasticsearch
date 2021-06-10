@@ -9,7 +9,7 @@ and automatically create index settings and templates based on what is found in 
 * `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/_component_templates/` for [component templates](#component-templates)
 * `/es/_index_templates/` for [index templates](#index-templates)
-* `/es/_template/` for [legacy index templates](#templates)
+* `/es/_template/` for [legacy index templates](#templates-deprecated)
 
 ## Documentation
 
@@ -236,7 +236,7 @@ and automatically create index settings and templates based on what is found in 
 * `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/_component_templates/` for [component templates](#component-templates)
 * `/es/_index_templates/` for [index templates](#index-templates)
-* `/es/_template/` for [legacy index templates](#templates)
+* `/es/_template/` for [legacy index templates](#templates-deprecated)
 
 ### Autoscan
 
