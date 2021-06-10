@@ -44,6 +44,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.createAlias;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchComponentTemplateUpdater.createComponentTemplate;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexTemplateUpdater.createIndexTemplate;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.updateSettings;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchTemplateUpdater.createTemplate;
@@ -165,6 +167,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     private String[] aliases;
 
+    private String[] componentTemplates;
+
+    private String[] indexTemplates;
+
     private String[] templates;
 
     private String classpathRoot = "es";
@@ -254,6 +260,48 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
+     * Define the index templates you want to manage with this factory
+     * <p>Example:</p>
+     *
+     * <pre>
+     * {@code
+     * <property name="indexTemplates">
+     *  <list>
+     *   <value>template_1</value>
+     *   <value>template_2</value>
+     *  </list>
+     * </property>
+     * }
+     * </pre>
+     *
+     * @param indexTemplates list of index templates
+     */
+    public void setIndexTemplates(String[] indexTemplates) {
+        this.indexTemplates = indexTemplates;
+    }
+
+    /**
+     * Define component templates you want to manage with this factory
+     * <p>Example:</p>
+     *
+     * <pre>
+     * {@code
+     * <property name="componentTemplates">
+     *  <list>
+     *   <value>template_1</value>
+     *   <value>template_2</value>
+     *  </list>
+     * </property>
+     * }
+     * </pre>
+     *
+     * @param componentTemplates list of component templates
+     */
+    public void setComponentTemplates(String[] componentTemplates) {
+        this.componentTemplates = componentTemplates;
+    }
+
+    /**
      * Define templates you want to manage with this factory
      * <p>Example :</p>
      *
@@ -269,7 +317,9 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * </pre>
      *
      * @param templates list of template
+     * @deprecated Use {@link #componentTemplates} instead
      */
+    @Deprecated
     public void setTemplates(String[] templates) {
         this.templates = templates;
     }
@@ -330,7 +380,9 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         client = buildRestHighLevelClient();
         if (autoscan) {
             indices = computeIndexNames(indices, classpathRoot);
-            templates = computeTemplates(templates, classpathRoot);
+            templates = discoverFromClasspath(templates, classpathRoot, SettingsFinder.Defaults.TemplateDir);
+            componentTemplates = discoverFromClasspath(componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
+            indexTemplates = discoverFromClasspath(indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
         }
 
         initTemplates();
@@ -388,30 +440,28 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         return indices;
     }
 
-    /**
-     * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
-     */
-    static String[] computeTemplates(String[] templates, String classpathRoot) {
-        if (templates == null || templates.length == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Automatic discovery is activated. Looking for template files in classpath under [{}].",
-                        classpathRoot);
-            }
-
-            ArrayList<String> autoTemplates = new ArrayList<>();
-
-            try {
-                // Let's scan our resources
-                List<String> scannedTemplates = ResourceList.getResourceNames(classpathRoot, SettingsFinder.Defaults.TemplateDir);
-                autoTemplates.addAll(scannedTemplates);
-
-                return autoTemplates.toArray(new String[0]);
-            } catch (IOException|URISyntaxException e) {
-                logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-                logger.trace("", e);
-            }
+    static String[] discoverFromClasspath(String[] resources, String classpathRoot, String subdir) {
+        if (resources != null && resources.length > 0) {
+            logger.debug("Resources are manually provided so we won't do any automatic discovery.");
+            return resources;
         }
-        return templates;
+
+        logger.debug("Automatic discovery is activated. Looking for resource files in classpath under [{}/{}].",
+                classpathRoot, subdir);
+
+        ArrayList<String> autoResources = new ArrayList<>();
+
+        try {
+            // Let's scan our resources
+            List<String> scannedResources = ResourceList.getResourceNames(classpathRoot, subdir);
+            autoResources.addAll(scannedResources);
+
+            return autoResources.toArray(new String[0]);
+        } catch (IOException|URISyntaxException e) {
+            logger.debug("Automatic discovery does not succeed for finding json files in classpath under [{}/{}].", classpathRoot, subdir);
+            logger.trace("", e);
+            return resources;
+        }
     }
 
     /**
@@ -433,12 +483,33 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
-     * Init templates if needed.
+     * It creates if needed:
+     * <ul>
+     *     <li>component templates</li>
+     *     <li>index templates</li>
+     *     <li>legacy templates (deprecated)</li>
+     * </ul>
      * <p>
      * Note that you can force to recreate template using
      * {@link #setForceTemplate(boolean)}
      */
     private void initTemplates() throws Exception {
+        if (componentTemplates != null && componentTemplates.length > 0) {
+            for (String componentTemplate : componentTemplates) {
+                Assert.hasText(componentTemplate, "Can not read component template in ["
+                        + componentTemplate
+                        + "]. Check that component template is not empty.");
+                createComponentTemplate(client.getLowLevelClient(), classpathRoot, componentTemplate, forceTemplate);
+            }
+        }
+        if (indexTemplates != null && indexTemplates.length > 0) {
+            for (String indexTemplate : indexTemplates) {
+                Assert.hasText(indexTemplate, "Can not read component template in ["
+                        + indexTemplate
+                        + "]. Check that component template is not empty.");
+                createIndexTemplate(client.getLowLevelClient(), classpathRoot, indexTemplate, forceTemplate);
+            }
+        }
         if (templates != null && templates.length > 0) {
             for (String template : templates) {
                 Assert.hasText(template, "Can not read template in ["

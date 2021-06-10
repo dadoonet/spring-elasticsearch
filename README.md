@@ -5,9 +5,11 @@ Welcome to the Spring factories for [Elasticsearch](https://www.elastic.co/elast
 The factory provides a [High Level Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
 and automatically create index settings and templates based on what is found in the classpath:
 
-* `/es/INDEXNAME/_settings.json` for [index settings and mappings](#managing-indices) for a given index `INDEXNAME`
-* `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#update-settings) for a given index `INDEXNAME`
-* `/es/_template/` for [index templates](#creating-templates)
+* `/es/INDEXNAME/_settings.json` for [index settings and mappings](#indices) for a given index `INDEXNAME`
+* `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
+* `/es/_component_templates/` for [component templates](#component-templates)
+* `/es/_index_templates/` for [index templates](#index-templates)
+* `/es/_template/` for [legacy index templates](#templates-deprecated)
 
 ## Documentation
 
@@ -225,105 +227,41 @@ public class RestApp {
 }
 ```
 
-## Using XML (deprecated)
+## Features
 
-### Using elasticsearch spring namespace for XML files
+The factory provides a [High Level Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
+and automatically create index settings and templates based on what is found in the classpath:
 
-In your spring context file, just add namespaces like this:
+* `/es/INDEXNAME/_settings.json` for [index settings and mappings](#indices) for a given index `INDEXNAME`
+* `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
+* `/es/_component_templates/` for [component templates](#component-templates)
+* `/es/_index_templates/` for [index templates](#index-templates)
+* `/es/_template/` for [legacy index templates](#templates-deprecated)
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-7.0.xsd">
-</beans>
-```
+### Autoscan
 
-### Getting a rest client bean
-
-You can get a REST High Level Client implementation.
-
-#### Define a rest client bean
-
-In your spring context file, just define a client like this:
-
-```xml
-<elasticsearch:rest-client id="esClient" />
-```
-
-By default, you will get an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
-connected to an Elasticsearch node already running at `http://localhost:9200`.
-
-You can set the nodes you want to connect to:
-
-```xml
-<elasticsearch:rest-client id="esClient" esNodes="http://localhost:9200,http://localhost:9201" />
-```
-
-#### Injecting the rest client in your java project
-
-You can use the rest client in your java classes.
+By default, the factory will scan the classpath inside the default `/es` directory.
+You can disable the autoscan and then provide manually every name for indices, templates...
 
 ```java
-import org.elasticsearch.client.RestHighLevelClient;
-
-RestHighLevelClient client = ctx.getBean("esClient", RestHighLevelClient.class);
+ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+factory.setAutoscan(false);
+factory.setIndices(new String[]{"twitter"});
 ```
 
-Better, you should use `@Autowired` annotation.
+### Default directory
+
+You can change the default directory from `/es` to something else. The factory will look into this
+directory to find the indices and the settings for the indices, templates...
 
 ```java
-// Inject your client...
-@Autowired RestHighLevelClient client;
+ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+factory.setClasspathRoot("/foo");
 ```
 
-#### Connecting to a secured X-Pack cluster
+### Indices
 
-You need to define the `xpack.security.user` property as follows:
-
-```
-<util:properties id="esProperties">
-    <prop key="xpack.security.user">elastic:changeme</prop>
-</util:properties>
-
-<elasticsearch:rest-client id="esClient" properties="esProperties" />
-```
-
-#### Asynchronous initialization
-
-Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
-
-```xml
-<task:executor pool-size="4" id="taskExecutor"/>
-<elasticsearch:rest-client id="esClient" async="true" taskExecutor="taskExecutor"/>
-```
-Asynchronous initialization does not block Spring startup but it continues on background on another thread.
-Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
-
-## Automatically create indices and templates
-
-### Managing indices
-
-If you want to manage indices at startup (creating missing indices and applying optional mapping):
-
-```xml
-<elasticsearch:rest-client id="esClient"
-                           indices="twitter" />
-```
-
-This will create an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
-and will create an index `twitter`.
-
-If you need to manage more than one index, just use a comma separated list:
-
-```xml
-<elasticsearch:rest-client id="esClient" 
-                           indices="twitter,facebook" />
-```
-
-If you add in your classpath a file named `es/twitter/_settings.json`, it will be automatically applied to define
+If you add in your classpath a file named `/es/twitter/_settings.json`, it will be automatically applied to define
 settings for your `twitter` index.
 
 For example, create the following file `src/main/resources/es/twitter/_settings.json` in your project:
@@ -342,50 +280,127 @@ For example, create the following file `src/main/resources/es/twitter/_settings.
 }
 ```
 
-### Using convention over configuration
+If you need to update settings for an existing index, let say `twitter`, add a file named  `/es/twitter/_update_settings.json` 
+in your classpath. The factory will detect it and will try to update the settings:
 
-By default, the factory will find every mapping file located under `es` directory.
-So, if you have a mapping file named `es/twitter/_doc.json` in your classpath, it will be automatically used by
-the factory without defining anything:
-
-```xml
-<elasticsearch:rest-client id="esClient" />
+```json
+{
+  "index" : {
+    "number_of_replicas" : 1
+  }
+}
 ```
 
-You can disable this automatic lookup by setting the `autoscan` property to `false`:
+If you want to remove the existing indices every time the factory starts, you can use the `forceIndex` option:
 
-```xml
-<elasticsearch:rest-client id="esClient" autoscan="false" indices="twitter" />
+```java
+ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+// Be careful: IT WILL REMOVE ALL EXISTING DATA FOR THE MANAGED INDICES.
+factory.setForceIndex(true);
 ```
 
-### Creating aliases to indexes
+Be careful: **IT WILL REMOVE ALL EXISTING DATA** FOR THE MANAGED INDICES.
 
-When creating an index, it could be useful to add an alias on it.
+
+### Component templates
+
+This feature will call the [Component Templates APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-component-template.html)
+It's very common to use it with [index templates](#index-templates).
+
+Let say you want to create a component template named `component1`. Just create a file named
+`/es/_component_templates/component1.json`:
+
+```json
+{
+  "template": {
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        }
+      }
+    }
+  }
+}
+```
+
+Let say you want to create a component template named `component2`. Just create a file named
+`/es/_component_templates/component2.json`:
+
+```json
+{
+  "template": {
+    "mappings": {
+      "runtime": {
+        "day_of_week": {
+          "type": "keyword",
+          "script": {
+            "source": "emit(doc['@timestamp'].value.dayOfWeekEnum.getDisplayName(TextStyle.FULL, Locale.ROOT))"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+You can use then the 2 component templates in an index template as shown below.
+
+### Index templates
+
+This feature will call the [Index Templates APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html)
+It can be used with [component templates](#component-templates).
+
+Let say you want to create an index template named `template_1`. Just create a file named 
+`/es/_index_templates/template_1.json`:
+
+```json
+{
+  "index_patterns": ["te*", "bar*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1
+    },
+    "mappings": {
+      "_source": {
+        "enabled": true
+      },
+      "properties": {
+        "host_name": {
+          "type": "keyword"
+        },
+        "created_at": {
+          "type": "date",
+          "format": "EEE MMM dd HH:mm:ss Z yyyy"
+        }
+      }
+    },
+    "aliases": {
+      "mydata": { }
+    }
+  },
+  "priority": 500,
+  "composed_of": ["component1", "component2"],
+  "version": 3,
+  "_meta": {
+    "description": "my custom"
+  }
+}
+```
+
+Note that this index template is using the 2 component templates that have been defined in the previous section.
+
+### Templates (deprecated)
+
+[Templates](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates-v1.html) have been 
+deprecated by Elasticsearch. You should now use [Index Templates](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html) 
+instead. With this factory, you can look at [Index Templates](#index-templates) to
+use the new implementation.
+
+Sometimes it's useful to define a template mapping that will automatically be applied to new indices created.
+
 For example, if you planned to have indexes per year for twitter feeds (twitter2012, twitter2013, twitter2014) and you want
-to define an alias named twitter, you can use the `aliases` property:
-
-```xml
-<elasticsearch:rest-client id="esClient" 
-                           aliases="twitter:twitter2012,twitter:twitter2013,twitter:twitter2014" />
-```
-
-### Creating templates
-
-Sometimes it's useful to define a template mapping that will automatically be applied to new indices created. 
-
-For example, if you planned to have indexes per year for twitter feeds (twitter2012, twitter2013, twitter2014) and you want
-to define a template named `twitter_template`, you can use the `templates` property:
-
-```xml
-<!--
-    We add also a facebook_template template just for showing how to
-    define more than one template...
--->
-<elasticsearch:rest-client id="esClient" 
-                           templates="twitter_template,facebook_template" />
-```
-
-To configure your template you have to define a file named `es/_template/twitter_template.json` in your project:
+to define a template named `twitter_template`, you have to define a file named `/es/_template/twitter_template.json` in your project:
 
 ```json
 {
@@ -404,6 +419,44 @@ To configure your template you have to define a file named `es/_template/twitter
 }
 ```
 
+## Using XML (deprecated)
+
+### Using elasticsearch spring namespace for XML files
+
+In your spring context file, just add namespaces like this:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-7.0.xsd">
+</beans>
+```
+
+Then, you can get a REST High Level Client instance with:
+
+```xml
+<elasticsearch:rest-client id="esClient" />
+```
+
+### Using convention over configuration
+
+By default, the factory will find every mapping file located under `es` directory.
+So, if you have a mapping file named `/es/twitter/_doc.json` in your classpath, it will be automatically used by
+the factory without defining anything:
+
+```xml
+<elasticsearch:rest-client id="esClient" />
+```
+
+You can disable this automatic lookup by setting the `autoscan` property to `false`:
+
+```xml
+<elasticsearch:rest-client id="esClient" autoscan="false" indices="twitter" />
+```
+
 ### Changing classpath search path for mapping and settings files
 
 By default, the factory look in `es` classpath folder to find if there is any of the files which are
@@ -416,19 +469,91 @@ If you need to change it, you can use the `classpathRoot` property:
 
 So, if a `myownfolder/twitter/_settings.json` file exists in your classpath, it will be used by the factory.
 
-### Update settings
+### Define a rest client bean
 
-If you need to merge settings for an existing `index`, add a file named  `es/twitter/_update_settings.json` in your
-classpath. The factory will detect it and will try to merge settings unless you explicitly set `mergeSettings` to `false`.
+In your spring context file, just define a client like this:
+
+```xml
+<elasticsearch:rest-client id="esClient" />
+```
+
+By default, you will get an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
+connected to an Elasticsearch node already running at `http://localhost:9200`.
+
+You can set the nodes you want to connect to:
+
+```xml
+<elasticsearch:rest-client id="esClient" esNodes="http://localhost:9200,http://localhost:9201" />
+```
+
+### Injecting the rest client in your java project
+
+You can use the rest client in your java classes.
+
+```java
+import org.elasticsearch.client.RestHighLevelClient;
+
+RestHighLevelClient client = ctx.getBean("esClient", RestHighLevelClient.class);
+```
+
+Better, you should use `@Autowired` annotation.
+
+```java
+// Inject your client...
+@Autowired RestHighLevelClient client;
+```
+
+### Connecting to a secured X-Pack cluster
+
+You need to define the `xpack.security.user` property as follows:
+
+```
+<util:properties id="esProperties">
+    <prop key="xpack.security.user">elastic:changeme</prop>
+</util:properties>
+
+<elasticsearch:rest-client id="esClient" properties="esProperties" />
+```
+
+### Asynchronous initialization
+
+Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
+
+```xml
+<task:executor pool-size="4" id="taskExecutor"/>
+<elasticsearch:rest-client id="esClient" async="true" taskExecutor="taskExecutor"/>
+```
+Asynchronous initialization does not block Spring startup but it continues on background on another thread.
+Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
+
+### Managing indices
+
+If you want to manage indices at startup (creating missing indices and applying optional settings):
+
+```xml
+<elasticsearch:rest-client id="esClient"
+                           indices="twitter" />
+```
+
+This will create an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
+and will create an index `twitter`.
+
+If you need to manage more than one index, just use a comma separated list:
+
+```xml
+<elasticsearch:rest-client id="esClient" 
+                           indices="twitter,facebook" />
+```
+
+If you need to update settings for an existing `twitter` index, add a file named  
+`/es/twitter/_update_settings.json` in your classpath. The factory will detect it and will try to update 
+settings unless you explicitly set `mergeSettings` to `false`.
 
 ```xml
 <elasticsearch:rest-client id="esClient" mergeSettings="false" />
 ```
 
-If merging fails, the factory will not start.
-
-
-### Force rebuild indices (use with caution)
+If updating the settings fails, the factory will not start.
 
 For test purpose or for continuous integration, you could force the factory to clean the previous `indices` when starting the client.
 It will *remove all your datas* for every index which has been defined. Just set  `forceIndex` property to `true`.
@@ -437,7 +562,29 @@ It will *remove all your datas* for every index which has been defined. Just set
 <elasticsearch:rest-client id="esClient" forceIndex="true" />
 ```
 
-### Force rebuild templates (use with caution)
+### Creating aliases to indices
+
+When creating an index, it could be useful to add an alias on it.
+For example, if you planned to have indexes per year for twitter feeds (twitter2012, twitter2013, twitter2014) and you want
+to define an alias named twitter, you can use the `aliases` property:
+
+```xml
+<elasticsearch:rest-client id="esClient" 
+                           aliases="twitter:twitter2012,twitter:twitter2013,twitter:twitter2014" />
+```
+
+### Creating templates (deprecated)
+
+If you are not using autoscan, you can use the `templates` property to define the templates:
+
+```xml
+<!--
+    We add also a facebook_template template just for showing how to
+    define more than one template...
+-->
+<elasticsearch:rest-client id="esClient" 
+                           templates="twitter_template,facebook_template" />
+```
 
 For test purpose or for continuous integration, you could force the factory to clean the previous `template` when starting the client.
 Just set  `forceTemplate` property to `true`.
@@ -480,12 +627,23 @@ Note that you can use the old fashion method to define your beans instead of usi
         <property name="classpathRoot" value="myownfolder" />
         <property name="forceIndex" value="true" />
         <property name="mergeSettings" value="true" />
+        <property name="forceTemplate" value="true" />
+        <property name="componentTemplates">
+            <list>
+                <value>component1</value>
+                <value>component2</value>
+            </list>
+        </property>
+        <property name="indexTemplates">
+            <list>
+                <value>template_1</value>
+            </list>
+        </property>
         <property name="templates">
             <list>
                 <value>twitter_template</value>
             </list>
         </property>
-        <property name="forceTemplate" value="true" />
         <property name="aliases">
             <list>
                 <value>twitter:twitter2012</value>
