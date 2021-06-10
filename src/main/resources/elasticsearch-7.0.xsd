@@ -80,7 +80,7 @@
             <xsd:attribute name="forceTemplate" type="xsd:boolean">
                 <xsd:annotation>
                     <xsd:documentation><![CDATA[
-					Set to true if you want to force recreate templates.
+					Set to false if you don't want to update existing templates.
 				]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>

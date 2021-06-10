@@ -157,7 +157,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     private boolean forceIndex;
 
-    private boolean forceTemplate;
+    private boolean forceTemplate = true;
 
     private boolean mergeSettings = true;
 
@@ -186,8 +186,8 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
-     * Set to true if you want to force recreate templates
-     * @param forceTemplate true if you want to force recreate templates
+     * Set to false if you don't want to update existing index templates, component templates or legacy templates
+     * @param forceTemplate false if you don't want to update existing index templates, component templates or legacy templates
      */
     public void setForceTemplate(boolean forceTemplate) {
         this.forceTemplate = forceTemplate;
@@ -490,7 +490,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      *     <li>legacy templates (deprecated)</li>
      * </ul>
      * <p>
-     * Note that you can force to recreate template using
+     * Note that you can ignore updating existing templates using
      * {@link #setForceTemplate(boolean)}
      */
     private void initTemplates() throws Exception {

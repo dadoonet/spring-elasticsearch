@@ -29,7 +29,6 @@ public class AppConfig extends RestAppConfig {
 	@Override
 	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/template-auto/client");
-		factory.setForceTemplate(true);
 	}
 
 }

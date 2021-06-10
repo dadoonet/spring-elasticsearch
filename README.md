@@ -52,6 +52,8 @@ and automatically create index settings and templates based on what is found in 
  * `mappings` setting has been replaced by `indices`.
  * `mergeMapping` setting has been removed.
 
+* `forceTemplate` setting is now `true` by default. A template should be always updated.
+
 ## Getting Started
 
 ### Maven dependency
@@ -346,6 +348,13 @@ Let say you want to create a component template named `component2`. Just create 
 
 You can use then the 2 component templates in an index template as shown below.
 
+If you don't want to update the existing templates if any, you can set `forceTemplate` property to `false`.
+
+```java
+ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+factory.setForceTemplate(false);
+```
+
 ### Index templates
 
 This feature will call the [Index Templates APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html)
@@ -390,6 +399,13 @@ Let say you want to create an index template named `template_1`. Just create a f
 
 Note that this index template is using the 2 component templates that have been defined in the previous section.
 
+If you don't want to update the existing templates if any, you can set `forceTemplate` property to `false`.
+
+```java
+ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+factory.setForceTemplate(false);
+```
+
 ### Templates (deprecated)
 
 [Templates](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates-v1.html) have been 
@@ -417,6 +433,13 @@ to define a template named `twitter_template`, you have to define a file named `
         }
     }
 }
+```
+
+If you don't want to update the existing templates if any, you can set `forceTemplate` property to `false`.
+
+```java
+ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+factory.setForceTemplate(false);
 ```
 
 ## Using XML (deprecated)
@@ -586,11 +609,10 @@ If you are not using autoscan, you can use the `templates` property to define th
                            templates="twitter_template,facebook_template" />
 ```
 
-For test purpose or for continuous integration, you could force the factory to clean the previous `template` when starting the client.
-Just set  `forceTemplate` property to `true`.
+If you don't want to update the existing templates if any, you can set `forceTemplate` property to `false`.
 
 ```xml
-<elasticsearch:rest-client id="esClient" forceTemplate="true" />
+<elasticsearch:rest-client id="esClient" forceTemplate="false" />
 ```
 
 ## Old fashion bean definition
@@ -627,7 +649,7 @@ Note that you can use the old fashion method to define your beans instead of usi
         <property name="classpathRoot" value="myownfolder" />
         <property name="forceIndex" value="true" />
         <property name="mergeSettings" value="true" />
-        <property name="forceTemplate" value="true" />
+        <property name="forceTemplate" value="false" />
         <property name="componentTemplates">
             <list>
                 <value>component1</value>
