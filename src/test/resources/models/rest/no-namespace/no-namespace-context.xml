@@ -25,7 +25,6 @@
         <property name="forceIndex" value="true" />
         <property name="autoscan" value="true" />
         <property name="forceTemplate" value="false" />
-        <property name="mergeMapping" value="false" />
         <property name="mergeSettings" value="false" />
 	</bean>
 

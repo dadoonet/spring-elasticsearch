@@ -30,7 +30,6 @@ public class AppConfig extends RestAppConfig {
 	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/template/client");
 		factory.setTemplates(new String[]{"twitter_template"});
-		factory.setForceTemplate(true);
 	}
 
 }
