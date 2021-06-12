@@ -158,7 +158,16 @@
 				]]></xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
-
+            <xsd:attribute name="pipelines" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation><![CDATA[
+					List of pipelines (comma separated)
+					if you are not using automatic discovery (see autoscan)
+                    Example:
+                        "pipeline1,pipeline2"
+				]]></xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
         </xsd:complexType>
     </xsd:element>
 

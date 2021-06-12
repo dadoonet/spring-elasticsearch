@@ -48,6 +48,7 @@ import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchComponentTempl
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexTemplateUpdater.createIndexTemplate;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.updateSettings;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchPipelineUpdater.createPipeline;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchTemplateUpdater.createTemplate;
 import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
 
@@ -172,6 +173,8 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     private String[] indexTemplates;
 
     private String[] templates;
+
+    private String[] pipelines;
 
     private String classpathRoot = "es";
 
@@ -325,6 +328,28 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
+     * Define the pipelines you want to manage with this factory
+     * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
+     * <p>Example:</p>
+     *
+     * <pre>
+     * {@code
+     * <property name="pipelines">
+     *  <list>
+     *   <value>pipeline1</value>
+     *   <value>pipeline2</value>
+     *  </list>
+     * </property>
+     * }
+     * </pre>
+     *
+     * @param pipelines list of pipelines
+     */
+    public void setPipelines(String[] pipelines) {
+        this.pipelines = pipelines;
+    }
+
+    /**
      * Classpath root for index and mapping files (default : /es)
      * <p>Example :</p>
      * <pre>
@@ -383,8 +408,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             templates = discoverFromClasspath(templates, classpathRoot, SettingsFinder.Defaults.TemplateDir);
             componentTemplates = discoverFromClasspath(componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
             indexTemplates = discoverFromClasspath(indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
+            pipelines = discoverFromClasspath(pipelines, classpathRoot, SettingsFinder.Defaults.PipelineDir);
         }
 
+        initPipelines();
         initTemplates();
         initSettings();
         initAliases();
@@ -516,6 +543,20 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                         + template
                         + "]. Check that templates is not empty.");
                 createTemplate(client.getLowLevelClient(), classpathRoot, template, forceTemplate);
+            }
+        }
+    }
+
+    /**
+     * It creates if needed the index pipelines
+     */
+    private void initPipelines() throws Exception {
+        if (pipelines != null && pipelines.length > 0) {
+            for (String pipeline : pipelines) {
+                Assert.hasText(pipeline, "Can not read pipeline in ["
+                        + pipeline
+                        + "]. Check that pipeline is not empty.");
+                createPipeline(client.getLowLevelClient(), classpathRoot, pipeline, true);
             }
         }
     }
