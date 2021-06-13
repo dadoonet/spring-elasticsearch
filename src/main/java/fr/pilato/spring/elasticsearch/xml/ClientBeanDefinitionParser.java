@@ -33,6 +33,7 @@ class ClientBeanDefinitionParser {
                                                     String aliases,
                                                     String componentTemplates, String indexTemplates,
                                                     String templates,
+                                                    String pipelines,
                                                     String async, String taskExecutor) {
         BeanDefinitionBuilder nodeFactory = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
         if (properties != null && properties.length() > 0) {
@@ -59,6 +60,9 @@ class ClientBeanDefinitionParser {
         }
         if (templates != null && templates.length() > 0) {
             nodeFactory.addPropertyValue("templates", templates);
+        }
+        if (pipelines != null && pipelines.length() > 0) {
+            nodeFactory.addPropertyValue("pipelines", pipelines);
         }
 
 		if (async != null && async.length() > 0) {

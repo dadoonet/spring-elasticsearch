@@ -239,6 +239,7 @@ and automatically create index settings and templates based on what is found in 
 * `/es/_component_templates/` for [component templates](#component-templates)
 * `/es/_index_templates/` for [index templates](#index-templates)
 * `/es/_template/` for [legacy index templates](#templates-deprecated)
+* `/es/_pipeline/` for [ingest pipelines](#ingest-pipelines)
 
 ### Autoscan
 
@@ -306,7 +307,7 @@ Be careful: **IT WILL REMOVE ALL EXISTING DATA** FOR THE MANAGED INDICES.
 
 ### Component templates
 
-This feature will call the [Component Templates APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-component-template.html)
+This feature will call the [Component Templates APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-component-template.html).
 It's very common to use it with [index templates](#index-templates).
 
 Let say you want to create a component template named `component1`. Just create a file named
@@ -357,7 +358,7 @@ factory.setForceTemplate(false);
 
 ### Index templates
 
-This feature will call the [Index Templates APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html)
+This feature will call the [Index Templates APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html).
 It can be used with [component templates](#component-templates).
 
 Let say you want to create an index template named `template_1`. Just create a file named 
@@ -440,6 +441,40 @@ If you don't want to update the existing templates if any, you can set `forceTem
 ```java
 ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
 factory.setForceTemplate(false);
+```
+
+### Ingest Pipelines
+
+This feature will call the [Ingest Pipelines APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/ingest.html)
+
+Let say you want to create an ingest pipeline named `pipeline1`. Just create a file named
+`/es/_pipeline/pipeline1.json`:
+
+```json
+{
+  "description": "My optional pipeline description",
+  "processors": [
+    {
+      "set": {
+        "description": "My optional processor description",
+        "field": "my-long-field",
+        "value": 10
+      }
+    },
+    {
+      "set": {
+        "description": "Set 'my-boolean-field' to true",
+        "field": "my-boolean-field",
+        "value": true
+      }
+    },
+    {
+      "lowercase": {
+        "field": "my-keyword-field"
+      }
+    }
+  ]
+}
 ```
 
 ## Using XML (deprecated)
@@ -615,6 +650,15 @@ If you don't want to update the existing templates if any, you can set `forceTem
 <elasticsearch:rest-client id="esClient" forceTemplate="false" />
 ```
 
+### Creating ingest pipelines
+
+If you are not using autoscan, you can use the `pipelines` property to define the templates:
+
+```xml
+<elasticsearch:rest-client id="esClient"
+                           pipelines="pipeline1,pipeline2" />
+```
+
 ## Old fashion bean definition
 
 Note that you can use the old fashion method to define your beans instead of using `<elasticsearch:...>` namespace:
@@ -664,6 +708,11 @@ Note that you can use the old fashion method to define your beans instead of usi
         <property name="templates">
             <list>
                 <value>twitter_template</value>
+            </list>
+        </property>
+        <property name="pipelines">
+            <list>
+                <value>pipeline1</value>
             </list>
         </property>
         <property name="aliases">
