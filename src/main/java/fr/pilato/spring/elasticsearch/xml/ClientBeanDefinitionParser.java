@@ -27,7 +27,7 @@ class ClientBeanDefinitionParser {
      * Managing common properties
      */
     static BeanDefinitionBuilder startClientBuilder(Class beanClass, String properties,
-                                                    boolean forceIndex, boolean forceTemplate,
+                                                    boolean forceIndex,
                                                     boolean mergeSettings,
                                                     boolean autoscan, String classpathRoot, String mappings,
                                                     String aliases,
@@ -40,7 +40,6 @@ class ClientBeanDefinitionParser {
             nodeFactory.addPropertyReference("properties", properties);
         }
         nodeFactory.addPropertyValue("forceIndex", forceIndex);
-        nodeFactory.addPropertyValue("forceTemplate", forceTemplate);
         nodeFactory.addPropertyValue("mergeSettings", mergeSettings);
         nodeFactory.addPropertyValue("autoscan", autoscan);
         if (classpathRoot != null && classpathRoot.length() > 0) {

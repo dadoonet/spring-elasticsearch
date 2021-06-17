@@ -22,7 +22,7 @@
     </util:properties>
 
     <elasticsearch:rest-client id="esClient" esNodes="localhost:9200,localhost:9201"
-            autoscan="true" forceIndex="false" forceTemplate="false" mergeSettings="false"
+            autoscan="true" forceIndex="false" mergeSettings="false"
             classpathRoot="/models/root/rest-client-namespace/client"
                                properties="esProperties"
     />

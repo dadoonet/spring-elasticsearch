@@ -17,7 +17,7 @@
 		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-7.0.xsd">
 
     <elasticsearch:rest-client id="esClient" esNodes="localhost:9200,localhost:9201"
-            autoscan="true" forceIndex="false" forceTemplate="false" mergeSettings="false"
+            autoscan="true" forceIndex="false" mergeSettings="false"
             classpathRoot="/models/root/rest-client-namespace/client"/>
 
 </beans>

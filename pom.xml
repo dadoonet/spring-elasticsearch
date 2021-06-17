@@ -25,7 +25,7 @@
 
         <spring.version>5.3.8</spring.version>
         <elasticsearch.version>7.13.2</elasticsearch.version>
-        <beyonder.version>7.13</beyonder.version>
+        <beyonder.version>7.13.1-SNAPSHOT</beyonder.version>
         <slf4j.version>1.7.30</slf4j.version>
         <log4j.version>2.14.1</log4j.version>
         <commons.io.version>2.10.0</commons.io.version>
