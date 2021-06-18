@@ -1,0 +1,10 @@
+{
+  "mappings": {
+    "properties" : {
+      "message" : {"type" : "text", "store" : true}
+    }
+  },
+  "aliases": {
+    "test": { }
+  }
+}

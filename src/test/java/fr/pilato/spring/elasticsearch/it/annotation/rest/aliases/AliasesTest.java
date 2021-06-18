@@ -26,6 +26,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 
 public class AliasesTest extends AbstractRestAnnotationContextModel {
 
@@ -35,5 +36,9 @@ public class AliasesTest extends AbstractRestAnnotationContextModel {
         assertThat(response, hasKey("rss"));
         assertThat(response, hasKey("twitter"));
         assertShardsAndReplicas(client.getLowLevelClient(), "rss", 1, 1);
+
+        response = runRestQuery(client.getLowLevelClient(), "/_alias/test");
+        assertThat(response, not(hasKey("test_1")));
+        assertThat(response, hasKey("test_2"));
     }
 }
