@@ -9,7 +9,8 @@ and automatically create index settings and templates based on what is found in 
 * `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/_component_templates/` for [component templates](#component-templates)
 * `/es/_index_templates/` for [index templates](#index-templates)
-* `/es/_template/` for [legacy index templates](#templates-deprecated)
+* `/es/_templates/` for [legacy index templates](#templates-deprecated)
+* `/es/_pipelines/` for [ingest pipelines](#ingest-pipelines)
 
 ## Documentation
 
@@ -53,6 +54,8 @@ and automatically create index settings and templates based on what is found in 
  * `mergeMapping` setting has been removed.
 
 * `forceTemplate` setting has been removed. A template should be always updated.
+
+* `_template` dir has been deprecated by `_templates` dir.
 
 ## Getting Started
 
@@ -238,8 +241,8 @@ and automatically create index settings and templates based on what is found in 
 * `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/_component_templates/` for [component templates](#component-templates)
 * `/es/_index_templates/` for [index templates](#index-templates)
-* `/es/_template/` for [legacy index templates](#templates-deprecated)
-* `/es/_pipeline/` for [ingest pipelines](#ingest-pipelines)
+* `/es/_templates/` for [legacy index templates](#templates-deprecated)
+* `/es/_pipelines/` for [ingest pipelines](#ingest-pipelines)
 
 ### Autoscan
 
@@ -403,7 +406,7 @@ use the new implementation.
 Sometimes it's useful to define a template mapping that will automatically be applied to new indices created.
 
 For example, if you planned to have indexes per year for twitter feeds (twitter2012, twitter2013, twitter2014) and you want
-to define a template named `twitter_template`, you have to define a file named `/es/_template/twitter_template.json` in your project:
+to define a template named `twitter_template`, you have to define a file named `/es/_templates/twitter_template.json` in your project:
 
 ```json
 {

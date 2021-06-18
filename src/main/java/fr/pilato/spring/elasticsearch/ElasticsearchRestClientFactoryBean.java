@@ -394,10 +394,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         client = buildRestHighLevelClient();
         if (autoscan) {
             indices = computeIndexNames(indices, classpathRoot);
-            templates = discoverFromClasspath(templates, classpathRoot, SettingsFinder.Defaults.TemplateDir);
+            templates = discoverFromClasspath(templates, classpathRoot, SettingsFinder.Defaults.TemplatesDir);
             componentTemplates = discoverFromClasspath(componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
             indexTemplates = discoverFromClasspath(indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
-            pipelines = discoverFromClasspath(pipelines, classpathRoot, SettingsFinder.Defaults.PipelineDir);
+            pipelines = discoverFromClasspath(pipelines, classpathRoot, SettingsFinder.Defaults.PipelinesDir);
         }
 
         initPipelines();
