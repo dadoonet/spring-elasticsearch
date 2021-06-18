@@ -116,7 +116,6 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  *      </list>
  *    </property>
  *    <property name="forceMapping" value="false" />
- *    <property name="forceTemplate" value="false" />
  *    <property name="mergeSettings" value="true" />
  *    <property name="settingsFile" value="es.properties" />
  *    <property name="autoscan" value="false" />
@@ -158,8 +157,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     private boolean forceIndex;
 
-    private boolean forceTemplate = true;
-
     private boolean mergeSettings = true;
 
     private boolean autoscan = true;
@@ -186,14 +183,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      */
     public void setForceIndex(boolean forceIndex) {
         this.forceIndex = forceIndex;
-    }
-
-    /**
-     * Set to false if you don't want to update existing index templates, component templates or legacy templates
-     * @param forceTemplate false if you don't want to update existing index templates, component templates or legacy templates
-     */
-    public void setForceTemplate(boolean forceTemplate) {
-        this.forceTemplate = forceTemplate;
     }
 
     /**
@@ -405,10 +394,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         client = buildRestHighLevelClient();
         if (autoscan) {
             indices = computeIndexNames(indices, classpathRoot);
-            templates = discoverFromClasspath(templates, classpathRoot, SettingsFinder.Defaults.TemplateDir);
+            templates = discoverFromClasspath(templates, classpathRoot, SettingsFinder.Defaults.TemplatesDir);
             componentTemplates = discoverFromClasspath(componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
             indexTemplates = discoverFromClasspath(indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
-            pipelines = discoverFromClasspath(pipelines, classpathRoot, SettingsFinder.Defaults.PipelineDir);
+            pipelines = discoverFromClasspath(pipelines, classpathRoot, SettingsFinder.Defaults.PipelinesDir);
         }
 
         initPipelines();
@@ -510,15 +499,12 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
-     * It creates if needed:
+     * It creates or updates:
      * <ul>
      *     <li>component templates</li>
      *     <li>index templates</li>
      *     <li>legacy templates (deprecated)</li>
      * </ul>
-     * <p>
-     * Note that you can ignore updating existing templates using
-     * {@link #setForceTemplate(boolean)}
      */
     private void initTemplates() throws Exception {
         if (componentTemplates != null && componentTemplates.length > 0) {
@@ -526,7 +512,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                 Assert.hasText(componentTemplate, "Can not read component template in ["
                         + componentTemplate
                         + "]. Check that component template is not empty.");
-                createComponentTemplate(client.getLowLevelClient(), classpathRoot, componentTemplate, forceTemplate);
+                createComponentTemplate(client.getLowLevelClient(), classpathRoot, componentTemplate);
             }
         }
         if (indexTemplates != null && indexTemplates.length > 0) {
@@ -534,7 +520,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                 Assert.hasText(indexTemplate, "Can not read component template in ["
                         + indexTemplate
                         + "]. Check that component template is not empty.");
-                createIndexTemplate(client.getLowLevelClient(), classpathRoot, indexTemplate, forceTemplate);
+                createIndexTemplate(client.getLowLevelClient(), classpathRoot, indexTemplate);
             }
         }
         if (templates != null && templates.length > 0) {
@@ -542,13 +528,13 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                 Assert.hasText(template, "Can not read template in ["
                         + template
                         + "]. Check that templates is not empty.");
-                createTemplate(client.getLowLevelClient(), classpathRoot, template, forceTemplate);
+                createTemplate(client.getLowLevelClient(), classpathRoot, template);
             }
         }
     }
 
     /**
-     * It creates if needed the index pipelines
+     * It creates or updates the index pipelines
      */
     private void initPipelines() throws Exception {
         if (pipelines != null && pipelines.length > 0) {
@@ -556,7 +542,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                 Assert.hasText(pipeline, "Can not read pipeline in ["
                         + pipeline
                         + "]. Check that pipeline is not empty.");
-                createPipeline(client.getLowLevelClient(), classpathRoot, pipeline, true);
+                createPipeline(client.getLowLevelClient(), classpathRoot, pipeline);
             }
         }
     }
