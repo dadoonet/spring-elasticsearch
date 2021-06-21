@@ -22,8 +22,10 @@ package fr.pilato.spring.elasticsearch.it.annotation.rest.aliases;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
 import org.elasticsearch.client.RestHighLevelClient;
 
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
@@ -31,11 +33,14 @@ import static org.hamcrest.Matchers.not;
 public class AliasesTest extends AbstractRestAnnotationContextModel {
 
     @Override
+    protected List<String> otherTestIndices() {
+        return asList("test_1", "test_2");
+    }
+
+    @Override
     protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
         Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_alias/alltheworld");
-        assertThat(response, hasKey("rss"));
         assertThat(response, hasKey("twitter"));
-        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 1, 1);
 
         response = runRestQuery(client.getLowLevelClient(), "/_alias/test");
         assertThat(response, not(hasKey("test_1")));

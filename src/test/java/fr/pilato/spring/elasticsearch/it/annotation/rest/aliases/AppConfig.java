@@ -29,7 +29,7 @@ public class AppConfig extends RestAppConfig {
 	@Override
 	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/aliases");
-		factory.setAliases(new String[]{"alltheworld:twitter", "alltheworld:rss"});
+		factory.setAliases(new String[]{"alltheworld:twitter"});
 		factory.setForceIndex(true);
 	}
 
