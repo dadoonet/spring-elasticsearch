@@ -11,6 +11,7 @@ and automatically create index settings and templates based on what is found in 
 * `/es/_index_templates/` for [index templates](#index-templates)
 * `/es/_templates/` for [legacy index templates](#templates-deprecated)
 * `/es/_pipelines/` for [ingest pipelines](#ingest-pipelines)
+* `/es/_aliases.json` for [aliases](#aliases)
 
 ## Documentation
 
@@ -243,6 +244,7 @@ and automatically create index settings and templates based on what is found in 
 * `/es/_index_templates/` for [index templates](#index-templates)
 * `/es/_templates/` for [legacy index templates](#templates-deprecated)
 * `/es/_pipelines/` for [ingest pipelines](#ingest-pipelines)
+* `/es/_aliases.json` for [aliases](#aliases)
 
 ### Autoscan
 
@@ -424,6 +426,23 @@ to define a template named `twitter_template`, you have to define a file named `
     }
 }
 ```
+
+### Aliases
+
+An alias is helpful to define or remove an alias to a given index. You could also use an [index templates](#index-templates)
+to do that automatically when at index creation time, but you can also define a file `/es/_aliases.json`:
+
+```json
+{
+  "actions" : [
+    { "remove": { "index": "test_1", "alias": "test" } },
+    { "add":  { "index": "test_2", "alias": "test" } }
+  ]
+}
+```
+
+When the factory starts, it will automatically send the content to the [Aliases API](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html)
+and move the alias `test` from index `test_1` to index `test_2`.
 
 ### Ingest Pipelines
 

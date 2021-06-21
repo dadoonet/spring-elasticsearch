@@ -43,7 +43,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.createAlias;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.manageAliases;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.manageAliasesWithJsonInElasticsearch;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchComponentTemplateUpdater.createComponentTemplate;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexTemplateUpdater.createIndexTemplate;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.createIndex;
@@ -552,11 +553,22 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      */
     private void initAliases() throws Exception {
 		if (aliases != null && aliases.length > 0) {
+            String request = "{\"actions\":[";
+            boolean first = true;
 			for (String aliasIndex : aliases) {
+			    if (!first) {
+                    request += ",";
+                }
+			    first = false;
                 Tuple<String, String> aliasIndexSplitted = computeAlias(aliasIndex);
-				createAlias(client.getLowLevelClient(), aliasIndexSplitted.v2(), aliasIndexSplitted.v1());
+                request += "{\"add\":{\"index\":\"" + aliasIndexSplitted.v1() +"\",\"alias\":\"" + aliasIndexSplitted.v2() +"\"}}";
 			}
+            request += "]}";
+            manageAliasesWithJsonInElasticsearch(client.getLowLevelClient(), request);
 		}
+		if (autoscan) {
+		    manageAliases(client.getLowLevelClient(), classpathRoot);
+        }
     }
 
     static Tuple<String, String> computeAlias(String aliasIndex) {
@@ -581,7 +593,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         }
     }
 
-	private RestHighLevelClient buildRestHighLevelClient() throws Exception {
+	private RestHighLevelClient buildRestHighLevelClient() {
         Collection<HttpHost> hosts = new ArrayList<>(esNodes.length);
 		for (String esNode : esNodes) {
             hosts.add(HttpHost.create(esNode));

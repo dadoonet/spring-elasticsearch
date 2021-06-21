@@ -1,0 +1,6 @@
+{
+  "actions" : [
+    { "remove": { "index": "test_1", "alias": "test" } },
+    { "add":  { "index": "test_2", "alias": "test" } }
+  ]
+}
