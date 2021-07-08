@@ -24,7 +24,8 @@ and automatically create index settings and templates based on what is found in 
 
 |   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
 |:-----------------------:|:-------------:|:------------:|:------------:|
-|       7.0-SNAPSHOT      |  7.0 - 7.x    |    5.1.8     |              |
+|       7.1-SNAPSHOT      |  7.0 - 7.x    |    5.3.8     |              |
+|            7.0          |  7.0 - 7.x    |    5.3.8     |  2021-06-21  |
 |            6.7          |  6.7 - 6.x    |    5.1.3     |  2019-04-13  |
 |            6.2          |  6.0 - 6.x    |    5.1.3     |  2019-01-08  |
 |            6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
@@ -78,7 +79,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>7.13.1</version>
+    <version>7.13.3</version>
 </dependency>
 ```
 
@@ -88,7 +89,7 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>7.0-SNAPSHOT</version>
+  <version>7.1-SNAPSHOT</version>
 </dependency>
 ```
 
