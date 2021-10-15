@@ -45,7 +45,11 @@ and automatically create index settings and templates based on what is found in 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.pilato.spring/spring-elasticsearch/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/fr.pilato.spring/spring-elasticsearch/)
 [![Build Status](https://github.com/dadoonet/spring-elasticsearch/actions/workflows/maven.yml/badge.svg)](https://github.com/dadoonet/spring-elasticsearch/actions/workflows/maven.yml)
 
-## Major (breaking) changes in 7.x
+## Release notes
+
+### Changes in 7.x
+
+### Major (breaking) changes in 7.0
 
 * The `TransportClient` has been removed.
 
@@ -79,7 +83,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>7.13.3</version>
+    <version>7.15.1</version>
 </dependency>
 ```
 
