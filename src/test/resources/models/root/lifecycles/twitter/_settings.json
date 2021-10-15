@@ -1,0 +1,5 @@
+{
+	"settings" : {
+		"index.lifecycle.name": "policy1"
+	}
+}

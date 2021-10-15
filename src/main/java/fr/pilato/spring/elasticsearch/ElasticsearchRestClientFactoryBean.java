@@ -46,6 +46,7 @@ import java.util.List;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.manageAliases;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.manageAliasesWithJsonInElasticsearch;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchComponentTemplateUpdater.createComponentTemplate;
+import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexLifecycleUpdater.createIndexLifecycle;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexTemplateUpdater.createIndexTemplate;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.updateSettings;
@@ -173,6 +174,8 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     private String[] templates;
 
     private String[] pipelines;
+
+    private String[] lifecycles;
 
     private String classpathRoot = "es";
 
@@ -399,8 +402,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
             componentTemplates = discoverFromClasspath(componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
             indexTemplates = discoverFromClasspath(indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
             pipelines = discoverFromClasspath(pipelines, classpathRoot, SettingsFinder.Defaults.PipelinesDir);
+            lifecycles = discoverFromClasspath(lifecycles, classpathRoot, SettingsFinder.Defaults.IndexLifecyclesDir);
         }
 
+        initLifecycles();
         initPipelines();
         initTemplates();
         initSettings();
@@ -544,6 +549,20 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                         + pipeline
                         + "]. Check that pipeline is not empty.");
                 createPipeline(client.getLowLevelClient(), classpathRoot, pipeline);
+            }
+        }
+    }
+
+    /**
+     * It creates or updates the index lifecycles
+     */
+    private void initLifecycles() throws Exception {
+        if (lifecycles != null && lifecycles.length > 0) {
+            for (String lifecycle : lifecycles) {
+                Assert.hasText(lifecycle, "Can not read lifecycle in ["
+                        + lifecycle
+                        + "]. Check that lifecycle is not empty.");
+                createIndexLifecycle(client.getLowLevelClient(), classpathRoot, lifecycle);
             }
         }
     }
