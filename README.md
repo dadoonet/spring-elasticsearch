@@ -49,6 +49,8 @@ and automatically create index settings and templates based on what is found in 
 
 ### Changes in 7.x
 
+* Add support for index lifecycles. You can add your index lifecycles policies in the `_index_lifecycles` dir.
+
 ### Major (breaking) changes in 7.0
 
 * The `TransportClient` has been removed.
@@ -250,6 +252,7 @@ and automatically create index settings and templates based on what is found in 
 * `/es/_templates/` for [legacy index templates](#templates-deprecated)
 * `/es/_pipelines/` for [ingest pipelines](#ingest-pipelines)
 * `/es/_aliases.json` for [aliases](#aliases)
+* `/es/_index_lifecycles/` for [index lifecycles policies](#index-lifecycle-policies)
 
 ### Autoscan
 
@@ -480,6 +483,48 @@ Let say you want to create an ingest pipeline named `pipeline1`. Just create a f
       }
     }
   ]
+}
+```
+
+### Index Lifecycles Policies
+
+This feature will call the [Index Lifecycle APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-lifecycle-management.html).
+
+Let say you want to create a policy named `policy1`. Just create a file named
+`/es/_index_lifecycles/policy1.json`:
+
+```json
+{
+  "policy": {
+    "phases": {
+      "warm": {
+        "min_age": "10d",
+        "actions": {
+          "forcemerge": {
+            "max_num_segments": 1
+          }
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": {
+          "delete": {}
+        }
+      }
+    }
+  }
+}
+```
+
+It will be automatically loaded into elasticsearch when you start the factory.
+If you want to apply this policy to your index, you can define the following settings for the index in
+`/es/twitter/_settings.json`:
+
+```json
+{
+	"settings" : {
+		"index.lifecycle.name": "policy1"
+	}
 }
 ```
 
