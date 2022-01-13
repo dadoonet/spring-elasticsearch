@@ -22,23 +22,24 @@ and automatically create index settings and templates based on what is found in 
 * For 1.x elasticsearch versions, look at [es-1.4 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.4).
 * For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
-|   spring-elasticsearch  | elasticsearch |   Spring     | Release date |
-|:-----------------------:|:-------------:|:------------:|:------------:|
-|       7.1-SNAPSHOT      |  7.0 - 7.x    |    5.3.8     |              |
-|            7.0          |  7.0 - 7.x    |    5.3.8     |  2021-06-21  |
-|            6.7          |  6.7 - 6.x    |    5.1.3     |  2019-04-13  |
-|            6.2          |  6.0 - 6.x    |    5.1.3     |  2019-01-08  |
-|            6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
-|            6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
-|            5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
-|           2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
-|           2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
-|           2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
-|           1.4.2         |     < 2.0     |    4.1.4     |  2015-03-03  |
-|           1.4.1         |      1.4      |    4.1.4     |  2015-02-28  |
-|           1.4.0         |      1.4      |    4.1.4     |  2015-01-03  |
-|           1.3.0         |      1.3      |    4.0.6     |  2014-09-01  |
-|           1.0.0         |      1.0      |    3.2.2     |  2014-02-14  |
+| spring-elasticsearch | elasticsearch |    Spring    | Release date |
+|:--------------------:|:-------------:|:------------:|:------------:|
+|     7.2-SNAPSHOT     |  7.0 - 7.x    |  5.3.15      |              |
+|         7.1          |  7.0 - 7.x    |    5.3.15    |  2022-01-13  |
+|         7.0          |  7.0 - 7.x    |    5.3.8     |  2021-06-21  |
+|         6.7          |  6.7 - 6.x    |    5.1.3     |  2019-04-13  |
+|         6.2          |  6.0 - 6.x    |    5.1.3     |  2019-01-08  |
+|         6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
+|         6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
+|         5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
+|        2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
+|        2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
+|        2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
+|        1.4.2         |     < 2.0     |    4.1.4     |  2015-03-03  |
+|        1.4.1         |      1.4      |    4.1.4     |  2015-02-28  |
+|        1.4.0         |      1.4      |    4.1.4     |  2015-01-03  |
+|        1.3.0         |      1.3      |    4.0.6     |  2014-09-01  |
+|        1.0.0         |      1.0      |    3.2.2     |  2014-02-14  |
 
 ## Build Status
 
@@ -49,7 +50,12 @@ and automatically create index settings and templates based on what is found in 
 
 ### Changes in 7.x
 
-* Add support for index lifecycles. You can add your index lifecycles policies in the `_index_lifecycles` dir.
+* Nothing yet ;)
+
+### Changes in 7.1
+
+* Update to Beyonder 7.16 which brings in support for index lifecycles. 
+You can add your index lifecycles policies in the `_index_lifecycles` dir.
 
 ### Major (breaking) changes in 7.0
 
@@ -75,7 +81,7 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>7.0</version>
+  <version>7.1</version>
 </dependency>
 ```
 
@@ -85,7 +91,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>7.15.1</version>
+    <version>7.16.2</version>
 </dependency>
 ```
 
@@ -95,7 +101,7 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -106,7 +112,7 @@ Don't forget to add if needed the following repository in your `pom.xml`:
     <repository>
         <id>oss-snapshots</id>
         <name>Sonatype OSS Snapshots</name>
-        <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
         <releases><enabled>false</enabled></releases>
         <snapshots><enabled>true</enabled></snapshots>
     </repository>
@@ -139,17 +145,17 @@ If you want to do so, add to your `pom.xml`:
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-1.2-api</artifactId>
-    <version>2.14.1</version>
+    <version>2.17.1</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.14.1</version>
+    <version>2.17.1</version>
 </dependency>
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-core</artifactId>
-    <version>2.14.1</version>
+    <version>2.17.1</version>
 </dependency>
 ```
 
@@ -174,7 +180,7 @@ Let's say you want to use Spring Java Annotations, here is a typical application
         <dependency>
             <groupId>fr.pilato.spring</groupId>
             <artifactId>spring-elasticsearch</artifactId>
-            <version>7.0</version>
+            <version>7.1</version>
         </dependency>
     </dependencies>
 </project>
