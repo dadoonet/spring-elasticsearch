@@ -814,6 +814,13 @@ If you need to skip the tests, run:
 mvn release:perform -Prelease -Darguments="-DskipTests"
 ```
 
+If everything is ok in https://s01.oss.sonatype.org/#stagingRepositories, you can perform the release with:
+
+```sh
+mvn nexus-staging:release
+mvn nexus-staging:drop
+```
+
 To announce the release, run:
 
 ```sh
