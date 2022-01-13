@@ -5,7 +5,7 @@ Welcome to the Spring factories for [Elasticsearch](https://www.elastic.co/elast
 The factory provides a [High Level Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
 and automatically create index settings and templates based on what is found in the classpath:
 
-* `/es/_index_lifecycles/` for [index lifecycles policies](#index-lifecycle-policies)
+* `/es/_index_lifecycles/` for [index lifecycles policies](#index-lifecycles-policies)
 * `/es/INDEXNAME/_settings.json` for [index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/_component_templates/` for [component templates](#component-templates)
@@ -259,7 +259,7 @@ and automatically create index settings and templates based on what is found in 
 * `/es/_templates/` for [legacy index templates](#templates-deprecated)
 * `/es/_pipelines/` for [ingest pipelines](#ingest-pipelines)
 * `/es/_aliases.json` for [aliases](#aliases)
-* `/es/_index_lifecycles/` for [index lifecycles policies](#index-lifecycle-policies)
+* `/es/_index_lifecycles/` for [index lifecycles policies](#index-lifecycles-policies)
 
 ### Autoscan
 
