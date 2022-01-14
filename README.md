@@ -92,7 +92,7 @@ If you want to set a specific version of the High Level Rest client, add it to y
 <dependency>
     <groupId>org.elasticsearch.client</groupId>
     <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>7.16.2</version>
+    <version>7.16.3</version>
 </dependency>
 ```
 
