@@ -390,7 +390,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0-M6</version>
+                <version>3.0.0-M7</version>
                 <dependencies>
                     <!-- Workaround for https://issues.apache.org/jira/browse/SUREFIRE-1732
                      TODO remove with next version of failsafe plugin
