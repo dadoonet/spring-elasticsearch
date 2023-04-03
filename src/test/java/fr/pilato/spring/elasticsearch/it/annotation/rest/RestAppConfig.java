@@ -19,20 +19,23 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RestHighLevelClient;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Properties;
 
 public abstract class RestAppConfig {
 
-	abstract protected void enrichFactory(ElasticsearchRestClientFactoryBean factory);
+	abstract protected void enrichFactory(ElasticsearchClientFactoryBean factory);
 
 	@Bean
-	public RestHighLevelClient esClient(Properties esProperties) throws Exception {
-		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+	public ElasticsearchClient esClient(Properties esProperties) throws Exception {
+		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
 		factory.setProperties(esProperties);
+		factory.setUsername("elastic");
+		factory.setPassword("changeme");
+		factory.setCheckSelfSignedCertificates(false);
 		enrichFactory(factory);
 		factory.afterPropertiesSet();
 		return factory.getObject();

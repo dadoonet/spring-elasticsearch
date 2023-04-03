@@ -19,16 +19,16 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.lifecycles;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 
 public class LifecyclesTest extends AbstractRestAnnotationContextModel {
@@ -40,7 +40,7 @@ public class LifecyclesTest extends AbstractRestAnnotationContextModel {
         } catch (ResponseException ignored) { }
     }
 
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        assertThat(client.getLowLevelClient().performRequest(new Request("GET", "/_ilm/policy/policy1")).getStatusLine().getStatusCode(), is(200));
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
+        assertThat(client.ilm().getLifecycle(glr -> glr.name("policy1")), notNullValue());
     }
 }

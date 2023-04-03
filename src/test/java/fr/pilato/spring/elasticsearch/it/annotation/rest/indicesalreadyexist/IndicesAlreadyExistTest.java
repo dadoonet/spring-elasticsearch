@@ -19,8 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.indicesalreadyexist;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -38,9 +38,9 @@ public class IndicesAlreadyExistTest extends AbstractRestAnnotationContextModel 
 
     @Test
     void testTwoClients() {
-        RestHighLevelClient esClient = checkClient("esClient");
+        ElasticsearchClient esClient = checkClient("esClient");
         assertThat(esClient, notNullValue());
-        RestHighLevelClient esClient2 = checkClient("esClient2");
+        ElasticsearchClient esClient2 = checkClient("esClient2");
         assertThat(esClient2, notNullValue());
     }
 

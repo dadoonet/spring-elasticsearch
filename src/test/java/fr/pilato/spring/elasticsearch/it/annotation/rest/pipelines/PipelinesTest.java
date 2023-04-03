@@ -19,17 +19,16 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.pipelines;
 
-import fr.pilato.elasticsearch.tools.updaters.ElasticsearchPipelineUpdater;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 
 public class PipelinesTest extends AbstractRestAnnotationContextModel {
@@ -46,7 +45,7 @@ public class PipelinesTest extends AbstractRestAnnotationContextModel {
         return null;
     }
 
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        assertThat(ElasticsearchPipelineUpdater.isPipelineExist(client.getLowLevelClient(), "pipeline1"), is(true));
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
+        assertThat(client.ingest().getPipeline(gpr -> gpr.id("pipeline1")).get("pipeline1"), notNullValue());
     }
 }

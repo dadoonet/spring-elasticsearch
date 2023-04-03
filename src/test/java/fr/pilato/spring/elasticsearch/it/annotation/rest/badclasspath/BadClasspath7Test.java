@@ -19,10 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.badclasspath;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.GetIndexRequest;
 
 import java.io.IOException;
 
@@ -37,7 +35,7 @@ public class BadClasspath7Test extends AbstractRestAnnotationContextModel {
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        assertThat("twitter index should not exist", client.indices().exists(new GetIndexRequest("twitter"), RequestOptions.DEFAULT), is(false));
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
+        assertThat("twitter index should not exist", client.indices().exists(er -> er.index("twitter")).value(), is(false));
     }
 }

@@ -19,8 +19,9 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.mapping;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.mapping.Property;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,10 +32,11 @@ import static org.hamcrest.Matchers.hasKey;
 
 public class MappingTest extends AbstractRestAnnotationContextModel {
 
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        RestHighLevelClient client2 = checkClient("esClient2");
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
+        ElasticsearchClient client2 = checkClient("esClient2");
 
-        Map<String, Object> response = runRestQuery(client2.getLowLevelClient(), "/twitter/_mapping", "twitter", "mappings", "properties");
+        Map<String, Property> response = client2.indices()
+                .getMapping(gmr -> gmr.index("twitter")).get("twitter").mappings().properties();
         // This one comes from the first mapping
         assertThat(response, hasKey("message"));
         // This one comes from the second mapping

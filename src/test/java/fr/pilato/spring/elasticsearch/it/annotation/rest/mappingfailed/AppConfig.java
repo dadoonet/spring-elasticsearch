@@ -19,8 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.mappingfailed;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RestHighLevelClient;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,9 +30,12 @@ import java.util.Properties;
 public class AppConfig {
 
 	@Bean
-	public RestHighLevelClient esClient(Properties esProperties) throws Exception {
-		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+	public ElasticsearchClient esClient(Properties esProperties) throws Exception {
+		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
 		factory.setProperties(esProperties);
+		factory.setUsername("elastic");
+		factory.setPassword("changeme");
+		factory.setCheckSelfSignedCertificates(false);
 		factory.setClasspathRoot("/models/root/mapping-failed/client1");
 		factory.setIndices(new String[]{"twitter"});
 		factory.setForceIndex(false);
@@ -41,9 +44,12 @@ public class AppConfig {
 	}
 
 	@Bean
-	public RestHighLevelClient esClient2(Properties esProperties) throws Exception {
-		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+	public ElasticsearchClient esClient2(Properties esProperties) throws Exception {
+		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
 		factory.setProperties(esProperties);
+		factory.setUsername("elastic");
+		factory.setPassword("changeme");
+		factory.setCheckSelfSignedCertificates(false);
 		factory.setClasspathRoot("/models/root/mapping-failed/client2");
 		factory.setIndices(new String[]{"twitter"});
 		factory.setMergeSettings(true);

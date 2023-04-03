@@ -6,7 +6,7 @@
     <artifactId>spring-elasticsearch</artifactId>
     <packaging>jar</packaging>
     <name>spring-elasticsearch</name>
-    <version>7.2-SNAPSHOT</version>
+    <version>8.7-SNAPSHOT</version>
     <url>https://github.com/dadoonet/spring-elasticsearch</url>
     <description>Spring factories for Elasticsearch</description>
 
@@ -24,8 +24,8 @@
         <java.compiler.version>14</java.compiler.version>
 
         <spring.version>5.3.22</spring.version>
-        <elasticsearch.version>7.16.3</elasticsearch.version>
-        <beyonder.version>7.16</beyonder.version>
+        <elasticsearch.version>8.7.0</elasticsearch.version>
+        <beyonder.version>8.6-SNAPSHOT</beyonder.version>
         <slf4j.version>1.7.36</slf4j.version>
         <log4j.version>2.18.0</log4j.version>
         <commons.io.version>2.11.0</commons.io.version>
@@ -35,7 +35,9 @@
         <skipTests>false</skipTests>
         <skip.unit.tests>${skipTests}</skip.unit.tests>
         <skip.integration.tests>${skipTests}</skip.integration.tests>
-        <tests.cluster.credentials>elastic:changeme</tests.cluster.credentials>
+        <tests.cluster.username>elastic</tests.cluster.username>
+        <tests.cluster.password>changeme</tests.cluster.password>
+        <tests.cluster.credentials>${tests.cluster.username}:${tests.cluster.password}</tests.cluster.credentials>
 
         <!-- For integration tests using Docker or external cluster -->
         <integ.elasticsearch.image>docker.elastic.co/elasticsearch/elasticsearch</integ.elasticsearch.image>
@@ -170,9 +172,15 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Elasticsearch -->
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <artifactId>elasticsearch-rest-client</artifactId>
             <version>${elasticsearch.version}</version>
         </dependency>
         <dependency>
@@ -336,7 +344,7 @@
                                 <from>${integ.elasticsearch.image}:${integ.elasticsearch.version}</from>
                                 <env>
                                     <discovery.type>single-node</discovery.type>
-                                    <cluster.name>elasticsearch</cluster.name>
+                                    <ELASTIC_PASSWORD>${tests.cluster.password}</ELASTIC_PASSWORD>
                                 </env>
                             </build>
                             <run>
@@ -345,8 +353,9 @@
                                 </ports>
                                 <wait>
                                     <http>
-                                        <url>http://localhost:${tests.cluster.rest.port}/</url>
+                                        <url>https://localhost:${tests.cluster.rest.port}/</url>
                                         <status>200..499</status>
+                                        <allowAllHosts>true</allowAllHosts>
                                     </http>
                                     <time>60000</time>
                                 </wait>

@@ -19,9 +19,9 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.indicesalreadyexist;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,14 +31,17 @@ import java.util.Properties;
 public class AppConfig extends RestAppConfig {
 
 	@Override
-	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
+	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/indices-already-exist-86/client");
 	}
 
 	@Bean
-	public RestHighLevelClient esClient2(Properties esProperties) throws Exception {
-		ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+	public ElasticsearchClient esClient2(Properties esProperties) throws Exception {
+		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
 		factory.setProperties(esProperties);
+		factory.setUsername("elastic");
+		factory.setPassword("changeme");
+		factory.setCheckSelfSignedCertificates(false);
 		factory.setClasspathRoot("/models/root/indices-already-exist-86/client");
 		factory.afterPropertiesSet();
 		return factory.getObject();

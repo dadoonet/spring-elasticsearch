@@ -19,13 +19,11 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.indextemplates;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
 import org.elasticsearch.client.Request;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.ComposableIndexTemplateExistRequest;
 
 import java.io.IOException;
 
@@ -53,9 +51,8 @@ public class IndexTemplatesTest extends AbstractRestAnnotationContextModel {
         return null;
     }
 
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        boolean existsTemplate = client.indices().existsIndexTemplate(new ComposableIndexTemplateExistRequest("template_1"),
-                RequestOptions.DEFAULT);
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
+        boolean existsTemplate = client.indices().existsIndexTemplate(eit -> eit.name("template_1")).value();
         assertThat(existsTemplate, is(true));
     }
 }
