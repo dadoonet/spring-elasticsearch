@@ -158,12 +158,12 @@ If you want to do so, add to your `pom.xml`:
 <dependencies>
   <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
+      <artifactId>log4j-api</artifactId>
       <version>2.20.0</version>
   </dependency>
   <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
       <version>2.20.0</version>
   </dependency>
   <dependency>
