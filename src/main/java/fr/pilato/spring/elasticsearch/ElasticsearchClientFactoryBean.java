@@ -219,29 +219,25 @@ public class ElasticsearchClientFactoryBean
 
     /**
      * Elasticsearch properties
-     * <p>Example:</p>
-     * <pre>
-     * {@code
-     *   <util:map id="esproperties">
-     *     <entry key="cluster.name" value="newclustername"/>
-     *   </util:map>
-     *
-     * <bean id="esClient" class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
-     *   <property name="properties" ref="esproperties" />
-     * </bean>
-     * }
-     * </pre>
-     * <p>Example:</p>
-     * <pre>
-     * {@code
-     *   <util:properties id="esproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
-     *   <elasticsearch:client id="esClient" properties="esproperties" />
-     * }
-     * </pre>
      * @param properties the properties
+     * @deprecated it was only used to set xpack.security.user. Please use now {@link #setUsername(String)}
+     * and {@link #setPassword(String)}.
      */
+    @Deprecated
     public void setProperties(Properties properties) {
-        this.properties = properties;
+        String securedUser = properties.getProperty(XPACK_USER, null);
+        if (securedUser != null) {
+            logger.warn("Usage of xpack.security.user property has been deprecated. " +
+                    "You should now use username and password factory settings.");
+
+            // We split the username and the password
+            String[] split = securedUser.split(":");
+            if (split.length < 2) {
+                throw new IllegalArgumentException(XPACK_USER + " must have the form username:password");
+            }
+            username = split[0];
+            password = split[1];
+        }
     }
 
     /**
@@ -689,22 +685,7 @@ public class ElasticsearchClientFactoryBean
         RestClientBuilder rcb = RestClient.builder(hosts.toArray(new HttpHost[]{}));
 
         // We need to check if we have a user security property
-        if (password == null) {
-            String securedUser = properties != null ? properties.getProperty(XPACK_USER, null) : null;
-            if (securedUser != null) {
-                logger.warn("Usage of xpack.security.user property has been deprecated. " +
-                        "You should now use username and password factory settings.");
-
-                // We split the username and the password
-                String[] split = securedUser.split(":");
-                if (split.length < 2) {
-                    throw new IllegalArgumentException(XPACK_USER + " must have the form username:password");
-                }
-                username = split[0];
-                password = split[1];
-            }
-        }
-        if (password == null) {
+        if (username == null || password == null) {
             throw new IllegalArgumentException("From version 8, you MUST define a user and a password to access Elasticsearch.");
         }
 
