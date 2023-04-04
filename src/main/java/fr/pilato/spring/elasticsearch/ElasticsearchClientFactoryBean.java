@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
@@ -46,6 +47,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.manageAliases;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchAliasUpdater.manageAliasesWithJsonInElasticsearch;
@@ -153,10 +155,25 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  * @see ElasticsearchClient
  * @author David Pilato
  */
-public class ElasticsearchClientFactoryBean extends ElasticsearchAbstractFactoryBean
+public class ElasticsearchClientFactoryBean
         implements FactoryBean<ElasticsearchClient>, InitializingBean, DisposableBean {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchClientFactoryBean.class);
+
+    Properties properties;
+
+    boolean async = false;
+
+    ThreadPoolTaskExecutor taskExecutor;
+
+    /**
+     * Define the username:password to use.
+     * @deprecated Now deprecated with username and password settings.
+     * @see ElasticsearchClientFactoryBean#setUsername(String)
+     * @see ElasticsearchClientFactoryBean#setPassword(String)
+     */
+    @Deprecated
+    public final static String XPACK_USER = "xpack.security.user";
 
     private RestClient lowLevelClient;
 
@@ -198,6 +215,49 @@ public class ElasticsearchClientFactoryBean extends ElasticsearchAbstractFactory
 
     public RestClient getLowLevelClient() {
         return lowLevelClient;
+    }
+
+    /**
+     * Elasticsearch properties
+     * <p>Example:</p>
+     * <pre>
+     * {@code
+     *   <util:map id="esproperties">
+     *     <entry key="cluster.name" value="newclustername"/>
+     *   </util:map>
+     *
+     * <bean id="esClient" class="fr.pilato.spring.elasticsearch.ElasticsearchTransportClientFactoryBean" >
+     *   <property name="properties" ref="esproperties" />
+     * </bean>
+     * }
+     * </pre>
+     * <p>Example:</p>
+     * <pre>
+     * {@code
+     *   <util:properties id="esproperties" location="classpath:fr/pilato/spring/elasticsearch/xml/esclient-transport.properties"/>
+     *   <elasticsearch:client id="esClient" properties="esproperties" />
+     * }
+     * </pre>
+     * @param properties the properties
+     */
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    /**
+     * Enable async initialization
+     * @param async true if you want async initialization
+     */
+    public void setAsync(boolean async) {
+        this.async = async;
+    }
+
+    /**
+     * Executor for async init mode
+     * @param taskExecutor Executor for async init mode
+     */
+    public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
     }
 
     /**
