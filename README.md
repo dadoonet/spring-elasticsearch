@@ -25,7 +25,7 @@ and automatically create index settings and templates based on what is found in 
 
 | spring-elasticsearch | elasticsearch | Spring | Release date |
 |:--------------------:|:-------------:|:------:|:------------:|
-|     8.7-SNAPSHOT     |     8.x       | 5.3.26 |              |
+|     8.7-SNAPSHOT     |     8.x       | 6.0.7  |              |
 |         7.1          |   7.0 - 7.x   | 5.3.15 |  2022-01-13  |
 |         7.0          |   7.0 - 7.x   | 5.3.8  |  2021-06-21  |
 |         6.7          |   6.7 - 6.x   | 5.1.3  |  2019-04-13  |
@@ -51,6 +51,8 @@ and automatically create index settings and templates based on what is found in 
 
 ### Changes in 8.7
 
+* Update to Spring 6.0.7
+* Update to Java 17 (needed by Spring 6)
 * Update to Beyonder 8.6
 * Provides now the new official [Java Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/)
 * Removed deprecated templates
@@ -156,12 +158,12 @@ If you want to do so, add to your `pom.xml`:
 <dependencies>
   <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
+      <artifactId>log4j-api</artifactId>
       <version>2.20.0</version>
   </dependency>
   <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
       <version>2.20.0</version>
   </dependency>
   <dependency>
