@@ -45,7 +45,6 @@ public abstract class AbstractAnnotationContextModel extends BaseTest {
 
         logger.info("  --> Starting Spring Context on [{}] classpath", classpath);
         ctx = new AnnotationConfigApplicationContext();
-        ctx.register(SecurityOptionalConfig.class);
         ctx.scan(classpath);
         ctx.refresh();
     }

@@ -21,6 +21,7 @@ package fr.pilato.spring.elasticsearch.it;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.pilato.spring.elasticsearch.util.SSLUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -30,7 +31,9 @@ import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
@@ -46,61 +49,52 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public abstract class BaseTest {
     private final static Logger staticLogger = LoggerFactory.getLogger(BaseTest.class);
-    public static boolean securityInstalled;
     protected final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     private static RestClient client;
-    public final static String testCredentials = System.getProperty("tests.cluster.credentials", "elastic:changeme");
+
+    private final static String DEFAULT_TEST_CLUSTER = "https://127.0.0.1:9200";
+    private final static String DEFAULT_TEST_USER = "elastic";
+    private final static String DEFAULT_TEST_PASSWORD = "changeme";
+
+    final static String testCluster = System.getProperty("tests.cluster", DEFAULT_TEST_CLUSTER);
+    public final static String testClusterUser = System.getProperty("tests.cluster.user", DEFAULT_TEST_USER);
+    public final static String testClusterPass = System.getProperty("tests.cluster.pass", DEFAULT_TEST_PASSWORD);
 
     private static void startRestClient() throws IOException {
         if (client == null) {
-            client = RestClient.builder(new HttpHost("127.0.0.1", 9200)).build();
+            RestClientBuilder builder = RestClient.builder(HttpHost.create(testCluster));
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(AuthScope.ANY,
+                    new UsernamePasswordCredentials(testClusterUser, testClusterPass));
 
-            securityInstalled = testClusterRunning(false);
-            if (securityInstalled) {
-                // We have a secured cluster. So we need to create a secured client
-                // But first we need to close the previous client we built
-                if (client != null) {
-                    client.close();
-                }
+            builder.setHttpClientConfigCallback(hcb -> hcb
+                    .setDefaultCredentialsProvider(credentialsProvider)
+                    .setSSLContext(SSLUtils.yesSSLContext())
+            );
 
-                String[] split = testCredentials.split(":");
-                if (split.length < 2) {
-                    throw new IllegalArgumentException("tests.cluster.credentials must have the form username:password");
-                }
-                String username = split[0];
-                String password = split[1];
-
-                final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-
-                client = RestClient.builder(new HttpHost("127.0.0.1", 9200))
-                        .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider))
-                        .build();
-                securityInstalled = testClusterRunning(true);
-            }
+            client = builder.build();
+            testClusterRunning();
         }
     }
 
-    private static boolean testClusterRunning(boolean withSecurity) throws IOException {
+    private static void testClusterRunning() throws IOException {
         try {
             Response response = client.performRequest(new Request("GET", "/"));
-            Map<String, Object> result = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<Map<String, Object>>(){});
+            Map<String, Object> result = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<>() {
+            });
 
             Map<String, Object> asMap = (Map<String, Object>) result.get("version");
 
-            staticLogger.info("Starting integration tests against an external cluster running elasticsearch [{}] with {}",
-                    asMap.get("number"), withSecurity ? "security" : "no security" );
-            return withSecurity;
+            staticLogger.info("Starting integration tests against an external cluster running elasticsearch [{}]",
+                    asMap.get("number"));
         } catch (ConnectException e) {
             // If we have an exception here, let's ignore the test
             staticLogger.warn("Integration tests are skipped: [{}]", e.getMessage());
             assumeFalse(e.getMessage().contains("Connection refused"), "Integration tests are skipped");
-            return withSecurity;
         } catch (ResponseException e) {
             if (e.getResponse().getStatusLine().getStatusCode() == 401) {
                 staticLogger.debug("The cluster is secured. So we need to build a client with security", e);
-                return true;
             } else {
                 staticLogger.error("Full error is", e);
                 throw e;
@@ -133,7 +127,7 @@ public abstract class BaseTest {
         // Do nothing
     }
 
-    @BeforeEach
+    @BeforeEach @AfterEach
     public void cleanIndex() throws IOException {
         if (indexName() != null) {
             try {

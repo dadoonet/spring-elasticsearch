@@ -19,8 +19,8 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.settings13;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -34,7 +34,7 @@ public class Settings13Test extends AbstractRestAnnotationContextModel {
         return Collections.singletonList("rss");
     }
 
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        assertShardsAndReplicas(client.getLowLevelClient(), "rss", 1, 1);
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
+        assertShardsAndReplicas(client, "rss", 1, 1);
     }
 }

@@ -20,7 +20,6 @@
 package fr.pilato.spring.elasticsearch.it.annotation.rest.mappingfailed;
 
 import fr.pilato.spring.elasticsearch.it.BaseTest;
-import fr.pilato.spring.elasticsearch.it.annotation.SecurityOptionalConfig;
 import org.elasticsearch.client.ResponseException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
@@ -49,7 +48,7 @@ public class MappingFailedTest extends BaseTest {
 		assertThrows(BeanCreationException.class, () -> {
 			try {
 				logger.info("  --> Starting Spring Context on [{}] classpath", this.getClass().getPackage().getName());
-				new AnnotationConfigApplicationContext(SecurityOptionalConfig.class, AppConfig.class);
+				new AnnotationConfigApplicationContext(AppConfig.class);
 			} catch (BeanCreationException e) {
 				Throwable cause = e.getCause().getCause();
 				assertEquals(ResponseException.class, cause.getClass());

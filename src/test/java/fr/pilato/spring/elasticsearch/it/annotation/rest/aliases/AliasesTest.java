@@ -19,8 +19,9 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.aliases;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.indices.get_alias.IndexAliases;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import java.util.List;
 import java.util.Map;
@@ -38,11 +39,10 @@ public class AliasesTest extends AbstractRestAnnotationContextModel {
     }
 
     @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
-        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/_alias/alltheworld");
-        assertThat(response, hasKey("twitter"));
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws Exception {
+        assertThat(client.indices().getAlias(gar -> gar.name("alltheworld")).result(), hasKey("twitter"));
 
-        response = runRestQuery(client.getLowLevelClient(), "/_alias/test");
+        Map<String, IndexAliases> response = client.indices().getAlias(gar -> gar.name("test")).result();
         assertThat(response, not(hasKey("test_1")));
         assertThat(response, hasKey("test_2"));
     }

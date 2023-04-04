@@ -2,7 +2,7 @@
 
 Welcome to the Spring factories for [Elasticsearch](https://www.elastic.co/elasticsearch/) project.
 
-The factory provides a [High Level Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
+The factory provides a [Java Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/)
 and automatically create index settings and templates based on what is found in the classpath:
 
 * `/es/_index_lifecycles/` for [index lifecycles policies](#index-lifecycles-policies)
@@ -10,37 +10,37 @@ and automatically create index settings and templates based on what is found in 
 * `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/_component_templates/` for [component templates](#component-templates)
 * `/es/_index_templates/` for [index templates](#index-templates)
-* `/es/_templates/` for [legacy index templates](#templates-deprecated)
 * `/es/_pipelines/` for [ingest pipelines](#ingest-pipelines)
 * `/es/_aliases.json` for [aliases](#aliases)
 
 ## Documentation
 
-* For 7.x elasticsearch versions, you are reading the latest documentation.
+* For 8.x elasticsearch versions, you are reading the latest documentation.
+* For 7.x elasticsearch versions, look at [es-7.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-7.x).
 * For 6.x elasticsearch versions, look at [es-6.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-6.x).
 * For 5.x elasticsearch versions, look at [es-5.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-5.x).
 * For 2.x elasticsearch versions, look at [es-2.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-2.x).
 * For 1.x elasticsearch versions, look at [es-1.4 branch](https://github.com/dadoonet/spring-elasticsearch/tree/es-1.4).
 * For 0.x elasticsearch versions, look at [0.x branch](https://github.com/dadoonet/spring-elasticsearch/tree/0.x).
 
-| spring-elasticsearch | elasticsearch |    Spring    | Release date |
-|:--------------------:|:-------------:|:------------:|:------------:|
-|     7.2-SNAPSHOT     |  7.0 - 7.x    |  5.3.15      |              |
-|         7.1          |  7.0 - 7.x    |    5.3.15    |  2022-01-13  |
-|         7.0          |  7.0 - 7.x    |    5.3.8     |  2021-06-21  |
-|         6.7          |  6.7 - 6.x    |    5.1.3     |  2019-04-13  |
-|         6.2          |  6.0 - 6.x    |    5.1.3     |  2019-01-08  |
-|         6.1          |  6.0 - 6.x    |    5.0.7     |  2018-07-22  |
-|         6.0          |  6.0 - 6.x    |    5.0.3     |  2018-02-08  |
-|         5.0          |  5.0 - 5.x    |    4.3.10    |  2018-02-04  |
-|        2.2.0         |  2.0 - 2.4    |    4.2.3     |  2017-03-09  |
-|        2.1.0         |  2.0, 2.1     |    4.2.3     |  2015-11-25  |
-|        2.0.0         |      2.0      |    4.1.4     |  2015-10-25  |
-|        1.4.2         |     < 2.0     |    4.1.4     |  2015-03-03  |
-|        1.4.1         |      1.4      |    4.1.4     |  2015-02-28  |
-|        1.4.0         |      1.4      |    4.1.4     |  2015-01-03  |
-|        1.3.0         |      1.3      |    4.0.6     |  2014-09-01  |
-|        1.0.0         |      1.0      |    3.2.2     |  2014-02-14  |
+| spring-elasticsearch | elasticsearch | Spring | Release date |
+|:--------------------:|:-------------:|:------:|:------------:|
+|     8.8-SNAPSHOT     |     8.x       | 5.3.15 |              |
+|         7.1          |   7.0 - 7.x   | 5.3.15 |  2022-01-13  |
+|         7.0          |   7.0 - 7.x   | 5.3.8  |  2021-06-21  |
+|         6.7          |   6.7 - 6.x   | 5.1.3  |  2019-04-13  |
+|         6.2          |   6.0 - 6.x   | 5.1.3  |  2019-01-08  |
+|         6.1          |   6.0 - 6.x   | 5.0.7  |  2018-07-22  |
+|         6.0          |   6.0 - 6.x   | 5.0.3  |  2018-02-08  |
+|         5.0          |   5.0 - 5.x   | 4.3.10 |  2018-02-04  |
+|        2.2.0         |   2.0 - 2.4   | 4.2.3  |  2017-03-09  |
+|        2.1.0         |   2.0, 2.1    | 4.2.3  |  2015-11-25  |
+|        2.0.0         |      2.0      | 4.1.4  |  2015-10-25  |
+|        1.4.2         |     < 2.0     | 4.1.4  |  2015-03-03  |
+|        1.4.1         |      1.4      | 4.1.4  |  2015-02-28  |
+|        1.4.0         |      1.4      | 4.1.4  |  2015-01-03  |
+|        1.3.0         |      1.3      | 4.0.6  |  2014-09-01  |
+|        1.0.0         |      1.0      | 3.2.2  |  2014-02-14  |
 
 ## Build Status
 
@@ -49,9 +49,12 @@ and automatically create index settings and templates based on what is found in 
 
 ## Release notes
 
-### Changes in 7.x
+### Changes in 8.7
 
-* Nothing yet ;)
+* Update to Beyonder 8.6
+* Provides now the new official [Java Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/)
+* Removed deprecated templates
+* Removed deprecated XML support
 
 ### Changes in 7.1
 
@@ -82,18 +85,25 @@ Import spring-elasticsearch in you project `pom.xml` file:
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>7.1</version>
+  <version>8.7</version>
 </dependency>
 ```
 
-If you want to set a specific version of the High Level Rest client, add it to your `pom.xml` file:
+If you want to set a specific version of the Elasticsearch Java client, add it to your `pom.xml` file:
 
 ```xml
-<dependency>
+<dependencies>
+  <dependency>
+    <groupId>co.elastic.clients</groupId>
+    <artifactId>elasticsearch-java</artifactId>
+    <version>${elasticsearch.version}</version>
+  </dependency>
+  <dependency>
     <groupId>org.elasticsearch.client</groupId>
-    <artifactId>elasticsearch-rest-high-level-client</artifactId>
-    <version>7.16.3</version>
-</dependency>
+    <artifactId>elasticsearch-rest-client</artifactId>
+    <version>${elasticsearch.version}</version>
+  </dependency>
+</dependencies>
 ```
 
 If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](https://oss.sonatype.org/content/repositories/snapshots/fr/pilato/spring/spring-elasticsearch/):
@@ -102,7 +112,7 @@ If you want to try out the most recent SNAPSHOT version [deployed on Sonatype](h
 <dependency>
   <groupId>fr.pilato.spring</groupId>
   <artifactId>spring-elasticsearch</artifactId>
-  <version>7.2-SNAPSHOT</version>
+  <version>8.8-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -143,21 +153,23 @@ For example for this project we are using for tests [log4j2](http://logging.apac
 If you want to do so, add to your `pom.xml`:
 
 ```xml
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-1.2-api</artifactId>
-    <version>2.17.1</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-slf4j-impl</artifactId>
-    <version>2.17.1</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-core</artifactId>
-    <version>2.17.1</version>
-</dependency>
+<dependencies>
+  <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
+      <version>2.18.0</version>
+  </dependency>
+  <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>2.18.0</version>
+  </dependency>
+  <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.18.0</version>
+  </dependency>
+</dependencies>
 ```
 
 ## Using Java Annotations
@@ -181,7 +193,7 @@ Let's say you want to use Spring Java Annotations, here is a typical application
         <dependency>
             <groupId>fr.pilato.spring</groupId>
             <artifactId>spring-elasticsearch</artifactId>
-            <version>7.1</version>
+            <version>8.7</version>
         </dependency>
     </dependencies>
 </project>
@@ -192,9 +204,6 @@ Let's say you want to use Spring Java Annotations, here is a typical application
 ```java
 package fr.pilato.tests;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -206,57 +215,52 @@ import java.io.IOException;
 @Component
 public class RestApp {
 
-    @Configuration
-    public class AppConfig {
-        @Bean
-        public RestHighLevelClient esClient() throws Exception {
-            ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
-            factory.setEsNodes(new String[]{"http://127.0.0.1:9200"});
-
-            // Begin: If you are running with x-pack
-            Properties props = new Properties();
-            props.setProperty("xpack.security.user", "elastic:changeme");
-		    factory.setProperties(props);
-            // End: If you are running with x-pack
-
-            factory.afterPropertiesSet();
-            return factory.getObject();
-        }
+  @Configuration
+  public class AppConfig {
+    @Bean
+    public ElasticsearchClient esClient() {
+      ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
+      factory.setEsNodes(new String[]{"https://127.0.0.1:9200"});
+      factory.setUsername("elastic");
+      factory.setPassword("changeme");
+      factory.afterPropertiesSet();
+      return factory.getObject();
     }
+  }
 
-    @Autowired
-    private RestHighLevelClient client;
+  @Autowired
+  private ElasticsearchClient client;
 
-    public static void main(String[] args) throws IOException {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.scan("fr.pilato.tests");
-        context.refresh();
+  public static void main(String[] args) {
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    context.scan("fr.pilato.tests");
+    context.refresh();
 
-        RestApp p = context.getBean(RestApp.class);
-        p.run();
+    RestApp p = context.getBean(RestApp.class);
+    p.run();
 
-        context.close();
-    }
+    context.close();
+  }
 
-    private void run() throws IOException {
-        // Run a High Level request
-        client.info(RequestOptions.DEFAULT);
-        // You still have access to the Low Level client
-        client.getLowLevel().performRequest(new Request("GET", "/"));
-    }
+  private void run() {
+    // Run an advanced request
+    client.info();
+
+    // You still have access to the Low Level client
+    client.getLowLevel().performRequest(new Request("GET", "/"));
+  }
 }
 ```
 
 ## Features
 
-The factory provides a [High Level Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
+The factory provides a [Java Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/)
 and automatically create index settings and templates based on what is found in the classpath:
 
 * `/es/INDEXNAME/_settings.json` for [index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/INDEXNAME/_update_settings.json` to [update existing index settings and mappings](#indices) for a given index `INDEXNAME`
 * `/es/_component_templates/` for [component templates](#component-templates)
 * `/es/_index_templates/` for [index templates](#index-templates)
-* `/es/_templates/` for [legacy index templates](#templates-deprecated)
 * `/es/_pipelines/` for [ingest pipelines](#ingest-pipelines)
 * `/es/_aliases.json` for [aliases](#aliases)
 * `/es/_index_lifecycles/` for [index lifecycles policies](#index-lifecycles-policies)
@@ -267,7 +271,7 @@ By default, the factory will scan the classpath inside the default `/es` directo
 You can disable the autoscan and then provide manually every name for indices, templates...
 
 ```java
-ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
 factory.setAutoscan(false);
 factory.setIndices(new String[]{"twitter"});
 ```
@@ -278,7 +282,7 @@ You can change the default directory from `/es` to something else. The factory w
 directory to find the indices and the settings for the indices, templates...
 
 ```java
-ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
 factory.setClasspathRoot("/foo");
 ```
 
@@ -317,7 +321,7 @@ in your classpath. The factory will detect it and will try to update the setting
 If you want to remove the existing indices every time the factory starts, you can use the `forceIndex` option:
 
 ```java
-ElasticsearchRestClientFactoryBean factory = new ElasticsearchRestClientFactoryBean();
+ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
 // Be careful: IT WILL REMOVE ALL EXISTING DATA FOR THE MANAGED INDICES.
 factory.setForceIndex(true);
 ```
@@ -413,35 +417,6 @@ Let say you want to create an index template named `template_1`. Just create a f
 
 Note that this index template is using the 2 component templates that have been defined in the previous section.
 
-### Templates (deprecated)
-
-[Templates](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates-v1.html) have been 
-deprecated by Elasticsearch. You should now use [Index Templates](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html) 
-instead. With this factory, you can look at [Index Templates](#index-templates) to
-use the new implementation.
-
-Sometimes it's useful to define a template mapping that will automatically be applied to new indices created.
-
-For example, if you planned to have indexes per year for twitter feeds (twitter2012, twitter2013, twitter2014) and you want
-to define a template named `twitter_template`, you have to define a file named `/es/_templates/twitter_template.json` in your project:
-
-```json
-{
-    "index_patterns" : "twitter*",
-    "settings" : {
-        "number_of_shards" : 1
-    },
-    "mappings" : {
-        "properties" : {
-            "message" : {
-                "type" : "text",
-                "store" : "yes"
-            }
-        }
-    }
-}
-```
-
 ### Aliases
 
 An alias is helpful to define or remove an alias to a given index. You could also use an [index templates](#index-templates)
@@ -535,249 +510,6 @@ If you want to apply this policy to your index, you can define the following set
 }
 ```
 
-## Using XML (deprecated)
-
-### Using elasticsearch spring namespace for XML files
-
-In your spring context file, just add namespaces like this:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:elasticsearch="http://www.pilato.fr/schema/elasticsearch"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.pilato.fr/schema/elasticsearch http://www.pilato.fr/schema/elasticsearch/elasticsearch-7.0.xsd">
-</beans>
-```
-
-Then, you can get a REST High Level Client instance with:
-
-```xml
-<elasticsearch:rest-client id="esClient" />
-```
-
-### Using convention over configuration
-
-By default, the factory will find every mapping file located under `es` directory.
-So, if you have a mapping file named `/es/twitter/_doc.json` in your classpath, it will be automatically used by
-the factory without defining anything:
-
-```xml
-<elasticsearch:rest-client id="esClient" />
-```
-
-You can disable this automatic lookup by setting the `autoscan` property to `false`:
-
-```xml
-<elasticsearch:rest-client id="esClient" autoscan="false" indices="twitter" />
-```
-
-### Changing classpath search path for mapping and settings files
-
-By default, the factory look in `es` classpath folder to find if there is any of the files which are
-used by the factory.
-If you need to change it, you can use the `classpathRoot` property:
-
-```xml
-<elasticsearch:rest-client id="esClient" classpathRoot="myownfolder" />
-```
-
-So, if a `myownfolder/twitter/_settings.json` file exists in your classpath, it will be used by the factory.
-
-### Define a rest client bean
-
-In your spring context file, just define a client like this:
-
-```xml
-<elasticsearch:rest-client id="esClient" />
-```
-
-By default, you will get an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-high.html)
-connected to an Elasticsearch node already running at `http://localhost:9200`.
-
-You can set the nodes you want to connect to:
-
-```xml
-<elasticsearch:rest-client id="esClient" esNodes="http://localhost:9200,http://localhost:9201" />
-```
-
-### Injecting the rest client in your java project
-
-You can use the rest client in your java classes.
-
-```java
-import org.elasticsearch.client.RestHighLevelClient;
-
-RestHighLevelClient client = ctx.getBean("esClient", RestHighLevelClient.class);
-```
-
-Better, you should use `@Autowired` annotation.
-
-```java
-// Inject your client...
-@Autowired RestHighLevelClient client;
-```
-
-### Connecting to a secured X-Pack cluster
-
-You need to define the `xpack.security.user` property as follows:
-
-```
-<util:properties id="esProperties">
-    <prop key="xpack.security.user">elastic:changeme</prop>
-</util:properties>
-
-<elasticsearch:rest-client id="esClient" properties="esProperties" />
-```
-
-### Asynchronous initialization
-
-Client bean initialization is by default synchronously. It can be initialized asynchronously with the attributes `async` and `taskExecutor`.
-
-```xml
-<task:executor pool-size="4" id="taskExecutor"/>
-<elasticsearch:rest-client id="esClient" async="true" taskExecutor="taskExecutor"/>
-```
-Asynchronous initialization does not block Spring startup but it continues on background on another thread.
-Any methods call to these beans before elasticsearch is initialized will be blocked. `taskExecutor` references a standard Spring's task executor.
-
-### Managing indices
-
-If you want to manage indices at startup (creating missing indices and applying optional settings):
-
-```xml
-<elasticsearch:rest-client id="esClient"
-                           indices="twitter" />
-```
-
-This will create an [Elasticsearch High Level Rest Client](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
-and will create an index `twitter`.
-
-If you need to manage more than one index, just use a comma separated list:
-
-```xml
-<elasticsearch:rest-client id="esClient" 
-                           indices="twitter,facebook" />
-```
-
-If you need to update settings for an existing `twitter` index, add a file named  
-`/es/twitter/_update_settings.json` in your classpath. The factory will detect it and will try to update 
-settings unless you explicitly set `mergeSettings` to `false`.
-
-```xml
-<elasticsearch:rest-client id="esClient" mergeSettings="false" />
-```
-
-If updating the settings fails, the factory will not start.
-
-For test purpose or for continuous integration, you could force the factory to clean the previous `indices` when starting the client.
-It will *remove all your datas* for every index which has been defined. Just set  `forceIndex` property to `true`.
-
-```xml
-<elasticsearch:rest-client id="esClient" forceIndex="true" />
-```
-
-### Creating aliases to indices
-
-When creating an index, it could be useful to add an alias on it.
-For example, if you planned to have indexes per year for twitter feeds (twitter2012, twitter2013, twitter2014) and you want
-to define an alias named twitter, you can use the `aliases` property:
-
-```xml
-<elasticsearch:rest-client id="esClient" 
-                           aliases="twitter:twitter2012,twitter:twitter2013,twitter:twitter2014" />
-```
-
-### Creating templates (deprecated)
-
-If you are not using autoscan, you can use the `templates` property to define the templates:
-
-```xml
-<!--
-    We add also a facebook_template template just for showing how to
-    define more than one template...
--->
-<elasticsearch:rest-client id="esClient" 
-                           templates="twitter_template,facebook_template" />
-```
-
-### Creating ingest pipelines
-
-If you are not using autoscan, you can use the `pipelines` property to define the templates:
-
-```xml
-<elasticsearch:rest-client id="esClient"
-                           pipelines="pipeline1,pipeline2" />
-```
-
-## Old fashion bean definition
-
-Note that you can use the old fashion method to define your beans instead of using `<elasticsearch:...>` namespace:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
-
-    <util:map id="esproperties">
-        <entry key="cluster.name" value="newclustername"/>
-    </util:map>
-
-    <!-- The Rest Client -->
-    <bean id="esRestClient" class="fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean" >
-        <property name="esNodes">
-            <list>
-                <value>http://localhost:9200</value>
-                <value>http://localhost:9201</value>
-            </list>
-        </property>
-
-        <property name="autoscan" value="false" />
-        <property name="indices">
-            <list>
-                <value>twitter</value>
-            </list>
-        </property>
-        <property name="classpathRoot" value="myownfolder" />
-        <property name="forceIndex" value="true" />
-        <property name="mergeSettings" value="true" />
-        <property name="componentTemplates">
-            <list>
-                <value>component1</value>
-                <value>component2</value>
-            </list>
-        </property>
-        <property name="indexTemplates">
-            <list>
-                <value>template_1</value>
-            </list>
-        </property>
-        <property name="templates">
-            <list>
-                <value>twitter_template</value>
-            </list>
-        </property>
-        <property name="pipelines">
-            <list>
-                <value>pipeline1</value>
-            </list>
-        </property>
-        <property name="aliases">
-            <list>
-                <value>twitter:twitter2012</value>
-                <value>twitter:twitter2013</value>
-                <value>twitter:twitter2014</value>
-            </list>
-        </property>
-    </bean>
-
-</beans>
-```
-
 # Thanks
 
 Special thanks to
@@ -838,7 +570,7 @@ mvn changes:announcement-mail -Dchanges.username='YourSmtpUserName' -Dchanges.pa
 
 This software is licensed under the Apache 2 license, quoted below.
 
-	Copyright 2011-2022 David Pilato
+	Copyright 2011-2023 David Pilato
 	
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not
 	use this file except in compliance with the License. You may obtain a copy of

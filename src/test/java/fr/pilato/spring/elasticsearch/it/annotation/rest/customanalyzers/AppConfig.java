@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.customanalyzers;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig extends RestAppConfig {
 
 	@Override
-	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
+	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/custom-analyzers-12/client");
 	}
 

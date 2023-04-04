@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.settings13;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig extends RestAppConfig {
 
 	@Override
-	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
+	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/settings-13/client");
 		factory.setForceIndex(true);
 	}

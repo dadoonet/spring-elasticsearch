@@ -19,41 +19,34 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.GetResponse;
+import co.elastic.clients.elasticsearch.indices.GetIndicesSettingsResponse;
 import fr.pilato.spring.elasticsearch.it.annotation.AbstractAnnotationContextModel;
 import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.xcontent.XContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.framework.Advised;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Proxy;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractRestAnnotationContextModel extends AbstractAnnotationContextModel {
-    protected RestHighLevelClient checkClient(String name) {
+    protected ElasticsearchClient checkClient(String name) {
         return checkClient(name, null);
     }
 
-    RestHighLevelClient checkClient(String name, Boolean async) {
-        RestHighLevelClient client;
+    ElasticsearchClient checkClient(String name, Boolean async) {
+        ElasticsearchClient client;
 
         if (name != null) {
-            client = ctx.getBean(name, RestHighLevelClient.class);
+            client = ctx.getBean(name, ElasticsearchClient.class);
         } else {
-            client = ctx.getBean(RestHighLevelClient.class);
+            client = ctx.getBean(ElasticsearchClient.class);
         }
         if (async != null) {
             if (async) {
@@ -74,17 +67,18 @@ public abstract class AbstractRestAnnotationContextModel extends AbstractAnnotat
 
     @Test
     public void testFactoriesCreated() throws Exception {
-        RestHighLevelClient client = checkClient(beanName());
+        ElasticsearchClient client = checkClient(beanName());
         checkUseCaseSpecific(client);
 
         // If an index is expected, let's check it actually exists
         if (indexName() != null) {
             // We test how many shards and replica we have
-            assertShardsAndReplicas(client.getLowLevelClient(), indexName(), expectedShards(), expectedReplicas());
+            assertShardsAndReplicas(client, indexName(), expectedShards(), expectedReplicas());
 
             // #92: search errors with async created Client
-            client.index(new IndexRequest("twitter").id("1").source("{\"foo\":\"bar\"}", XContentType.JSON), RequestOptions.DEFAULT);
-            assertThat(client.get(new GetRequest("twitter").id("1"), RequestOptions.DEFAULT).isExists(), is(true));
+            client.index(ir -> ir.index("twitter").id("1").withJson(new StringReader("{\"foo\":\"bar\"}")));
+            GetResponse<Void> response = client.get(gr -> gr.index("twitter").id("1"), Void.class);
+            assertThat(response, notNullValue());
         }
     }
 
@@ -92,38 +86,12 @@ public abstract class AbstractRestAnnotationContextModel extends AbstractAnnotat
      * Overwrite it to implement use case specific tests
      * @param client Client representing bean named esClient
      */
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws Exception {
     }
 
-    protected void assertShardsAndReplicas(RestClient client, String indexName, int expectedShards, int expectedReplicas) throws IOException {
-        Map<String, Object> result = runRestQuery(client, "/" + indexName + "/_settings", indexName, "settings", "index");
-        assertThat(Integer.parseInt((String) result.get("number_of_shards")), is(expectedShards));
-        assertThat(Integer.parseInt((String) result.get("number_of_replicas")), is(expectedReplicas));
-    }
-
-    protected Map<String, Object> runRestQuery(RestClient client, String url, String... fields) throws IOException {
-        Response response = client.performRequest(new Request("GET", url));
-        Map<String, Object> result = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<Map<String, Object>>(){});
-        logger.trace("Raw result {}", result);
-        if (fields.length > 0) {
-            result = extractFromPath(result, fields);
-            logger.trace("Extracted result {}", result);
-        }
-        return result;
-    }
-
-    private static Map<String, Object> extractFromPath(Map<String, Object> json, String... path) {
-        Map<String, Object> currentObject = json;
-        for (String fieldName : path) {
-            Object jObject = currentObject.get(fieldName);
-            if (jObject == null) {
-                throw new RuntimeException("incorrect Json. Was expecting field " + fieldName);
-            }
-            if (!(jObject instanceof Map)) {
-                throw new RuntimeException("incorrect datatype in json. Expected Map and got " + jObject.getClass().getName());
-            }
-            currentObject = (Map<String, Object>) jObject;
-        }
-        return currentObject;
+    protected void assertShardsAndReplicas(ElasticsearchClient client, String indexName, int expectedShards, int expectedReplicas) throws IOException {
+        GetIndicesSettingsResponse settings = client.indices().getSettings(gisr -> gisr.index(indexName));
+        assertThat(Integer.parseInt(settings.get(indexName).settings().index().numberOfShards()), is(expectedShards));
+        assertThat(Integer.parseInt(settings.get(indexName).settings().index().numberOfReplicas()), is(expectedReplicas));
     }
 }

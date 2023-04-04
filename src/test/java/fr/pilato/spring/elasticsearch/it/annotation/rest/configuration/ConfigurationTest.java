@@ -19,15 +19,14 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.configuration;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 
 class ConfigurationTest extends AbstractRestAnnotationContextModel {
 
 	@Override
-	protected void checkUseCaseSpecific(RestHighLevelClient client) throws Exception {
-		// We call the High Level Rest client to make sure it works properly
-		client.info(RequestOptions.DEFAULT);
+	protected void checkUseCaseSpecific(ElasticsearchClient client) throws Exception {
+		// We call the Rest client to make sure it works properly
+		client.info();
 	}
 }

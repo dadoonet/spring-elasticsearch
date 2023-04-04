@@ -19,7 +19,7 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.configuration;
 
-import fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean;
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,8 +27,8 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig extends RestAppConfig {
 
 	@Override
-	protected void enrichFactory(ElasticsearchRestClientFactoryBean factory) {
-		factory.setEsNodes(new String[]{"127.0.0.1:9200"});
+	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
+		factory.setEsNodes(new String[]{"https://127.0.0.1:9200"});
 	}
 
 }

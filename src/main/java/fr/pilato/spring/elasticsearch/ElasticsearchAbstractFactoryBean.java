@@ -36,6 +36,13 @@ public abstract class ElasticsearchAbstractFactoryBean {
 
 	ThreadPoolTaskExecutor taskExecutor;
 
+	/**
+	 * Define the username:password to use.
+	 * @deprecated Now deprecated with username and password settings.
+	 * @see ElasticsearchClientFactoryBean#setUsername(String)
+	 * @see ElasticsearchClientFactoryBean#setPassword(String)
+	 */
+	@Deprecated
 	public final static String XPACK_USER = "xpack.security.user";
 
     /**

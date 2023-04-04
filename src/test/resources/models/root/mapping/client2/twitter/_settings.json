@@ -15,7 +15,7 @@
 				},
 				"fr_stemmer" : {
 					"type" : "stemmer",
-					"name" : "french"
+					"language" : "french"
 				}
 			}
 		}

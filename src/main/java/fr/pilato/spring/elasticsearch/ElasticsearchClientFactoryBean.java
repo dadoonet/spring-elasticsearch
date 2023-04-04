@@ -19,8 +19,13 @@
 
 package fr.pilato.spring.elasticsearch;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import fr.pilato.elasticsearch.tools.util.ResourceList;
 import fr.pilato.elasticsearch.tools.util.SettingsFinder;
+import fr.pilato.spring.elasticsearch.util.SSLUtils;
 import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -29,7 +34,6 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -51,31 +55,30 @@ import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexTemplateU
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.createIndex;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchIndexUpdater.updateSettings;
 import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchPipelineUpdater.createPipeline;
-import static fr.pilato.elasticsearch.tools.updaters.ElasticsearchTemplateUpdater.createTemplate;
 import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
 
 /**
- * An abstract {@link org.springframework.beans.factory.FactoryBean} used to create an Elasticsearch
- * {@link org.elasticsearch.client.RestHighLevelClient}.
+ * An abstract {@link FactoryBean} used to create an Elasticsearch
+ * {@link ElasticsearchClient}.
  * <p>
- * The lifecycle of the underlying {@link RestHighLevelClient} instance is tied to the
+ * The lifecycle of the underlying {@link ElasticsearchClient} instance is tied to the
  * lifecycle of the bean via the {@link #destroy()} method which calls
- * {@link RestHighLevelClient#close()}
+ * {@link RestClient#close()}
  * </p>
  * <p>
  * You need to define the nodes you want to communicate with.<br>
  * Don't forget to create an es.properties file if you want to set specific values
- * for this client, e.g.: cluster.name
+ * for this client.
  * <br>Example :
  * </p>
  * <pre>
  * {@code
  *  <bean id="esClient"
- *    class="fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean" >
+ *    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
  *    <property name="esNodes">
  *      <list>
- *        <value>localhost:9200</value>
- *        <value>localhost:9201</value>
+ *        <value>https://localhost:9200</value>
+ *        <value>https://localhost:9201</value>
  *      </list>
  *    </property>
  *  </bean>
@@ -85,11 +88,11 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  * You can define properties for this bean that will help to auto create indexes
  * and types.
  * <br>
- * By default, the factory will load a es.properties file in the classloader. It will
- * contains all information needed for your client, e.g.: cluster.name
+ * By default, the factory will load an es.properties file in the classloader. It will
+ * contain all information needed for your client.
  * <br>
  * If you want to  modify the filename used for properties, just define the settingsFile property.
- * <p>In the following example, we will create two indices :</p>
+ * <p>In the following example, we will create two indices:</p>
  * <ul>
  *   <li>twitter
  *   <li>rss
@@ -99,7 +102,7 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  * <pre>
  * {@code
  *  <bean id="esClient"
- *    class="fr.pilato.spring.elasticsearch.ElasticsearchRestClientFactoryBean" >
+ *    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
  *    <property name="indices">
  *      <list>
  *        <value>twitter</value>
@@ -147,21 +150,33 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  * By convention, the factory will create all settings found under the /es classpath.<br>
  * You can disable convention and use configuration by setting autoscan to false.
  *
- * @see RestHighLevelClient
+ * @see ElasticsearchClient
  * @author David Pilato
  */
-public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFactoryBean
-        implements FactoryBean<RestHighLevelClient>, InitializingBean, DisposableBean {
+public class ElasticsearchClientFactoryBean extends ElasticsearchAbstractFactoryBean
+        implements FactoryBean<ElasticsearchClient>, InitializingBean, DisposableBean {
 
-    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchRestClientFactoryBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchClientFactoryBean.class);
 
-    private RestHighLevelClient client;
+    private RestClient lowLevelClient;
 
     private boolean forceIndex;
 
     private boolean mergeSettings = true;
 
     private boolean autoscan = true;
+
+    /**
+     * For tests purpose only. We allow no to check Self-Signed Certificates.
+     */
+    private boolean checkSelfSignedCertificates = true;
+
+    // TODO add support for certificates
+
+    private String username;
+    private String password;
+
+    // TODO add support for keys
 
     private String[] indices;
 
@@ -171,15 +186,19 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     private String[] indexTemplates;
 
-    private String[] templates;
-
     private String[] pipelines;
 
     private String[] lifecycles;
 
     private String classpathRoot = "es";
 
-    private String[] esNodes =  { "http://localhost:9200" };
+    private String[] esNodes =  { "https://localhost:9200" };
+
+    private ElasticsearchClient client;
+
+    public RestClient getLowLevelClient() {
+        return lowLevelClient;
+    }
 
     /**
      * Set to true if you want to force reinit the indices. This will remove all existing indices managed by the factory.
@@ -187,15 +206,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      */
     public void setForceIndex(boolean forceIndex) {
         this.forceIndex = forceIndex;
-    }
-
-    /**
-     * Set to true if you want to try to merge mappings
-     * @param mergeMapping true if you want to try to merge mappings
-     */
-    @Deprecated
-    public void setMergeMapping(boolean mergeMapping) {
-        logger.warn("This setting has been removed as we only manage index settings from 7.0.");
     }
 
     /**
@@ -214,6 +224,33 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         this.autoscan = autoscan;
     }
 
+    /**
+     * For tests purpose only. We allow no to check Self-Signed Certificates.
+     * @param checkSelfSignedCertificates set it to false if you don't want to check the certificate.
+     */
+    public void setCheckSelfSignedCertificates(boolean checkSelfSignedCertificates) {
+        this.checkSelfSignedCertificates = checkSelfSignedCertificates;
+        if (!checkSelfSignedCertificates) {
+            logger.warn("You disabled checking the https certificate. This could lead to " +
+                    "'Man in the middle' attacks. This setting is only intended for tests.");
+        }
+    }
+
+    /**
+     * Define the Elasticsearch username. Defaults to "elastic".
+     * @param username Elasticsearch username.
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * Define the Elasticsearch password. Must be provided.
+     * @param password Elasticsearch password.
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     /**
      * Define mappings you want to manage with this factory
@@ -298,29 +335,6 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
-     * Define templates you want to manage with this factory
-     * <p>Example :</p>
-     *
-     * <pre>
-     * {@code
-     * <property name="templates">
-     *  <list>
-     *   <value>template_1</value>
-     *   <value>template_2</value>
-     *  </list>
-     * </property>
-     * }
-     * </pre>
-     *
-     * @param templates list of template
-     * @deprecated Use {@link #componentTemplates} instead
-     */
-    @Deprecated
-    public void setTemplates(String[] templates) {
-        this.templates = templates;
-    }
-
-    /**
      * Define the pipelines you want to manage with this factory
      * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * <p>Example:</p>
@@ -390,15 +404,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        logger.info("Starting Elasticsearch client");
-        client = initialize();
-    }
-
-    private RestHighLevelClient initialize() throws Exception {
-        client = buildRestHighLevelClient();
+        logger.info("Starting Elasticsearch Low Level client");
+        lowLevelClient = buildElasticsearchLowLevelClient();
         if (autoscan) {
             indices = computeIndexNames(indices, classpathRoot);
-            templates = discoverFromClasspath(templates, classpathRoot, SettingsFinder.Defaults.TemplatesDir);
             componentTemplates = discoverFromClasspath(componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
             indexTemplates = discoverFromClasspath(indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
             pipelines = discoverFromClasspath(pipelines, classpathRoot, SettingsFinder.Defaults.PipelinesDir);
@@ -411,29 +420,36 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         initSettings();
         initAliases();
 
-        return client;
+        logger.info("Starting Elasticsearch client");
+
+        // Create the transport with a Jackson mapper
+        ElasticsearchTransport transport = new RestClientTransport(
+                lowLevelClient, new JacksonJsonpMapper());
+
+        // And create the API client
+        client = new ElasticsearchClient(transport);
     }
 
     @Override
     public void destroy() {
         try {
-            logger.info("Closing Elasticsearch client");
-            if (client != null) {
-                client.close();
+            logger.info("Closing Elasticsearch Low Level client");
+            if (lowLevelClient != null) {
+                lowLevelClient.close();
             }
         } catch (final Exception e) {
-            logger.error("Error closing Elasticsearch client: ", e);
+            logger.error("Error closing Elasticsearch Low Level client: ", e);
         }
     }
 
     @Override
-    public RestHighLevelClient getObject() {
+    public ElasticsearchClient getObject() {
         return client;
     }
 
     @Override
-    public Class<RestHighLevelClient> getObjectType() {
-        return RestHighLevelClient.class;
+    public Class<ElasticsearchClient> getObjectType() {
+        return ElasticsearchClient.class;
     }
 
     @Override
@@ -442,7 +458,7 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     }
 
     /**
-     * We use convention over configuration : see https://github.com/dadoonet/spring-elasticsearch/issues/3
+     * We use convention over configuration : see <a href="https://github.com/dadoonet/spring-elasticsearch/issues/3">...</a>
      */
     static String[] computeIndexNames(String[] indices, String classpathRoot) {
         if (indices == null || indices.length == 0) {
@@ -493,12 +509,12 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
     private void initSettings() throws Exception {
         checkClient();
         // We extract indexes and mappings to manage from mappings definition
-        if (indices != null && indices.length > 0) {
+        if (indices != null) {
             // Let's initialize indexes and mappings if needed
             for (String index : indices) {
-                createIndex(client.getLowLevelClient(), classpathRoot, index, forceIndex);
+                createIndex(lowLevelClient, classpathRoot, index, forceIndex);
                 if (mergeSettings) {
-                    updateSettings(client.getLowLevelClient(), classpathRoot, index);
+                    updateSettings(lowLevelClient, classpathRoot, index);
                 }
             }
         }
@@ -513,28 +529,20 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * </ul>
      */
     private void initTemplates() throws Exception {
-        if (componentTemplates != null && componentTemplates.length > 0) {
+        if (componentTemplates != null) {
             for (String componentTemplate : componentTemplates) {
                 Assert.hasText(componentTemplate, "Can not read component template in ["
                         + componentTemplate
                         + "]. Check that component template is not empty.");
-                createComponentTemplate(client.getLowLevelClient(), classpathRoot, componentTemplate);
+                createComponentTemplate(lowLevelClient, classpathRoot, componentTemplate);
             }
         }
-        if (indexTemplates != null && indexTemplates.length > 0) {
+        if (indexTemplates != null) {
             for (String indexTemplate : indexTemplates) {
                 Assert.hasText(indexTemplate, "Can not read component template in ["
                         + indexTemplate
                         + "]. Check that component template is not empty.");
-                createIndexTemplate(client.getLowLevelClient(), classpathRoot, indexTemplate);
-            }
-        }
-        if (templates != null && templates.length > 0) {
-            for (String template : templates) {
-                Assert.hasText(template, "Can not read template in ["
-                        + template
-                        + "]. Check that templates is not empty.");
-                createTemplate(client.getLowLevelClient(), classpathRoot, template);
+                createIndexTemplate(lowLevelClient, classpathRoot, indexTemplate);
             }
         }
     }
@@ -543,12 +551,12 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * It creates or updates the index pipelines
      */
     private void initPipelines() throws Exception {
-        if (pipelines != null && pipelines.length > 0) {
+        if (pipelines != null) {
             for (String pipeline : pipelines) {
                 Assert.hasText(pipeline, "Can not read pipeline in ["
                         + pipeline
                         + "]. Check that pipeline is not empty.");
-                createPipeline(client.getLowLevelClient(), classpathRoot, pipeline);
+                createPipeline(lowLevelClient, classpathRoot, pipeline);
             }
         }
     }
@@ -557,12 +565,12 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * It creates or updates the index lifecycles
      */
     private void initLifecycles() throws Exception {
-        if (lifecycles != null && lifecycles.length > 0) {
+        if (lifecycles != null) {
             for (String lifecycle : lifecycles) {
                 Assert.hasText(lifecycle, "Can not read lifecycle in ["
                         + lifecycle
                         + "]. Check that lifecycle is not empty.");
-                createIndexLifecycle(client.getLowLevelClient(), classpathRoot, lifecycle);
+                createIndexLifecycle(lowLevelClient, classpathRoot, lifecycle);
             }
         }
     }
@@ -583,10 +591,10 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
                 request += "{\"add\":{\"index\":\"" + aliasIndexSplitted.v1() +"\",\"alias\":\"" + aliasIndexSplitted.v2() +"\"}}";
 			}
             request += "]}";
-            manageAliasesWithJsonInElasticsearch(client.getLowLevelClient(), request);
+            manageAliasesWithJsonInElasticsearch(lowLevelClient, request);
 		}
 		if (autoscan) {
-		    manageAliases(client.getLowLevelClient(), classpathRoot);
+		    manageAliases(lowLevelClient, classpathRoot);
         }
     }
 
@@ -607,12 +615,12 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
      * Check if client is still here !
      */
     private void checkClient() throws Exception {
-        if (client == null) {
-            throw new Exception("Elasticsearch client doesn't exist. Your factory is not properly initialized.");
+        if (lowLevelClient == null) {
+            throw new Exception("Elasticsearch Low Level client doesn't exist. Your factory is not properly initialized.");
         }
     }
 
-	private RestHighLevelClient buildRestHighLevelClient() {
+	private RestClient buildElasticsearchLowLevelClient() {
         Collection<HttpHost> hosts = new ArrayList<>(esNodes.length);
 		for (String esNode : esNodes) {
             hosts.add(HttpHost.create(esNode));
@@ -621,23 +629,38 @@ public class ElasticsearchRestClientFactoryBean extends ElasticsearchAbstractFac
         RestClientBuilder rcb = RestClient.builder(hosts.toArray(new HttpHost[]{}));
 
         // We need to check if we have a user security property
-        String securedUser = properties != null ? properties.getProperty(XPACK_USER, null) : null;
-        if (securedUser != null) {
-            // We split the username and the password
-            String[] split = securedUser.split(":");
-            if (split.length < 2) {
-                throw new IllegalArgumentException(XPACK_USER + " must have the form username:password");
+        if (password == null) {
+            String securedUser = properties != null ? properties.getProperty(XPACK_USER, null) : null;
+            if (securedUser != null) {
+                logger.warn("Usage of xpack.security.user property has been deprecated. " +
+                        "You should now use username and password factory settings.");
+
+                // We split the username and the password
+                String[] split = securedUser.split(":");
+                if (split.length < 2) {
+                    throw new IllegalArgumentException(XPACK_USER + " must have the form username:password");
+                }
+                username = split[0];
+                password = split[1];
             }
-            String username = split[0];
-            String password = split[1];
-
-            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(AuthScope.ANY,
-                    new UsernamePasswordCredentials(username, password));
-
-            rcb.setHttpClientConfigCallback(hcb -> hcb.setDefaultCredentialsProvider(credentialsProvider));
+        }
+        if (password == null) {
+            throw new IllegalArgumentException("From version 8, you MUST define a user and a password to access Elasticsearch.");
         }
 
-        return new RestHighLevelClient(rcb);
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY,
+                new UsernamePasswordCredentials(username, password));
+
+        rcb.setHttpClientConfigCallback(hcb -> {
+            hcb.setDefaultCredentialsProvider(credentialsProvider);
+            if (!checkSelfSignedCertificates) {
+                // ONLY FOR TESTS
+                hcb.setSSLContext(SSLUtils.yesSSLContext());
+            }
+            return hcb;
+        });
+
+        return rcb.build();
 	}
 }

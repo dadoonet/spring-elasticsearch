@@ -19,11 +19,10 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.settingsnomapping21;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
@@ -31,9 +30,8 @@ import static org.hamcrest.Matchers.hasKey;
 
 public class SettingsNoMapping21Test extends AbstractRestAnnotationContextModel {
 
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
         // We should have an existing index here
-        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/twitter");
-        assertThat(response, hasKey("twitter"));
+        assertThat(client.indices().get(gir -> gir.index("twitter")).result(), hasKey("twitter"));
     }
 }

@@ -19,21 +19,22 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.mappingconvention;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.mapping.Property;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasKey;
-
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class MappingConventionTest extends AbstractRestAnnotationContextModel {
 
     @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        Map<String, Object> response = runRestQuery(client.getLowLevelClient(), "/twitter/_mapping", "twitter", "mappings", "properties");
-        assertThat(response, hasKey("message"));
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
+        Property property = client.indices().getMapping(gmr -> gmr.index("twitter")).get("twitter").mappings().properties().get("message");
+        assertThat(property, notNullValue());
+        assertThat(property.text().store(), is(true));
     }
 }

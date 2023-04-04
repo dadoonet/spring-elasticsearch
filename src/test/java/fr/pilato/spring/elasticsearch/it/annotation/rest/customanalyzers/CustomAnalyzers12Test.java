@@ -19,21 +19,21 @@
 
 package fr.pilato.spring.elasticsearch.it.annotation.rest.customanalyzers;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.AbstractRestAnnotationContextModel;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.is;
 
 
 public class CustomAnalyzers12Test extends AbstractRestAnnotationContextModel {
 
     @Override
-    protected void checkUseCaseSpecific(RestHighLevelClient client) throws IOException {
-        Map<String, Object> result = runRestQuery(client.getLowLevelClient(), "/twitter/_settings", "twitter", "settings", "index", "analysis", "analyzer", "francais");
-        assertThat(result, hasEntry("type", "custom"));
+    protected void checkUseCaseSpecific(ElasticsearchClient client) throws IOException {
+        assertThat(client.indices().getSettings(gisr -> gisr.index("twitter"))
+                .get("twitter").settings().index().analysis().analyzer().get("francais").isCustom(),
+                is(true));
     }
 }
