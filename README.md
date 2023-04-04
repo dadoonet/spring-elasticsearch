@@ -25,7 +25,7 @@ and automatically create index settings and templates based on what is found in 
 
 | spring-elasticsearch | elasticsearch | Spring | Release date |
 |:--------------------:|:-------------:|:------:|:------------:|
-|     8.8-SNAPSHOT     |     8.x       | 5.3.15 |              |
+|     8.7-SNAPSHOT     |     8.x       | 5.3.15 |              |
 |         7.1          |   7.0 - 7.x   | 5.3.15 |  2022-01-13  |
 |         7.0          |   7.0 - 7.x   | 5.3.8  |  2021-06-21  |
 |         6.7          |   6.7 - 6.x   | 5.1.3  |  2019-04-13  |
