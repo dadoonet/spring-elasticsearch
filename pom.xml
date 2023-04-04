@@ -21,7 +21,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.compiler.version>14</java.compiler.version>
+        <java.compiler.version>17</java.compiler.version>
 
         <spring.version>6.0.7</spring.version>
         <elasticsearch.version>8.7.0</elasticsearch.version>

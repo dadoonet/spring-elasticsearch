@@ -14,10 +14,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 14 and Maven Central Repository
+    - name: Set up JDK 17 and Maven Central Repository
       uses: actions/setup-java@v2
       with:
-        java-version: '14'
+        java-version: '17'
         distribution: 'adopt'
     - name: Cache Maven packages
       uses: actions/cache@v2
@@ -43,7 +43,7 @@ jobs:
     - name: Set up JDK 14 and Maven Central Repository
       uses: actions/setup-java@v2
       with:
-        java-version: '14'
+        java-version: '17'
         distribution: 'adopt'
         server-id: sonatype-nexus-snapshots
         server-username: MAVEN_USERNAME
