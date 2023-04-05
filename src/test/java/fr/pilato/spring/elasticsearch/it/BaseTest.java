@@ -21,7 +21,7 @@ package fr.pilato.spring.elasticsearch.it;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.pilato.spring.elasticsearch.util.SSLUtils;
+import fr.pilato.spring.elasticsearch.SSLUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;

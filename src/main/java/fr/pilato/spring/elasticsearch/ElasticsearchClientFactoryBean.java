@@ -25,8 +25,6 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import fr.pilato.elasticsearch.tools.util.ResourceList;
 import fr.pilato.elasticsearch.tools.util.SettingsFinder;
-import fr.pilato.spring.elasticsearch.util.SSLUtils;
-import fr.pilato.spring.elasticsearch.util.Tuple;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;

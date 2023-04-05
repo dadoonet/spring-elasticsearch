@@ -23,43 +23,22 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.indices.GetIndicesSettingsResponse;
 import fr.pilato.spring.elasticsearch.it.annotation.AbstractAnnotationContextModel;
-import fr.pilato.spring.elasticsearch.proxy.GenericInvocationHandler;
 import org.junit.jupiter.api.Test;
-import org.springframework.aop.framework.Advised;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Proxy;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractRestAnnotationContextModel extends AbstractAnnotationContextModel {
     protected ElasticsearchClient checkClient(String name) {
-        return checkClient(name, null);
-    }
-
-    ElasticsearchClient checkClient(String name, Boolean async) {
         ElasticsearchClient client;
 
         if (name != null) {
             client = ctx.getBean(name, ElasticsearchClient.class);
         } else {
             client = ctx.getBean(ElasticsearchClient.class);
-        }
-        if (async != null) {
-            if (async) {
-                assertThat(client, instanceOf(Advised.class));
-                assertThat(((Advised) client).getAdvisors()[0].getAdvice() , instanceOf(GenericInvocationHandler.class));
-            } else {
-                try {
-                    Proxy.getInvocationHandler(client);
-                    fail("Must not be proxyfied");
-                } catch (IllegalArgumentException e) {
-                    // We expect that
-                }
-            }
         }
         assertThat(client, not(nullValue()));
         return client;

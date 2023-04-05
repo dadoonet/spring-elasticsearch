@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.util;
+package fr.pilato.spring.elasticsearch;
 
 public class Tuple<V1, V2> {
 
