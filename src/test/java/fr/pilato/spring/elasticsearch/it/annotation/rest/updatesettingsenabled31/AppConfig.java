@@ -24,15 +24,12 @@ import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Properties;
-
 @Configuration
 public class AppConfig {
 
 	@Bean
-	public ElasticsearchClient esClient(Properties esProperties) throws Exception {
+	public ElasticsearchClient esClient() throws Exception {
 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
-		factory.setProperties(esProperties);
 		factory.setUsername("elastic");
 		factory.setPassword("changeme");
 		factory.setCheckSelfSignedCertificates(false);
@@ -42,9 +39,8 @@ public class AppConfig {
 	}
 
 	@Bean
-	public ElasticsearchClient esClient2(Properties esProperties) throws Exception {
+	public ElasticsearchClient esClient2() throws Exception {
 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
-		factory.setProperties(esProperties);
 		factory.setUsername("elastic");
 		factory.setPassword("changeme");
 		factory.setCheckSelfSignedCertificates(false);

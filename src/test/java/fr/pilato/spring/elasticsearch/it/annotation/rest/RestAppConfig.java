@@ -23,16 +23,13 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Properties;
-
 public abstract class RestAppConfig {
 
 	abstract protected void enrichFactory(ElasticsearchClientFactoryBean factory);
 
 	@Bean
-	public ElasticsearchClient esClient(Properties esProperties) throws Exception {
+	public ElasticsearchClient esClient() throws Exception {
 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
-		factory.setProperties(esProperties);
 		factory.setUsername("elastic");
 		factory.setPassword("changeme");
 		factory.setCheckSelfSignedCertificates(false);
