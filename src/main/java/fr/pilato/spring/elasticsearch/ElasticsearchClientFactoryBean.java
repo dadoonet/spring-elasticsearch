@@ -20,6 +20,7 @@
 package fr.pilato.spring.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.HealthStatus;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -42,6 +43,7 @@ import org.springframework.util.Assert;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -110,9 +112,9 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  *    public ElasticsearchClient esClient() throws Exception {
  *      ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
  * 	    // Create two indices twitter and rss
- * 	    factory.setIndices({ "twitter", "rss" });
+ * 	    factory.setIndices(new String[]{ "twitter", "rss" });
  * 	    // Create an alias alltheworld on top of twitter and rss indices
- * 	    factory.setAliases({ "alltheworld:twitter", "alltheworld:rss" });
+ * 	    factory.setAliases(new String[]{ "alltheworld:twitter", "alltheworld:rss" });
  * 	    // Remove all the existing declared indices (twitter and rss). VERY DANGEROUS SETTING!
  * 	    factory.setForceIndex(true);
  * 	    // If setForceIndex is not set, we try to merge existing index settings
@@ -185,16 +187,22 @@ public class ElasticsearchClientFactoryBean
 
     // TODO add support for keys
 
+    @Deprecated
     private String[] indices;
 
+    @Deprecated
     private String[] aliases;
 
+    @Deprecated
     private String[] componentTemplates;
 
+    @Deprecated
     private String[] indexTemplates;
 
+    @Deprecated
     private String[] pipelines;
 
+    @Deprecated
     private String[] lifecycles;
 
     private String classpathRoot = "es";
@@ -249,7 +257,9 @@ public class ElasticsearchClientFactoryBean
     /**
      * Set to false if you want to use configuration instead of convention.
      * @param autoscan false if you want to use configuration instead of convention.
+     * @deprecated you must use automatic discovery
      */
+    @Deprecated
     public void setAutoscan(boolean autoscan) {
         this.autoscan = autoscan;
     }
@@ -286,7 +296,9 @@ public class ElasticsearchClientFactoryBean
      * Define indices you want to manage with this factory
      * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param indices Array of index names
+     * @deprecated you must use automatic discovery (see {@link #setAutoscan(boolean)})
      */
+    @Deprecated
     public void setIndices(String[] indices) {
         this.indices = indices;
     }
@@ -295,7 +307,9 @@ public class ElasticsearchClientFactoryBean
      * Define aliases you want to manage with this factory
      * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param aliases alias array of aliasname:indexname
+     * @deprecated you must use automatic discovery (see {@link #setAutoscan(boolean)})
      */
+    @Deprecated
     public void setAliases(String[] aliases) {
         this.aliases = aliases;
     }
@@ -304,7 +318,9 @@ public class ElasticsearchClientFactoryBean
      * Define the index templates you want to manage with this factory
      * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param indexTemplates list of index templates
+     * @deprecated you must use automatic discovery (see {@link #setAutoscan(boolean)})
      */
+    @Deprecated
     public void setIndexTemplates(String[] indexTemplates) {
         this.indexTemplates = indexTemplates;
     }
@@ -313,7 +329,9 @@ public class ElasticsearchClientFactoryBean
      * Define component templates you want to manage with this factory
      * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param componentTemplates list of component templates
+     * @deprecated you must use automatic discovery (see {@link #setAutoscan(boolean)})
      */
+    @Deprecated
     public void setComponentTemplates(String[] componentTemplates) {
         this.componentTemplates = componentTemplates;
     }
@@ -322,7 +340,9 @@ public class ElasticsearchClientFactoryBean
      * Define the pipelines you want to manage with this factory
      * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param pipelines list of pipelines
+     * @deprecated you must use automatic discovery (see {@link #setAutoscan(boolean)})
      */
+    @Deprecated
     public void setPipelines(String[] pipelines) {
         this.pipelines = pipelines;
     }
@@ -379,27 +399,19 @@ public class ElasticsearchClientFactoryBean
     public void afterPropertiesSet() throws Exception {
         logger.info("Starting Elasticsearch Low Level client");
         lowLevelClient = buildElasticsearchLowLevelClient();
-        if (autoscan) {
-            indices = computeIndexNames(indices, classpathRoot);
-            componentTemplates = discoverFromClasspath(componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
-            indexTemplates = discoverFromClasspath(indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
-            pipelines = discoverFromClasspath(pipelines, classpathRoot, SettingsFinder.Defaults.PipelinesDir);
-            lifecycles = discoverFromClasspath(lifecycles, classpathRoot, SettingsFinder.Defaults.IndexLifecyclesDir);
-        }
 
+        logger.info("Starting Elasticsearch client");
+        // Create the transport with a Jackson mapper
+        ElasticsearchTransport transport = new RestClientTransport(lowLevelClient, new JacksonJsonpMapper());
+        // And create the API client
+        client = new ElasticsearchClient(transport);
+
+        // Automagically initialize the cluster/indices
         initLifecycles();
         initPipelines();
         initTemplates();
         initSettings();
         initAliases();
-
-        logger.info("Starting Elasticsearch client");
-
-        // Create the transport with a Jackson mapper
-        ElasticsearchTransport transport = new RestClientTransport(lowLevelClient, new JacksonJsonpMapper());
-
-        // And create the API client
-        client = new ElasticsearchClient(transport);
     }
 
     @Override
@@ -432,25 +444,36 @@ public class ElasticsearchClientFactoryBean
     /**
      * We use convention over configuration : see <a href="https://github.com/dadoonet/spring-elasticsearch/issues/3">...</a>
      */
-    static String[] computeIndexNames(String[] indices, String classpathRoot) {
-        if (indices == null || indices.length == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Automatic discovery is activated. Looking for definition files in classpath under [{}].",
-                        classpathRoot);
-            }
-
-            try {
-                // Let's scan our resources
-                return findIndexNames(classpathRoot).toArray(new String[0]);
-            } catch (IOException |URISyntaxException e) {
-                logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
-                logger.trace("", e);
-            }
+    static String[] computeIndexNames(boolean autoscan, String[] resources, String classpathRoot) {
+        if (!autoscan) {
+            logger.debug("Automatic discovery is disabled. Only static resources are used: {}", (Object) resources);
+            return resources;
         }
-        return indices;
+        if (resources != null && resources.length > 0) {
+            logger.debug("Resources are manually provided so we won't do any automatic discovery.");
+            return resources;
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Automatic discovery is activated. Looking for definition files in classpath under [{}].",
+                    classpathRoot);
+        }
+
+        try {
+            // Let's scan our resources
+            return findIndexNames(classpathRoot).toArray(new String[0]);
+        } catch (IOException |URISyntaxException e) {
+            logger.debug("Automatic discovery does not succeed for finding json files in classpath under " + classpathRoot + ".");
+            logger.trace("", e);
+            return null;
+        }
     }
 
-    static String[] discoverFromClasspath(String[] resources, String classpathRoot, String subdir) {
+    static String[] discoverFromClasspath(boolean autoscan, String[] resources, String classpathRoot, String subdir) {
+        if (!autoscan) {
+            logger.debug("Automatic discovery is disabled. Only static resources are used: {}", (Object) resources);
+            return resources;
+        }
         if (resources != null && resources.length > 0) {
             logger.debug("Resources are manually provided so we won't do any automatic discovery.");
             return resources;
@@ -458,9 +481,7 @@ public class ElasticsearchClientFactoryBean
 
         logger.debug("Automatic discovery is activated. Looking for resource files in classpath under [{}/{}].",
                 classpathRoot, subdir);
-
         ArrayList<String> autoResources = new ArrayList<>();
-
         try {
             // Let's scan our resources
             List<String> scannedResources = ResourceList.getResourceNames(classpathRoot, subdir);
@@ -479,16 +500,21 @@ public class ElasticsearchClientFactoryBean
      * <p>Note that you can force to reinit the index using {@link #setForceIndex(boolean)}
      */
     private void initSettings() throws Exception {
-        checkClient();
+        logger.debug("Initializing indices");
+        String[] indices = computeIndexNames(autoscan, this.indices, classpathRoot);
         // We extract indexes and mappings to manage from mappings definition
         if (indices != null) {
             // Let's initialize indexes and mappings if needed
             for (String index : indices) {
+                logger.debug("Initializing index {}", index);
                 createIndex(lowLevelClient, classpathRoot, index, forceIndex);
                 if (mergeSettings) {
                     updateSettings(lowLevelClient, classpathRoot, index);
                 }
             }
+
+            // Let's wait until the index is properly ready to be used
+            client.cluster().health(hrb -> hrb.index(Arrays.stream(indices).toList()).waitForStatus(HealthStatus.Yellow));
         }
     }
 
@@ -497,20 +523,25 @@ public class ElasticsearchClientFactoryBean
      * <ul>
      *     <li>component templates</li>
      *     <li>index templates</li>
-     *     <li>legacy templates (deprecated)</li>
      * </ul>
      */
     private void initTemplates() throws Exception {
+        logger.debug("Initializing component templates");
+        String[] componentTemplates = discoverFromClasspath(autoscan, this.componentTemplates, classpathRoot, SettingsFinder.Defaults.ComponentTemplatesDir);
         if (componentTemplates != null) {
             for (String componentTemplate : componentTemplates) {
+                logger.debug("Initializing component template {}", componentTemplate);
                 Assert.hasText(componentTemplate, "Can not read component template in ["
                         + componentTemplate
                         + "]. Check that component template is not empty.");
                 createComponentTemplate(lowLevelClient, classpathRoot, componentTemplate);
             }
         }
+        logger.debug("Initializing index templates");
+        String[] indexTemplates = discoverFromClasspath(autoscan, this.indexTemplates, classpathRoot, SettingsFinder.Defaults.IndexTemplatesDir);
         if (indexTemplates != null) {
             for (String indexTemplate : indexTemplates) {
+                logger.debug("Initializing index template {}", indexTemplate);
                 Assert.hasText(indexTemplate, "Can not read component template in ["
                         + indexTemplate
                         + "]. Check that component template is not empty.");
@@ -523,8 +554,11 @@ public class ElasticsearchClientFactoryBean
      * It creates or updates the index pipelines
      */
     private void initPipelines() throws Exception {
+        logger.debug("Initializing ingest pipelines");
+        String[] pipelines = discoverFromClasspath(autoscan, this.pipelines, classpathRoot, SettingsFinder.Defaults.PipelinesDir);
         if (pipelines != null) {
             for (String pipeline : pipelines) {
+                logger.debug("Initializing pipeline {}", pipeline);
                 Assert.hasText(pipeline, "Can not read pipeline in ["
                         + pipeline
                         + "]. Check that pipeline is not empty.");
@@ -537,8 +571,11 @@ public class ElasticsearchClientFactoryBean
      * It creates or updates the index lifecycles
      */
     private void initLifecycles() throws Exception {
+        logger.debug("Initializing lifecycle policies");
+        String [] lifecycles = discoverFromClasspath(autoscan, this.lifecycles, classpathRoot, SettingsFinder.Defaults.IndexLifecyclesDir);
         if (lifecycles != null) {
             for (String lifecycle : lifecycles) {
+                logger.debug("Initializing lifecycle {}", lifecycle);
                 Assert.hasText(lifecycle, "Can not read lifecycle in ["
                         + lifecycle
                         + "]. Check that lifecycle is not empty.");
@@ -551,7 +588,17 @@ public class ElasticsearchClientFactoryBean
      * Init aliases if needed.
      */
     private void initAliases() throws Exception {
-		if (aliases != null && aliases.length > 0) {
+        logger.debug("Initializing aliases");
+
+        if (!autoscan) {
+            logger.debug("Automatic discovery is disabled. Only static resources are used: {}", (Object) aliases);
+        } else {
+            logger.debug("Automatic discovery is activated. Looking for aliases in classpath under [{}/{}{}].",
+                    classpathRoot, SettingsFinder.Defaults.AliasesFile, SettingsFinder.Defaults.JsonFileExtension);
+        }
+
+        if (aliases != null && aliases.length > 0) {
+            logger.debug("Resources are manually provided so we won't do any automatic discovery.");
             String request = "{\"actions\":[";
             boolean first = true;
 			for (String aliasIndex : aliases) {
@@ -560,12 +607,12 @@ public class ElasticsearchClientFactoryBean
                 }
 			    first = false;
                 Tuple<String, String> aliasIndexSplitted = computeAlias(aliasIndex);
+                logger.debug("add alias {} on index {}", aliasIndexSplitted.v2(), aliasIndexSplitted.v1());
                 request += "{\"add\":{\"index\":\"" + aliasIndexSplitted.v1() +"\",\"alias\":\"" + aliasIndexSplitted.v2() +"\"}}";
 			}
             request += "]}";
             manageAliasesWithJsonInElasticsearch(lowLevelClient, request);
-		}
-		if (autoscan) {
+        } else {
 		    manageAliases(lowLevelClient, classpathRoot);
         }
     }
@@ -581,15 +628,6 @@ public class ElasticsearchClientFactoryBean
                 "]. Check that aliases contains only aliasname:indexname elements.");
 
         return new Tuple<>(index, alias);
-    }
-
-    /**
-     * Check if client is still here !
-     */
-    private void checkClient() throws Exception {
-        if (lowLevelClient == null) {
-            throw new Exception("Elasticsearch Low Level client doesn't exist. Your factory is not properly initialized.");
-        }
     }
 
 	private RestClient buildElasticsearchLowLevelClient() {

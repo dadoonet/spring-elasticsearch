@@ -1,0 +1,5 @@
+{
+  "actions" : [
+    { "add":  { "index": "twitter", "alias": "alias" } }
+  ]
+}

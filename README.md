@@ -59,6 +59,7 @@ and automatically create index settings and templates based on what is found in 
 * Removed deprecated XML support
 * As a side effect of a previous removal (TransportClient), async initialization of the client has been removed.
 * Deprecated `setProperties(Properties)` method.
+* Add a wait for yellow health when creating a new index
 
 ### Changes in 7.1
 

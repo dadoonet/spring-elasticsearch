@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.it.annotation.rest.aliases;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.manualsettings;
 
 import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
@@ -28,7 +28,12 @@ public class AppConfig extends RestAppConfig {
 
 	@Override
 	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
-		factory.setClasspathRoot("/models/root/aliases");
+		factory.setClasspathRoot("/models/root/manual-settings");
+		factory.setIndices(new String[]{"twitter"});
+		factory.setAliases(new String[]{"alltheworld:twitter"});
+		factory.setPipelines(new String[]{"pipeline1"});
+		factory.setComponentTemplates(new String[]{"component1"});
+		factory.setIndexTemplates(new String[]{"template_1"});
 	}
 
 }
