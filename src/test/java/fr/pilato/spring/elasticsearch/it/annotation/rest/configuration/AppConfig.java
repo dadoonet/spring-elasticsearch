@@ -28,7 +28,6 @@ public class AppConfig extends RestAppConfig {
 
 	@Override
 	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
-		factory.setEsNodes(new String[]{"https://127.0.0.1:9200"});
 	}
 
 }

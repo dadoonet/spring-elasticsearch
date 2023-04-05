@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
@@ -68,68 +67,67 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  * {@link RestClient#close()}
  * </p>
  * <p>
- * You need to define the nodes you want to communicate with.<br>
- * Don't forget to create an es.properties file if you want to set specific values
- * for this client.
- * <br>Example :
+ * If not using the default https://localhost:9200, you need to define the nodes you want to communicate with
+ * and probably the credentials.
  * </p>
+ * <p>Example :</p>
  * <pre>
  * {@code
- *  <bean id="esClient"
- *    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
- *    <property name="esNodes">
- *      <list>
- *        <value>https://localhost:9200</value>
- *        <value>https://localhost:9201</value>
- *      </list>
- *    </property>
- *  </bean>
+ * @Configuration
+ * public class AppConfig {
+ *    @Bean
+ *    public ElasticsearchClient esClient() throws Exception {
+ * 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
+ * 	    factory.setEsNodes(List.of(HttpHost.create("https://localhost:9200")));
+ * 		factory.setPassword("changeme");
+ * 		factory.afterPropertiesSet();
+ * 		return factory.getObject();
+ *    }
+ *  }
  * }
  * </pre>
  * <p>
- * You can define properties for this bean that will help to auto create indexes
- * and types.
- * <br>
- * By default, the factory will load an es.properties file in the classloader. It will
- * contain all information needed for your client.
- * <br>
- * If you want to  modify the filename used for properties, just define the settingsFile property.
- * <p>In the following example, we will create two indices:</p>
+ * The factory is meant to be used with some classpath files which are automatically
+ * loaded from {@code /es} directory to define your:
  * <ul>
- *   <li>twitter
- *   <li>rss
+ *   <li>component templates: {@code /es/_component_templates/*.json}
+ *   <li>index templates: {@code /es/_index_templates/*.json}
+ *   <li>indices: {@code /es/INDEXNAME/_settings.json}
+ *   <li>aliases: {@code /es/_aliases.json}
+ *   <li>index lifecycles policies: {@code /es/_index_lifecycles/*.json}
+ *   <li>ingest pipelines: {@code /es/_pipelines/*.json}
  * </ul>
- * Then we will define an alias alltheworld for twitter and rss indexes.
  *
+ * <p>You can force the manual creation of the above components but this is
+ * not the goal of this factory. So it should be used only for some specific use cases:
+ * </p>
+ * <p>
+ * Example :
+ * </p>
  * <pre>
  * {@code
- *  <bean id="esClient"
- *    class="fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean" >
- *    <property name="indices">
- *      <list>
- *        <value>twitter</value>
- *        <value>rss</value>
- *      </list>
- *    </property>
- *    <property name="aliases">
- *      <list>
- *        <value>alltheworld:twitter</value>
- *        <value>alltheworld:rss</value>
- *      </list>
- *    </property>
- *    <property name="templates">
- *      <list>
- *        <value>rss_template</value>
- *      </list>
- *    </property>
- *    <property name="forceMapping" value="false" />
- *    <property name="mergeSettings" value="true" />
- *    <property name="settingsFile" value="es.properties" />
- *    <property name="autoscan" value="false" />
- *  </bean>
+ * @Configuration
+ * public class AppConfig {
+ *    @Bean
+ *    public ElasticsearchClient esClient() throws Exception {
+ * 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
+ * 	    // Create two indices twitter and rss
+ * 	    factory.setIndices({ "twitter", "rss" });
+ * 	    // Create an alias alltheworld on top of twitter and rss indices
+ * 	    factory.setAliases({ "alltheworld:twitter", "alltheworld:rss" });
+ * 	    // Remove all the existing declared indices (twitter and rss). VERY DANGEROUS SETTING!
+ * 	    factory.setForceIndex(true);
+ * 	    // If setForceIndex is not set, we try to merge existing index settings
+ * 	    // with the provided ones
+ * 	    factory.setMergeSettings(true);
+ * 	    // Disable automatic scanning of the classpath.
+ * 	    factory.setAutoscan(false);
+ * 		factory.afterPropertiesSet();
+ * 		return factory.getObject();
+ *    }
+ *  }
  * }
  * </pre>
- *
  * By default, indexes are created with their default Elasticsearch settings. You can specify
  * your own settings for your index by putting a /es/indexname/_settings.json in your classpath.
  * <br>
@@ -159,12 +157,6 @@ public class ElasticsearchClientFactoryBean
         implements FactoryBean<ElasticsearchClient>, InitializingBean, DisposableBean {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchClientFactoryBean.class);
-
-    Properties properties;
-
-    boolean async = false;
-
-    ThreadPoolTaskExecutor taskExecutor;
 
     /**
      * Define the username:password to use.
@@ -209,7 +201,7 @@ public class ElasticsearchClientFactoryBean
 
     private String classpathRoot = "es";
 
-    private String[] esNodes =  { "https://localhost:9200" };
+    private Collection<HttpHost> esNodes = List.of(HttpHost.create("https://localhost:9200"));
 
     private ElasticsearchClient client;
 
@@ -238,22 +230,6 @@ public class ElasticsearchClientFactoryBean
             username = split[0];
             password = split[1];
         }
-    }
-
-    /**
-     * Enable async initialization
-     * @param async true if you want async initialization
-     */
-    public void setAsync(boolean async) {
-        this.async = async;
-    }
-
-    /**
-     * Executor for async init mode
-     * @param taskExecutor Executor for async init mode
-     */
-    public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
     }
 
     /**
@@ -309,19 +285,8 @@ public class ElasticsearchClientFactoryBean
     }
 
     /**
-     * Define mappings you want to manage with this factory
-     * <br>use : indexname form
-     * <p>Example :</p>
-     * <pre>
-     * {@code
-     * <property name="mappings">
-     *  <list>
-     *   <value>twitter</value>
-     *   <value>rss</value>
-     *  </list>
-     * </property>
-     * }
-     * </pre>
+     * Define indices you want to manage with this factory
+     * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param indices Array of index names
      */
     public void setIndices(String[] indices) {
@@ -330,18 +295,7 @@ public class ElasticsearchClientFactoryBean
 
     /**
      * Define aliases you want to manage with this factory
-     * <br>use : aliasname:indexname form
-     * <p>Example :</p>
-     * <pre>
-     * {@code
-     * <property name="aliases">
-     *  <list>
-     *   <value>alltheworld:twitter</value>
-     *   <value>alltheworld:rss</value>
-     *  </list>
-     * </property>
-     * }
-     * </pre>
+     * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param aliases alias array of aliasname:indexname
      */
     public void setAliases(String[] aliases) {
@@ -350,19 +304,7 @@ public class ElasticsearchClientFactoryBean
 
     /**
      * Define the index templates you want to manage with this factory
-     * <p>Example:</p>
-     *
-     * <pre>
-     * {@code
-     * <property name="indexTemplates">
-     *  <list>
-     *   <value>template_1</value>
-     *   <value>template_2</value>
-     *  </list>
-     * </property>
-     * }
-     * </pre>
-     *
+     * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param indexTemplates list of index templates
      */
     public void setIndexTemplates(String[] indexTemplates) {
@@ -371,19 +313,7 @@ public class ElasticsearchClientFactoryBean
 
     /**
      * Define component templates you want to manage with this factory
-     * <p>Example:</p>
-     *
-     * <pre>
-     * {@code
-     * <property name="componentTemplates">
-     *  <list>
-     *   <value>template_1</value>
-     *   <value>template_2</value>
-     *  </list>
-     * </property>
-     * }
-     * </pre>
-     *
+     * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
      * @param componentTemplates list of component templates
      */
     public void setComponentTemplates(String[] componentTemplates) {
@@ -393,19 +323,6 @@ public class ElasticsearchClientFactoryBean
     /**
      * Define the pipelines you want to manage with this factory
      * in case you are not using automatic discovery (see {@link #setAutoscan(boolean)})
-     * <p>Example:</p>
-     *
-     * <pre>
-     * {@code
-     * <property name="pipelines">
-     *  <list>
-     *   <value>pipeline1</value>
-     *   <value>pipeline2</value>
-     *  </list>
-     * </property>
-     * }
-     * </pre>
-     *
      * @param pipelines list of pipelines
      */
     public void setPipelines(String[] pipelines) {
@@ -417,14 +334,13 @@ public class ElasticsearchClientFactoryBean
      * <p>Example :</p>
      * <pre>
      * {@code
-     * <property name="classpathRoot" value="/es" />
+     * factory.setClasspathRoot("/es");
      * }
      * </pre>
      * That means that the factory will look in es folder to find index settings.
      * <br>So if you want to define settings or mappings for the twitter index, you
      * should put a _settings.json file under /es/twitter/ folder.
      * @param classpathRoot Classpath root for index and mapping files
-     * @see #setIndices(String[])
      */
     public void setClasspathRoot(String classpathRoot) {
         // For compatibility reasons, we need to convert "/classpathroot" to "classpathroot"
@@ -438,24 +354,27 @@ public class ElasticsearchClientFactoryBean
 
     /**
      * Define ES nodes to communicate with.
-     * <br>use : protocol://hostname:port form
-     * <p>Example :</p>
-     * <pre>
-     * {@code
-     * <property name="esNodes">
-     *  <list>
-     *   <value>http://localhost:9200</value>
-     *   <value>http://localhost:9201</value>
-     *  </list>
-     * </property>
-     * }
-     * </pre>
-     * If not set, default to [ "http://localhost:9200" ].
-     * <br>If port is not set, default to 9200.
-     * @param esNodes An array of nodes hostname:port
+     * Defaults to [ "https://localhost:9200" ].
+     * @param esNodes A collection of nodes
      */
-    public void setEsNodes(String[] esNodes) {
+    public void setEsNodes(Collection<HttpHost> esNodes) {
         this.esNodes = esNodes;
+    }
+
+    /**
+     * Define ES nodes to communicate with.
+     * <br>use : protocol://hostname:port form
+     * @param esNodes An array of nodes hostname:port
+     * @deprecated #setEsNodes(HttpHost[])
+     */
+    @Deprecated
+    public void setEsNodes(String[] esNodes) {
+        Collection<HttpHost> hosts = new ArrayList<>(esNodes.length);
+        for (String esNode : esNodes) {
+            hosts.add(HttpHost.create(esNode));
+        }
+
+        this.esNodes = hosts;
     }
 
     @Override
@@ -479,8 +398,7 @@ public class ElasticsearchClientFactoryBean
         logger.info("Starting Elasticsearch client");
 
         // Create the transport with a Jackson mapper
-        ElasticsearchTransport transport = new RestClientTransport(
-                lowLevelClient, new JacksonJsonpMapper());
+        ElasticsearchTransport transport = new RestClientTransport(lowLevelClient, new JacksonJsonpMapper());
 
         // And create the API client
         client = new ElasticsearchClient(transport);
@@ -677,12 +595,7 @@ public class ElasticsearchClientFactoryBean
     }
 
 	private RestClient buildElasticsearchLowLevelClient() {
-        Collection<HttpHost> hosts = new ArrayList<>(esNodes.length);
-		for (String esNode : esNodes) {
-            hosts.add(HttpHost.create(esNode));
-        }
-
-        RestClientBuilder rcb = RestClient.builder(hosts.toArray(new HttpHost[]{}));
+        RestClientBuilder rcb = RestClient.builder(esNodes.toArray(new HttpHost[]{}));
 
         // We need to check if we have a user security property
         if (username == null || password == null) {

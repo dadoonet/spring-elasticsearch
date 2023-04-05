@@ -34,7 +34,6 @@ public class AppConfig {
 		factory.setPassword("changeme");
 		factory.setCheckSelfSignedCertificates(false);
 		factory.setClasspathRoot("/models/root/multiple-clients/client1");
-		factory.setIndices(new String[]{"twitter"});
 		factory.setForceIndex(false);
 		factory.afterPropertiesSet();
 		return factory.getObject();
@@ -47,7 +46,6 @@ public class AppConfig {
 		factory.setPassword("changeme");
 		factory.setCheckSelfSignedCertificates(false);
 		factory.setClasspathRoot("/models/root/multiple-clients/client2");
-		factory.setIndices(new String[]{"twitter"});
 		factory.setMergeSettings(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();
