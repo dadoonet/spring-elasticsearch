@@ -41,6 +41,9 @@ public class ManualSettingsTest extends AbstractRestAnnotationContextModel {
         try {
             client.performRequest(new Request("DELETE", "/_component_template/component1"));
         } catch (ResponseException ignored) { }
+        try {
+            client.performRequest(new Request("DELETE", "/_pipeline/pipeline1"));
+        } catch (ResponseException ignored) { }
     }
 
     @Override
