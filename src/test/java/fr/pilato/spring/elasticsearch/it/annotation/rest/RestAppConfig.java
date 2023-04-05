@@ -21,7 +21,13 @@ package fr.pilato.spring.elasticsearch.it.annotation.rest;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
+import fr.pilato.spring.elasticsearch.SSLUtils;
+import org.apache.http.HttpHost;
 import org.springframework.context.annotation.Bean;
+
+import java.util.List;
+
+import static fr.pilato.spring.elasticsearch.it.BaseTest.*;
 
 public abstract class RestAppConfig {
 
@@ -30,11 +36,18 @@ public abstract class RestAppConfig {
 	@Bean
 	public ElasticsearchClient esClient() throws Exception {
 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
-		factory.setUsername("elastic");
-		factory.setPassword("changeme");
-		factory.setCheckSelfSignedCertificates(false);
+		enrichFactoryWithNodeSettings(factory);
 		enrichFactory(factory);
 		factory.afterPropertiesSet();
 		return factory.getObject();
+	}
+
+	public static void enrichFactoryWithNodeSettings(ElasticsearchClientFactoryBean factory) {
+		factory.setEsNodes(List.of(HttpHost.create(testCluster)));
+		factory.setUsername(testClusterUser);
+		factory.setPassword(testClusterPass);
+		if (testCluster.equals(DEFAULT_TEST_CLUSTER)) {
+			factory.setSslContext(SSLUtils.yesSSLContext());
+		}
 	}
 }

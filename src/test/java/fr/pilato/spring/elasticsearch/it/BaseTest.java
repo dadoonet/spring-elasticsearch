@@ -53,30 +53,13 @@ public abstract class BaseTest {
 
     private static RestClient client;
 
-    private final static String DEFAULT_TEST_CLUSTER = "https://127.0.0.1:9200";
+    public final static String DEFAULT_TEST_CLUSTER = "https://127.0.0.1:9200";
     private final static String DEFAULT_TEST_USER = "elastic";
     private final static String DEFAULT_TEST_PASSWORD = "changeme";
 
-    final static String testCluster = System.getProperty("tests.cluster", DEFAULT_TEST_CLUSTER);
+    public final static String testCluster = System.getProperty("tests.cluster", DEFAULT_TEST_CLUSTER);
     public final static String testClusterUser = System.getProperty("tests.cluster.user", DEFAULT_TEST_USER);
     public final static String testClusterPass = System.getProperty("tests.cluster.pass", DEFAULT_TEST_PASSWORD);
-
-    private static void startRestClient() throws IOException {
-        if (client == null) {
-            RestClientBuilder builder = RestClient.builder(HttpHost.create(testCluster));
-            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(AuthScope.ANY,
-                    new UsernamePasswordCredentials(testClusterUser, testClusterPass));
-
-            builder.setHttpClientConfigCallback(hcb -> hcb
-                    .setDefaultCredentialsProvider(credentialsProvider)
-                    .setSSLContext(SSLUtils.yesSSLContext())
-            );
-
-            client = builder.build();
-            testClusterRunning();
-        }
-    }
 
     private static void testClusterRunning() throws IOException {
         try {
@@ -92,13 +75,6 @@ public abstract class BaseTest {
             // If we have an exception here, let's ignore the test
             staticLogger.warn("Integration tests are skipped: [{}]", e.getMessage());
             assumeFalse(e.getMessage().contains("Connection refused"), "Integration tests are skipped");
-        } catch (ResponseException e) {
-            if (e.getResponse().getStatusLine().getStatusCode() == 401) {
-                staticLogger.debug("The cluster is secured. So we need to build a client with security", e);
-            } else {
-                staticLogger.error("Full error is", e);
-                throw e;
-            }
         } catch (IOException e) {
             staticLogger.error("Full error is", e);
             throw e;
@@ -107,10 +83,28 @@ public abstract class BaseTest {
 
 
     @BeforeAll
-    public static void testElasticsearchIsRunning() {
+    public static void startElasticsearchClient() {
         try {
-            startRestClient();
+            if (client == null) {
+                staticLogger.info("Starting tests against {}", testCluster);
+                RestClientBuilder builder = RestClient.builder(HttpHost.create(testCluster));
+                final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(AuthScope.ANY,
+                        new UsernamePasswordCredentials(testClusterUser, testClusterPass));
+
+                builder.setHttpClientConfigCallback(hcb -> {
+                    hcb.setDefaultCredentialsProvider(credentialsProvider);
+                    if (testCluster.equals(DEFAULT_TEST_CLUSTER)) {
+                        hcb.setSSLContext(SSLUtils.yesSSLContext());
+                    }
+                    return hcb;
+                });
+
+                client = builder.build();
+                testClusterRunning();
+            }
         } catch (Exception e) {
+            staticLogger.error("Error", e);
             assumeFalse(true, "Elasticsearch does not seem to run.");
         }
     }
@@ -130,31 +124,26 @@ public abstract class BaseTest {
     @BeforeEach @AfterEach
     public void cleanIndex() throws IOException {
         if (indexName() != null) {
-            try {
-                client.performRequest(new Request("DELETE", indexName()));
-            } catch (ResponseException e) {
-                if (e.getResponse().getStatusLine().getStatusCode() != 404) {
-                    throw e;
-                }
-            }
+            deleteIndex(indexName());
         }
         for (String otherTestIndex : otherTestIndices()) {
-            try {
-                client.performRequest(new Request("DELETE", otherTestIndex));
-            } catch (ResponseException e) {
-                if (e.getResponse().getStatusLine().getStatusCode() != 404) {
-                    throw e;
-                }
-            }
+            deleteIndex(otherTestIndex);
         }
+        deleteIndex("twitter");
+        executeBefore(client);
+    }
+
+    private void deleteIndex(String indexName) throws IOException {
         try {
-            client.performRequest(new Request("DELETE", "twitter"));
+            logger.debug("Removing index {}", indexName);
+            client.performRequest(new Request("DELETE", "/" + indexName));
+            logger.debug("Removing index {} - ok", indexName);
         } catch (ResponseException e) {
             if (e.getResponse().getStatusLine().getStatusCode() != 404) {
                 throw e;
             }
+            logger.debug("Removing index {} - not found", indexName);
         }
-        executeBefore(client);
     }
 
     /**

@@ -515,6 +515,26 @@ If you want to apply this policy to your index, you can define the following set
 }
 ```
 
+### SSL certificates
+
+If you need to specify your own SSL certificates (self-signed certificates), you can use the `setSSLContext(SSLContext)`
+method to do this.
+You can refer to the Elasticsearch [Low Level client documentation](https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/_encrypted_communication.html)
+to see some examples. Once you have created a SSLContext, you can use it in the factory:
+
+```java
+Path trustStorePath = Paths.get("/path/to/truststore.p12");
+KeyStore truststore = KeyStore.getInstance("pkcs12");
+try (InputStream is = Files.newInputStream(trustStorePath)) {
+    truststore.load(is, keyStorePass.toCharArray());
+}
+SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
+final SSLContext sslContext = sslBuilder.build();
+
+ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
+factory.setSslContext(sslContext);
+```
+
 # Thanks
 
 Special thanks to
@@ -527,12 +547,18 @@ Special thanks to
 # Running tests
 
 If you want to run tests (integration tests) from your IDE, you need to start first an elasticsearch instance.
-Tests are expecting a node running at `localhost:9200`.
+Tests are expecting a node running at `https://localhost:9200` with the user `elastic` and `changeme` as the password.
 
 To run the tests using Maven (on the CLI), just run:
 
 ```sh
 mvn clean install
+```
+
+You can change the target to run the tests. For example, if you want to run the tests against an elastic cloud instance:
+
+```shell
+mvn clean install -Dtests.cluster=https://ID.es.ZONE.PROVIDER.cloud.es.io -Dtests.cluster.user=myuser -Dtests.cluster.pass=YOURPASSWORD
 ```
 
 # Release guide
