@@ -29,8 +29,6 @@ public class AppConfig extends RestAppConfig {
 	@Override
 	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/aliases");
-		factory.setAliases(new String[]{"alltheworld:twitter"});
-		factory.setForceIndex(true);
 	}
 
 }

@@ -17,32 +17,23 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.util;
+package fr.pilato.spring.elasticsearch.it.annotation.rest.manualsettings;
 
-public class Tuple<V1, V2> {
+import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
+import fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig;
+import org.springframework.context.annotation.Configuration;
 
-    public static <V1, V2> Tuple<V1, V2> tuple(V1 v1, V2 v2) {
-        return new Tuple<>(v1, v2);
-    }
+@Configuration
+public class AppConfig extends RestAppConfig {
 
-    private final V1 v1;
-    private final V2 v2;
+	@Override
+	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
+		factory.setClasspathRoot("/models/root/manual-settings");
+		factory.setIndices(new String[]{"twitter"});
+		factory.setAliases(new String[]{"alltheworld:twitter"});
+		factory.setPipelines(new String[]{"pipeline1"});
+		factory.setComponentTemplates(new String[]{"component1"});
+		factory.setIndexTemplates(new String[]{"template_1"});
+	}
 
-    public Tuple(V1 v1, V2 v2) {
-        this.v1 = v1;
-        this.v2 = v2;
-    }
-
-    public V1 v1() {
-        return v1;
-    }
-
-    public V2 v2() {
-        return v2;
-    }
-
-    @Override
-    public String toString() {
-        return "Tuple [v1=" + v1 + ", v2=" + v2 + "]";
-    }
 }

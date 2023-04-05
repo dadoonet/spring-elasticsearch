@@ -40,8 +40,6 @@ public class AliasesTest extends AbstractRestAnnotationContextModel {
 
     @Override
     protected void checkUseCaseSpecific(ElasticsearchClient client) throws Exception {
-        assertThat(client.indices().getAlias(gar -> gar.name("alltheworld")).result(), hasKey("twitter"));
-
         Map<String, IndexAliases> response = client.indices().getAlias(gar -> gar.name("test")).result();
         assertThat(response, not(hasKey("test_1")));
         assertThat(response, hasKey("test_2"));

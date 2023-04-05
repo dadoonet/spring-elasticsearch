@@ -31,7 +31,6 @@ public class AppConfig extends RestAppConfig {
 	@Override
 	protected void enrichFactory(ElasticsearchClientFactoryBean factory) {
 		factory.setClasspathRoot("/models/root/mapping/client1");
-		factory.setIndices(new String[]{"twitter"});
 		factory.setForceIndex(false);
 	}
 
@@ -42,7 +41,6 @@ public class AppConfig extends RestAppConfig {
 		factory.setPassword("changeme");
 		factory.setCheckSelfSignedCertificates(false);
 		factory.setClasspathRoot("/models/root/mapping/client2");
-		factory.setIndices(new String[]{"twitter"});
 		factory.setMergeSettings(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();

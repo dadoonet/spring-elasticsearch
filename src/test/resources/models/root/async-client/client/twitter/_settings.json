@@ -1,7 +1,0 @@
-{
-  "mappings": {
-    "properties" : {
-      "message" : {"type" : "text", "store" : true}
-    }
-  }
-}

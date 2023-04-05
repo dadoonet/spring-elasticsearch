@@ -57,7 +57,9 @@ and automatically create index settings and templates based on what is found in 
 * Provides now the new official [Java Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/)
 * Removed deprecated templates
 * Removed deprecated XML support
+* As a side effect of a previous removal (TransportClient), async initialization of the client has been removed.
 * Deprecated `setProperties(Properties)` method.
+* Add a wait for yellow health when creating a new index
 
 ### Changes in 7.1
 

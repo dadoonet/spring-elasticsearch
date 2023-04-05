@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package fr.pilato.spring.elasticsearch.util;
+package fr.pilato.spring.elasticsearch;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;

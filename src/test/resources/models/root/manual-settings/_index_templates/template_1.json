@@ -1,0 +1,14 @@
+{
+    "index_patterns": ["te*", "bar*"],
+    "template": {
+        "settings": {
+            "number_of_shards": 1
+        }
+    },
+    "priority": 100,
+    "composed_of": ["component1"],
+    "version": 1,
+    "_meta": {
+        "description": "my custom"
+    }
+}
