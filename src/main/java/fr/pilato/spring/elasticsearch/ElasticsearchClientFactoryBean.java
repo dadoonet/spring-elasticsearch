@@ -108,7 +108,7 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  * public class AppConfig {
  *    @Bean
  *    public ElasticsearchClient esClient() throws Exception {
- * 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
+ *      ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
  * 	    // Create two indices twitter and rss
  * 	    factory.setIndices({ "twitter", "rss" });
  * 	    // Create an alias alltheworld on top of twitter and rss indices
@@ -120,8 +120,8 @@ import static fr.pilato.elasticsearch.tools.util.ResourceList.findIndexNames;
  * 	    factory.setMergeSettings(true);
  * 	    // Disable automatic scanning of the classpath.
  * 	    factory.setAutoscan(false);
- * 		factory.afterPropertiesSet();
- * 		return factory.getObject();
+ *      factory.afterPropertiesSet();
+ *      return factory.getObject();
  *    }
  *  }
  * }
