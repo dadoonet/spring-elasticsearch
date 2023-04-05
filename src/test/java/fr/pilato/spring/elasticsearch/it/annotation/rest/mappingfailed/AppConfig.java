@@ -24,15 +24,15 @@ import fr.pilato.spring.elasticsearch.ElasticsearchClientFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static fr.pilato.spring.elasticsearch.it.annotation.rest.RestAppConfig.enrichFactoryWithNodeSettings;
+
 @Configuration
 public class AppConfig {
 
 	@Bean
 	public ElasticsearchClient esClient() throws Exception {
 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
-		factory.setUsername("elastic");
-		factory.setPassword("changeme");
-		factory.setCheckSelfSignedCertificates(false);
+		enrichFactoryWithNodeSettings(factory);
 		factory.setClasspathRoot("/models/root/mapping-failed/client1");
 		factory.setForceIndex(false);
 		factory.afterPropertiesSet();
@@ -42,9 +42,7 @@ public class AppConfig {
 	@Bean
 	public ElasticsearchClient esClient2() throws Exception {
 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
-		factory.setUsername("elastic");
-		factory.setPassword("changeme");
-		factory.setCheckSelfSignedCertificates(false);
+		enrichFactoryWithNodeSettings(factory);
 		factory.setClasspathRoot("/models/root/mapping-failed/client2");
 		factory.setMergeSettings(true);
 		factory.afterPropertiesSet();

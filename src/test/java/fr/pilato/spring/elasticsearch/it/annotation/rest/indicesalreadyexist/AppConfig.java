@@ -36,9 +36,7 @@ public class AppConfig extends RestAppConfig {
 	@Bean
 	public ElasticsearchClient esClient2() throws Exception {
 		ElasticsearchClientFactoryBean factory = new ElasticsearchClientFactoryBean();
-		factory.setUsername("elastic");
-		factory.setPassword("changeme");
-		factory.setCheckSelfSignedCertificates(false);
+		enrichFactoryWithNodeSettings(factory);
 		factory.setClasspathRoot("/models/root/indices-already-exist-86/client");
 		factory.afterPropertiesSet();
 		return factory.getObject();

@@ -40,6 +40,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -175,13 +176,6 @@ public class ElasticsearchClientFactoryBean
 
     private boolean autoscan = true;
 
-    /**
-     * For tests purpose only. We allow no to check Self-Signed Certificates.
-     */
-    private boolean checkSelfSignedCertificates = true;
-
-    // TODO add support for certificates
-
     private String username;
     private String password;
 
@@ -210,6 +204,8 @@ public class ElasticsearchClientFactoryBean
     private Collection<HttpHost> esNodes = List.of(HttpHost.create("https://localhost:9200"));
 
     private ElasticsearchClient client;
+
+    private SSLContext sslContext;
 
     public RestClient getLowLevelClient() {
         return lowLevelClient;
@@ -262,18 +258,6 @@ public class ElasticsearchClientFactoryBean
     @Deprecated
     public void setAutoscan(boolean autoscan) {
         this.autoscan = autoscan;
-    }
-
-    /**
-     * For tests purpose only. We allow no to check Self-Signed Certificates.
-     * @param checkSelfSignedCertificates set it to false if you don't want to check the certificate.
-     */
-    public void setCheckSelfSignedCertificates(boolean checkSelfSignedCertificates) {
-        this.checkSelfSignedCertificates = checkSelfSignedCertificates;
-        if (!checkSelfSignedCertificates) {
-            logger.warn("You disabled checking the https certificate. This could lead to " +
-                    "'Man in the middle' attacks. This setting is only intended for tests.");
-        }
     }
 
     /**
@@ -393,6 +377,16 @@ public class ElasticsearchClientFactoryBean
         }
 
         this.esNodes = hosts;
+    }
+
+    /**
+     * Define the SSLContext to use if any
+     * @param sslContext    SSLContext
+     * @see SSLUtils#yesSSLContext() for test purposes
+     * @see SSLUtils#createSslContextFromCa(String) when you want to pass the Elasticsearch self-signed certificate
+     */
+    public void setSslContext(SSLContext sslContext) {
+        this.sslContext = sslContext;
     }
 
     @Override
@@ -644,9 +638,8 @@ public class ElasticsearchClientFactoryBean
 
         rcb.setHttpClientConfigCallback(hcb -> {
             hcb.setDefaultCredentialsProvider(credentialsProvider);
-            if (!checkSelfSignedCertificates) {
-                // ONLY FOR TESTS
-                hcb.setSSLContext(SSLUtils.yesSSLContext());
+            if (sslContext != null) {
+                hcb.setSSLContext(sslContext);
             }
             return hcb;
         });
