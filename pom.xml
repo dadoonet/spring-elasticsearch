@@ -28,7 +28,7 @@
         <beyonder.version>8.6-SNAPSHOT</beyonder.version>
         <slf4j.version>2.0.7</slf4j.version>
         <log4j.version>2.20.0</log4j.version>
-        <commons.io.version>2.11.0</commons.io.version>
+        <commons.io.version>2.14.0</commons.io.version>
         <jackson.version>2.15.2</jackson.version>
         <junit.version>5.9.3</junit.version>
 
