@@ -399,7 +399,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>3.5.4</version>
                 <dependencies>
                     <!-- Workaround for https://issues.apache.org/jira/browse/SUREFIRE-1732
                      TODO remove with next version of failsafe plugin
@@ -407,7 +407,7 @@
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-api</artifactId>
-                        <version>3.2.2</version>
+                        <version>3.5.4</version>
                     </dependency>
                 </dependencies>
                 <executions>
