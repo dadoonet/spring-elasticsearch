@@ -6,7 +6,7 @@
     <artifactId>spring-elasticsearch</artifactId>
     <packaging>jar</packaging>
     <name>spring-elasticsearch</name>
-    <version>8.7-SNAPSHOT</version>
+    <version>8.19-SNAPSHOT</version>
     <url>https://github.com/dadoonet/spring-elasticsearch</url>
     <description>Spring factories for Elasticsearch</description>
 
@@ -24,8 +24,8 @@
         <java.compiler.version>17</java.compiler.version>
 
         <spring.version>6.2.11</spring.version>
-        <elasticsearch.version>8.11.0</elasticsearch.version>
-        <beyonder.version>8.6-SNAPSHOT</beyonder.version>
+        <elasticsearch.version>8.19.4</elasticsearch.version>
+        <beyonder.version>8.17</beyonder.version>
         <slf4j.version>2.0.17</slf4j.version>
         <log4j.version>2.20.0</log4j.version>
         <commons.io.version>2.20.0</commons.io.version>
