@@ -1,5 +1,26 @@
 # Spring factories for Elasticsearch
 
+**This project is now archived.** 
+
+Please use [Elasticsearch Beyonder](https://github.com/dadoonet/elasticsearch-beyonder/) 
+instead. Just inject an Elasticsearch Rest Client bean in your code and use the
+`ElasticsearchBeyonder` class to load your indices, templates... Something like:
+
+```java
+import org.springframework.context.annotation.Bean;
+
+public class MyApp {
+    @Bean
+    ElasticsearchClient client;
+
+    public void startBeyonder() {
+        ElasticsearchBeyonder.start(client);
+    }
+}
+```
+
+---
+
 Welcome to the Spring factories for [Elasticsearch](https://www.elastic.co/elasticsearch/) project.
 
 The factory provides a [Java Rest Client for Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/)
